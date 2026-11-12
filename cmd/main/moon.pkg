@@ -1,0 +1,5 @@
+// import {
+//   "walkzzz/astrolabe" @lib,
+// }
+
+pkgtype(kind: "executable")
