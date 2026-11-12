@@ -10,6 +10,10 @@ pub fn any_char() -> @core.Parser[Char]
 
 pub fn char(Char) -> @core.Parser[Char]
 
+pub fn char_class((Char) -> Bool, String) -> @core.Parser[Char]
+
+pub fn char_range(Char, Char) -> @core.Parser[Char]
+
 pub fn end_of_input() -> @core.Parser[Unit]
 
 pub fn[T] peek(@core.Parser[T]) -> @core.Parser[T]

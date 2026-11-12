@@ -114,6 +114,18 @@ pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
   @basic.skip(p)
 }
 
+///|
+/// Parse a single character in the inclusive range [lo, hi].
+pub fn char_range(lo : Char, hi : Char) -> @core.Parser[Char] {
+  @basic.char_range(lo, hi)
+}
+
+///|
+/// Parse a single character matching a predicate function.
+pub fn char_class(pred : (Char) -> Bool, label_ : String) -> @core.Parser[Char] {
+  @basic.char_class(pred, label_)
+}
+
 /// ============================================================================
 /// Compose combinators (re-export from @compose)
 /// ============================================================================

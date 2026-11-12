@@ -1,3 +1,7 @@
 import {
   "walkzzz/astrolabe/core",
 }
+
+import {
+  "walkzzz/astrolabe/compose",
+} for "wbtest"

@@ -199,3 +199,44 @@ pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
     }
   })
 }
+
+///| Parse a single character in the inclusive range [lo, hi].
+
+///|
+
+///|
+/// Fails if the next character is outside the range.
+pub fn char_range(lo : Char, hi : Char) -> @core.Parser[Char] {
+  let label_ = "char in [" + lo.to_string() + "-" + hi.to_string() + "]"
+  @core.Parser::of(fn(state) {
+    match state.peek() {
+      Some(ch) if ch >= lo && ch <= hi => {
+        state.advance_one()
+        @core.Success(ch, state)
+      }
+      _ => @core.Failure(@core.ParseError::at(pos=state.pos, expected=label_))
+    }
+  })
+}
+
+///| Parse a single character matching a predicate function.
+
+///|
+
+///| This is the most flexible single-character parser: pass any `(Char) -> Bool`
+
+///|
+
+///|
+/// to define custom character classes (e.g., hex digits, identifier starts).
+pub fn char_class(pred : (Char) -> Bool, label_ : String) -> @core.Parser[Char] {
+  @core.Parser::of(fn(state) {
+    match state.peek() {
+      Some(ch) if pred(ch) => {
+        state.advance_one()
+        @core.Success(ch, state)
+      }
+      _ => @core.Failure(@core.ParseError::at(pos=state.pos, expected=label_))
+    }
+  })
+}

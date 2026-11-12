@@ -14,6 +14,10 @@ pub fn[T, U] bind(@core.Parser[T], (T) -> @core.Parser[U]) -> @core.Parser[U]
 
 pub fn char(Char) -> @core.Parser[Char]
 
+pub fn char_class((Char) -> Bool, String) -> @core.Parser[Char]
+
+pub fn char_range(Char, Char) -> @core.Parser[Char]
+
 pub fn[T] choice(Array[@core.Parser[T]]) -> @core.Parser[T]
 
 pub fn[T] commit(@core.Parser[T]) -> @core.Parser[T]
