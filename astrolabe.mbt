@@ -64,6 +64,7 @@ pub fn[T] parse_full(
 
 ///|
 /// Format a `ParseError` as a human-readable string.
+#inline
 pub fn format_error(err : @core.ParseError) -> String {
   err.format()
 }
@@ -91,6 +92,7 @@ pub fn format_error_with_input(
 
 ///|
 /// Match a single specific character.
+#inline
 pub fn char(expected : Char) -> @core.Parser[Char] {
   @basic.char(expected)
 }
@@ -101,6 +103,7 @@ pub fn char(expected : Char) -> @core.Parser[Char] {
 
 ///|
 /// Match an exact string literal.
+#inline
 pub fn string(expected : String) -> @core.Parser[String] {
   @basic.string(expected)
 }
@@ -111,6 +114,7 @@ pub fn string(expected : String) -> @core.Parser[String] {
 
 ///|
 /// Match any single character.
+#inline
 pub fn any_char() -> @core.Parser[Char] {
   @basic.any_char()
 }
@@ -121,6 +125,7 @@ pub fn any_char() -> @core.Parser[Char] {
 
 ///|
 /// Consume exactly `n` characters from the input.
+#inline
 pub fn take(n : Int32) -> @core.Parser[String] {
   @basic.take(n)
 }
@@ -144,6 +149,7 @@ pub fn satisfy(
 
 ///|
 /// Succeed only at the end of input.
+#inline
 pub fn end_of_input() -> @core.Parser[Unit] {
   @basic.end_of_input()
 }
@@ -174,6 +180,7 @@ pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
 
 ///|
 /// Parse a single character in the inclusive range [lo, hi].
+#inline
 pub fn char_range(lo : Char, hi : Char) -> @core.Parser[Char] {
   @basic.char_range(lo, hi)
 }
@@ -184,6 +191,7 @@ pub fn char_range(lo : Char, hi : Char) -> @core.Parser[Char] {
 
 ///|
 /// Parse a single character matching a predicate function.
+#inline
 pub fn char_class(pred : (Char) -> Bool, label_ : String) -> @core.Parser[Char] {
   @basic.char_class(pred, label_)
 }
@@ -221,18 +229,9 @@ pub fn[T, U] bind(
 
 ///|
 /// A parser that always succeeds without consuming input.
+#alias(return_, deprecated="Use pure instead")
 pub fn[T] pure(value : T) -> @core.Parser[T] {
   @compose.pure(value)
-}
-
-///| `pure` 的别名。
-
-///|
-
-///|
-/// Alias for `pure`.
-pub fn[T] return_(value : T) -> @core.Parser[T] {
-  @compose.return_(value)
 }
 
 ///| 顺序组合两个独立解析器，收集两者结果。
@@ -283,6 +282,7 @@ pub fn[A, B, C, D] seq4(
 
 ///|
 /// Match `p` zero or more times, collecting results into an array.
+#inline
 pub fn[T] many(p : @core.Parser[T]) -> @core.Parser[Array[T]] {
   @compose.many(p)
 }
@@ -293,6 +293,7 @@ pub fn[T] many(p : @core.Parser[T]) -> @core.Parser[Array[T]] {
 
 ///|
 /// Match `p` one or more times, collecting results into an array.
+#inline
 pub fn[T] many1(p : @core.Parser[T]) -> @core.Parser[Array[T]] {
   @compose.many1(p)
 }
@@ -329,6 +330,7 @@ pub fn[T, S] sep_by1(
 
 ///|
 /// Match `p` exactly `n` times, collecting results into an array.
+#inline
 pub fn[T] count(n : Int32, p : @core.Parser[T]) -> @core.Parser[Array[T]] {
   @compose.count(n, p)
 }
@@ -356,6 +358,7 @@ pub fn[T, E] many_till(
 
 ///|
 /// Mark a parser's failure as committed.
+#inline
 pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] {
   @control.commit(p)
 }
@@ -376,6 +379,7 @@ pub fn[T] alt(p1 : @core.Parser[T], p2 : @core.Parser[T]) -> @core.Parser[T] {
 
 ///|
 /// N-way ordered choice over an array of parsers.
+#inline
 pub fn[T] choice(parsers : Array[@core.Parser[T]]) -> @core.Parser[T] {
   @control.choice(parsers)
 }
@@ -386,6 +390,7 @@ pub fn[T] choice(parsers : Array[@core.Parser[T]]) -> @core.Parser[T] {
 
 ///|
 /// Replace a parser's error message with a custom label.
+#inline
 pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
   @control.label(p, name)
 }

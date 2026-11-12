@@ -18,9 +18,8 @@ pub fn[T, E] many_till(@core.Parser[T], @core.Parser[E]) -> @core.Parser[Array[T
 
 pub fn[T, U] map(@core.Parser[T], (T) -> U) -> @core.Parser[U]
 
+#alias(return_, deprecated)
 pub fn[T] pure(T) -> @core.Parser[T]
-
-pub fn[T] return_(T) -> @core.Parser[T]
 
 pub fn[T, S] sep_by(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
 

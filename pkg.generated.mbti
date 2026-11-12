@@ -46,9 +46,8 @@ pub fn[T] parse_full(@core.Parser[T], String) -> Result[T, @core.ParseError]
 
 pub fn[T] peek(@core.Parser[T]) -> @core.Parser[T]
 
+#alias(return_, deprecated)
 pub fn[T] pure(T) -> @core.Parser[T]
-
-pub fn[T] return_(T) -> @core.Parser[T]
 
 pub fn satisfy((Char) -> Bool, label? : String) -> @core.Parser[Char]
 

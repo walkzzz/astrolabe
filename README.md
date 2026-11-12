@@ -6,7 +6,7 @@
 
 MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Angstrom](https://github.com/SimonCourteaux/angstrom)
 
-[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.1.13-orange)](https://mooncakes.io/package/walkzzz/astrolabe)
+[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.1.15-orange)](https://mooncakes.io/package/walkzzz/astrolabe)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![tests](https://img.shields.io/badge/tests-122%20%C3%97%204%20backends-green)]()
 [![formal](https://img.shields.io/badge/formal-Z3%20verified-brightgreen)](docs/formal-spec.md)
@@ -185,7 +185,7 @@ match req {
 |--------|------|
 | `map(p, f)` | 变换结果 |
 | `bind(p, f)` | 序列，第二个依赖第一个 |
-| `pure(v)` / `return_(v)` | 总是成功 |
+| `pure(v)` / `return_(v)` ⚠️ | 总是成功（`return_` 已弃用，请用 `pure`） |
 | `seq2` / `seq3` / `seq4` | 序列收集 |
 | `many(p)` / `many1(p)` | 零次或多次 / 一次或多次 |
 | `sep_by(p, sep)` / `sep_by1` | 分隔符分隔 |

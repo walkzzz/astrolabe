@@ -283,6 +283,7 @@ pub fn ParseError::at(pos~ : Pos, expected~ : String) -> ParseError {
 
 ///|
 /// Return a copy with `committed = true`, used for sequence-commit semantics.
+#inline
 pub fn ParseError::commit(self : ParseError) -> ParseError {
   {
     pos: self.pos,

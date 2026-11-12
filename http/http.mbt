@@ -5,6 +5,7 @@
 ///|
 /// HTTP method as an enum.
 #derive(Debug, Eq)
+#non_exhaustive
 pub(all) enum Method {
   GET
   POST

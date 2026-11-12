@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.15] - 2026-11-13
+
+### Added
+- `#alias(return_, deprecated="Use pure instead")` on `pure` — eliminates separate `return_` function
+- `#non_exhaustive` on `Method` enum — forward-compatible for future HTTP methods
+- `#inline` on `ParseError::commit()` and 14 facade wrapper functions
+
+### Changed
+- `return_` is now an alias (deprecated) for `pure` instead of a separate function
+- Manual `impl Show for Method` kept (MoonBit deprecated `derive(Show)`, recommends manual impl)
+
+### Removed
+- `return_` function definitions in compose/compose.mbt and astrolabe.mbt (replaced by #alias)
+
 ## [0.1.14] - 2026-11-12
 
 ### Added

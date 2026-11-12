@@ -73,18 +73,9 @@ pub fn[T, U] bind(
 
 ///|
 /// A parser that always succeeds without consuming input, yielding `value`.
+#alias(return_, deprecated="Use pure instead")
 pub fn[T] pure(value : T) -> @core.Parser[T] {
   @core.Parser::of(fn(state) { @core.Success(value, state) })
-}
-
-///| `pure` 的别名。命名为 `return_` 以避免与 MoonBit 关键字冲突。
-
-///|
-
-///|
-/// Alias for `pure`. Named `return_` to avoid conflicting with MoonBit keyword.
-pub fn[T] return_(value : T) -> @core.Parser[T] {
-  pure(value)
 }
 
 ///| 序列两个独立解析器，收集两个结果。

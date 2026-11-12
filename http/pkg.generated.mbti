@@ -34,6 +34,7 @@ pub fn Header::not_equal(Self, Self) -> Bool
 pub fn Header::to_repr(Self) -> @debug.Repr
 pub fn Header::to_string(Self) -> String
 
+#non_exhaustive
 #derive(Eq, @debug.Debug)
 pub(all) enum Method {
   GET
