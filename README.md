@@ -4,9 +4,9 @@
 
 **位置感知解析器组合子库** — MoonBit 生态首个
 
-灵感来自 OCaml [Angstrom](https://github.com/SimonCourteaux/angstrom)，填补 yacc（重）与 parkit（无位置）之间的空白
+灵感来自 OCaml [Angstrom](https://github.com/SimonCourteaux/angstrom)，填补 yacc（重）与 regex（无位置）之间的空白
 
-[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.1.10-orange)](https://mooncakes.io/package/walkzzz/astrolabe)
+[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.1.12-orange)](https://mooncakes.io/package/walkzzz/astrolabe)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![tests](https://img.shields.io/badge/tests-122%20%C3%97%204%20backends-green)]()
 [![formal](https://img.shields.io/badge/formal-Z3%20verified-brightgreen)](docs/formal-spec.md)
@@ -51,7 +51,7 @@ let letter_or_digit = @astrolabe.alt(
 ``moonbit
 let p = @astrolabe.string("hello")
 match p.parse_full("helLO") {
-  Err(e) => println(@astrolabe.format_error_with_input(e, "helLO"))
+  Err(e) => println(e.format_with_input("helLO"))
   // line 1, column 4 (offset 3):
   // expected hello
   //   ...helLO
@@ -100,16 +100,30 @@ let req = @astrolabe/http.parse_request_string(
 )
 ``
 
+## MoonBit 惯用法
+
+Astrolabe 充分利用 MoonBit 的方法系统、特征系统和派生属性：
+
+| 特性 | 使用方式 |
+|------|---------|
+| `#derive(Eq, Debug)` | Pos/State/ParseError/JValue/HTTP 类型自动生成 Eq/Debug |
+| `impl Show` | Method/Version 实现 Show，支持 `.to_string()` |
+| `extend Type with Trait::{method}` | 显式附加 trait 方法支持点调用 |
+| `TypeName::method(self, ...)` | 所有关键操作以方法定义（Parser::parse, ParseError::format, State::peek） |
+| `ParseError::commit()` | 消除 bind/seq2/seq3/seq4/control 中 7 处 `committed: true` 重复构造 |
+| `Parser::of(fn)` | 通用扩展点，将任意函数包装为 Parser |
+
 ## API 一览
 
 ### 入口函数
 
-| 函数 | 说明 |
-|------|------|
-| `parse(p, input)` | 解析，允许尾部未消费 |
-| `parse_full(p, input)` | 解析，要求全部消费 |
-| `format_error(e)` | 格式化错误 |
-| `format_error_with_input(e, input)` | 错误 + 输入上下文 |
+| 函数 / 方法 | 说明 |
+|-------------|------|
+| `p.parse(input)` | 解析，允许尾部未消费 |
+| `p.parse_full(input)` | 解析，要求全部消费 |
+| `err.format()` | 格式化错误 |
+| `err.format_with_input(input)` | 错误 + 输入上下文 |
+| `err.commit()` | 返回 committed=true 的副本 |
 
 ### 基础组合子
 
@@ -147,6 +161,15 @@ let req = @astrolabe/http.parse_request_string(
 | `alt(p1, p2)` | 有序选择（回溯控制） |
 | `choice(parsers)` | N 路有序选择 |
 | `label(p, name)` | 替换错误信息 |
+
+### HTTP 类型方法
+
+| 方法 | 说明 |
+|------|------|
+| `method.to_string()` | 通过 Show trait — `"GET"`, `"POST"` 等 |
+| `version.to_string()` | 通过 Show trait — `"HTTP/1.1"` 等 |
+| `uri.to_string()` | 完整 URI 字符串 |
+| `request.to_string()` | 完整 HTTP 请求文本 |
 
 ## 性能基准
 
@@ -189,6 +212,7 @@ astrolabe/
 ├── control/       commit, alt, choice, label
 ├── json/          JValue + JSON 解析器 + stringify
 ├── http/          Method, Request, Uri + 解析器
+├── proof/         Z3 形式化验证 (7 goals proved)
 ├── benchmarks/    25 个基准测试
 ├── examples/      URI, CSV, 计算器
 ├── cmd/main/      CLI 演示

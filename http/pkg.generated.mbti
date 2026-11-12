@@ -32,6 +32,7 @@ pub(all) struct Header {
 pub fn Header::equal(Self, Self) -> Bool
 pub fn Header::not_equal(Self, Self) -> Bool
 pub fn Header::to_repr(Self) -> @debug.Repr
+pub fn Header::to_string(Self) -> String
 
 #derive(Eq, @debug.Debug)
 pub(all) enum Method {
@@ -47,8 +48,10 @@ pub(all) enum Method {
 }
 pub fn Method::equal(Self, Self) -> Bool
 pub fn Method::not_equal(Self, Self) -> Bool
+pub fn Method::output(Self, &Logger) -> Unit
 pub fn Method::to_repr(Self) -> @debug.Repr
 pub fn Method::to_string(Self) -> String
+pub impl Show for Method
 
 #derive(Eq, @debug.Debug)
 pub(all) struct Request {
@@ -60,6 +63,7 @@ pub(all) struct Request {
 pub fn Request::equal(Self, Self) -> Bool
 pub fn Request::not_equal(Self, Self) -> Bool
 pub fn Request::to_repr(Self) -> @debug.Repr
+pub fn Request::to_string(Self) -> String
 
 #derive(Eq, @debug.Debug)
 pub(all) struct RequestLine {
@@ -70,6 +74,7 @@ pub(all) struct RequestLine {
 pub fn RequestLine::equal(Self, Self) -> Bool
 pub fn RequestLine::not_equal(Self, Self) -> Bool
 pub fn RequestLine::to_repr(Self) -> @debug.Repr
+pub fn RequestLine::to_string(Self) -> String
 
 #derive(Eq, @debug.Debug)
 pub(all) struct Uri {
@@ -83,6 +88,7 @@ pub(all) struct Uri {
 pub fn Uri::equal(Self, Self) -> Bool
 pub fn Uri::not_equal(Self, Self) -> Bool
 pub fn Uri::to_repr(Self) -> @debug.Repr
+pub fn Uri::to_string(Self) -> String
 
 #derive(Eq, @debug.Debug)
 pub(all) struct Version {
@@ -91,8 +97,10 @@ pub(all) struct Version {
 }
 pub fn Version::equal(Self, Self) -> Bool
 pub fn Version::not_equal(Self, Self) -> Bool
+pub fn Version::output(Self, &Logger) -> Unit
 pub fn Version::to_repr(Self) -> @debug.Repr
 pub fn Version::to_string(Self) -> String
+pub impl Show for Version
 
 // Type aliases
 

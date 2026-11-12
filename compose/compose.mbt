@@ -44,12 +44,7 @@ pub fn[T, U] bind(
         match (next.run)(st) {
           @core.Success(result, st2) => @core.Success(result, st2)
           @core.Failure(err) =>
-            @core.Failure({
-              pos: err.pos,
-              expected: err.expected,
-              committed: true,
-              context: err.context,
-            })
+          @core.Failure(err.commit())
         }
       }
       @core.Failure(err) => @core.Failure(err)
@@ -91,12 +86,7 @@ pub fn[A, B] seq2(
       @core.Success(a, st1) =>
         match (p2.run)(st1) {
           @core.Failure(err) =>
-            @core.Failure({
-              pos: err.pos,
-              expected: err.expected,
-              committed: true,
-              context: err.context,
-            })
+          @core.Failure(err.commit())
           @core.Success(b, st2) => @core.Success((a, b), st2)
         }
     }
@@ -122,21 +112,11 @@ pub fn[A, B, C] seq3(
       @core.Success(a, st1) =>
         match (p2.run)(st1) {
           @core.Failure(err) =>
-            @core.Failure({
-              pos: err.pos,
-              expected: err.expected,
-              committed: true,
-              context: err.context,
-            })
+          @core.Failure(err.commit())
           @core.Success(b, st2) =>
             match (p3.run)(st2) {
               @core.Failure(err) =>
-                @core.Failure({
-                  pos: err.pos,
-                  expected: err.expected,
-                  committed: true,
-                  context: err.context,
-                })
+            @core.Failure(err.commit())
               @core.Success(c, st3) => @core.Success((a, b, c), st3)
             }
         }
@@ -423,21 +403,11 @@ pub fn[A, B, C, D] seq4(
       @core.Success(a, st1) =>
         match (p2.run)(st1) {
           @core.Failure(err) =>
-            @core.Failure({
-              pos: err.pos,
-              expected: err.expected,
-              committed: true,
-              context: err.context,
-            })
+          @core.Failure(err.commit())
           @core.Success(b, st2) =>
             match (p3.run)(st2) {
               @core.Failure(err) =>
-                @core.Failure({
-                  pos: err.pos,
-                  expected: err.expected,
-                  committed: true,
-                  context: err.context,
-                })
+            @core.Failure(err.commit())
               @core.Success(c, st3) =>
                 match (p4.run)(st3) {
                   @core.Failure(err) =>

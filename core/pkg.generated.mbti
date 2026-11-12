@@ -18,6 +18,7 @@ pub(all) struct ParseError {
   context : String
 }
 pub fn ParseError::at(pos~ : Pos, expected~ : String) -> Self
+pub fn ParseError::commit(Self) -> Self
 pub fn ParseError::equal(Self, Self) -> Bool
 pub fn ParseError::format(Self) -> String
 pub fn ParseError::format_with_input(Self, String) -> String

@@ -226,16 +226,12 @@ pub extend ParseError with Eq::{not_equal, equal}
 ///|
 pub extend ParseError with @debug.Debug::{to_repr}
 
-///| Construct an uncommitted error at `pos` expecting `expected`.
-
-///|
-
-///| Convenience factory for the common case: single expected token,
-
-///|
-/// no context, uncommitted.
 pub fn ParseError::at(pos~ : Pos, expected~ : String) -> ParseError {
   { pos, expected: [expected], committed: false, context: "", }
+}
+
+pub fn ParseError::commit(self : ParseError) -> ParseError {
+  { pos: self.pos, expected: self.expected, committed: true, context: self.context, }
 }
 
 ///| Format this error as a human-readable string.

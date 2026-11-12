@@ -19,20 +19,21 @@ pub extend Method with Eq::{not_equal, equal}
 ///|
 pub extend Method with @debug.Debug::{to_repr}
 
-///|
-pub fn Method::to_string(self : Method) -> String {
+pub impl Show for Method with output(self, logger) {
   match self {
-    GET => "GET"
-    POST => "POST"
-    PUT => "PUT"
-    DELETE => "DELETE"
-    HEAD => "HEAD"
-    OPTIONS => "OPTIONS"
-    PATCH => "PATCH"
-    CONNECT => "CONNECT"
-    TRACE => "TRACE"
+    GET => logger.write_string("GET")
+    POST => logger.write_string("POST")
+    PUT => logger.write_string("PUT")
+    DELETE => logger.write_string("DELETE")
+    HEAD => logger.write_string("HEAD")
+    OPTIONS => logger.write_string("OPTIONS")
+    PATCH => logger.write_string("PATCH")
+    CONNECT => logger.write_string("CONNECT")
+    TRACE => logger.write_string("TRACE")
   }
 }
+
+pub extend Method with Show::{output, to_string}
 
 ///|
 /// HTTP version.
@@ -49,9 +50,14 @@ pub extend Version with Eq::{not_equal, equal}
 pub extend Version with @debug.Debug::{to_repr}
 
 ///|
-pub fn Version::to_string(self : Version) -> String {
-  "HTTP/\{self.major}.\{self.minor}"
+pub impl Show for Version with output(self, logger) {
+  logger.write_string("HTTP/")
+  logger.write_string(self.major.to_string())
+  logger.write_string(".")
+  logger.write_string(self.minor.to_string())
 }
+
+pub extend Version with Show::{output, to_string}
 
 ///|
 /// HTTP request line: method + path + version.
@@ -116,9 +122,41 @@ pub extend Uri with Eq::{not_equal, equal}
 ///|
 pub extend Uri with @debug.Debug::{to_repr}
 
-/// ============================================================================
-/// Internal helpers
-/// ============================================================================
+pub fn RequestLine::to_string(self : RequestLine) -> String {
+  "\{self.req_method} \{self.uri} \{self.version.to_string()}"
+}
+
+pub fn Header::to_string(self : Header) -> String {
+  "\{self.name}: \{self.value}"
+}
+
+pub fn Request::to_string(self : Request) -> String {
+  let line = "\{self.req_method} \{self.uri} \{self.version.to_string()}"
+  let headers = self.headers.map(fn(h) { h.to_string() }).join("\r\n")
+  if headers == "" {
+    line + "\r\n\r\n"
+  } else {
+    line + "\r\n" + headers + "\r\n\r\n"
+  }
+}
+
+pub fn Uri::to_string(self : Uri) -> String {
+  let mut s = "\{self.scheme}://\{self.host}"
+  match self.port {
+    Some(p) => s = s + ":\{p}"
+    None => ()
+  }
+  s = s + self.path
+  match self.query {
+    Some(q) => s = s + "?\{q}"
+    None => ()
+  }
+  match self.fragment {
+    Some(f) => s = s + "#\{f}"
+    None => ()
+  }
+  s
+}
 
 ///|
 /// Parse characters while predicate holds, returning the string.

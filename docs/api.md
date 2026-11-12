@@ -2,11 +2,21 @@
 
 > Complete reference for all public API in `@astrolabe`, `@astrolabe/json`, and `@astrolabe/http`.
 
+## Method & Trait System
+
+Astrolabe uses MoonBit's method and trait system throughout:
+
+- **Types define methods** via `TypeName::method_name(self, ...)` — e.g., `Parser::parse`, `ParseError::format`
+- **Dot syntax** works on methods: `p.parse("abc")`, `err.format()`
+- **Traits** are used for standard interfaces: `Method` and `Version` implement `Show` (providing `.to_string()`)
+- **Derive** auto-generates `Eq`, `Debug` for core types: `Pos`, `State`, `ParseError`, `JValue`, all HTTP types
+- **Extend** explicitly attaches trait methods for dot syntax: `extend Method with Show::{to_string, output}`
+
 ## Core Types (`@astrolabe`)
 
 ### Pos
 
-Source position tracked during parsing.
+Source position tracked during parsing. `#derive(Eq, Debug)`.
 
 ```moonbit
 struct Pos {
@@ -19,11 +29,11 @@ struct Pos {
 | Method | Signature | Description |
 |--------|-----------|-------------|
 | `Pos::initial()` | `() -> Pos` | Create position at (1, 1, 0) |
-| `Pos::advance` | `(Pos, Char) -> Pos` | Advance by one character; newline resets column |
+| `pos.advance(ch)` | `(Char) -> Pos` | Advance by one character; newline resets column |
 
 ### State
 
-Mutable parsing state wrapping input string and cursor.
+Mutable parsing state wrapping input string and cursor. `#derive(Debug)`.
 
 ```moonbit
 struct State {
@@ -35,15 +45,17 @@ struct State {
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
-| `State::new` | `(String) -> State` | Create state at start of input |
-| `State::remaining` | `(State) -> Int32` | Characters remaining |
-| `State::is_eof` | `(State) -> Bool` | At end of input? |
-| `State::peek` | `(State) -> Char?` | Peek current char (None at EOF) |
-| `State::advance_one` | `(State) -> Unit` | Advance cursor by one char |
-| `State::advance_by` | `(State, Int32) -> Unit` | Advance by `n` chars |
-| `State::slice` | `(State, Int32, Int32) -> String` | Extract substring `[start, end)` |
+| `State::new(input)` | `(String) -> State` | Create state at start of input |
+| `state.remaining()` | `() -> Int32` | Characters remaining |
+| `state.is_eof()` | `() -> Bool` | At end of input? |
+| `state.peek()` | `() -> Char?` | Peek current char (None at EOF) |
+| `state.advance_one()` | `() -> Unit` | Advance cursor by one char |
+| `state.advance_by(n)` | `(Int32) -> Unit` | Advance by `n` chars |
+| `state.slice(start, end)` | `(Int32, Int32) -> String` | Extract substring `[start, end)` |
 
 ### ParseError
+
+`#derive(Debug, Eq)`. Error carrying position, expected tokens, and commitment status.
 
 ```moonbit
 struct ParseError {
@@ -56,11 +68,14 @@ struct ParseError {
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
-| `ParseError::at` | `(pos~, expected~) -> ParseError` | Uncommitted error at position |
-| `ParseError::format` | `(ParseError) -> String` | Human-readable string |
-| `ParseError::format_with_input` | `(ParseError, String) -> String` | Same + context snippet with caret |
+| `ParseError::at(pos~, expected~)` | `() -> ParseError` | Uncommitted error at position |
+| `err.commit()` | `() -> ParseError` | Return copy with `committed = true` |
+| `err.format()` | `() -> String` | Human-readable string |
+| `err.format_with_input(input)` | `(String) -> String` | Same + context snippet with caret |
 
 ### Parser[T]
+
+Core parser combinator type.
 
 ```moonbit
 struct Parser[T] {
@@ -70,9 +85,9 @@ struct Parser[T] {
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
-| `Parser::of` | `fn[T]((State) -> ParseResult[T]) -> Parser[T]` | Wrap raw function into Parser |
-| `Parser::parse` | `fn[T](Parser[T], String) -> Result[T, ParseError]` | Parse, allow trailing |
-| `Parser::parse_full` | `fn[T](Parser[T], String) -> Result[T, ParseError]` | Parse, require full consumption |
+| `Parser::of(f)` | `fn[T]((State) -> ParseResult[T]) -> Parser[T]` | Wrap raw function into Parser |
+| `p.parse(input)` | `fn[T](String) -> Result[T, ParseError]` | Parse, allow trailing |
+| `p.parse_full(input)` | `fn[T](String) -> Result[T, ParseError]` | Parse, require full consumption |
 
 ### ParseResult[T]
 
@@ -324,6 +339,8 @@ Replace `p`'s error message with `name`. Useful for domain-specific error messag
 
 ### JValue
 
+`#derive(Debug, Eq)`. JSON value type.
+
 ```moonbit
 enum JValue {
   JNull
@@ -337,7 +354,7 @@ enum JValue {
 
 | Method | Description |
 |--------|-------------|
-| `JValue::stringify` | Convert to JSON string representation |
+| `jv.stringify()` | Convert to JSON string representation |
 
 ### Public API
 
@@ -352,19 +369,25 @@ enum JValue {
 
 ### Types
 
-| Type | Fields | Description |
-|------|--------|-------------|
-| `Method` | `GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH, CONNECT, TRACE` | HTTP method enum |
-| `Version` | `major: Int32, minor: Int32` | HTTP version |
-| `RequestLine` | `req_method: Method, uri: String, version: Version` | Parsed request line |
-| `Header` | `name: String, value: String` | Header key-value pair |
-| `Request` | `req_method, uri, version, headers: Array[Header]` | Complete HTTP request |
-| `Uri` | `scheme, host, port: Int32?, path, query: String?, fragment: String?` | URI components |
+| Type | Fields | Traits | Description |
+|------|--------|--------|-------------|
+| `Method` | `GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH, CONNECT, TRACE` | `Eq, Debug, Show` | HTTP method enum |
+| `Version` | `major: Int32, minor: Int32` | `Eq, Debug, Show` | HTTP version |
+| `RequestLine` | `req_method: Method, uri: String, version: Version` | `Eq, Debug` | Parsed request line |
+| `Header` | `name: String, value: String` | `Eq, Debug` | Header key-value pair |
+| `Request` | `req_method, uri, version, headers: Array[Header]` | `Eq, Debug` | Complete HTTP request |
+| `Uri` | `scheme, host, port: Int32?, path, query: String?, fragment: String?` | `Eq, Debug` | URI components |
+
+### Methods
 
 | Method | Description |
 |--------|-------------|
-| `Method::to_string` | `"GET"`, `"POST"`, etc. |
-| `Version::to_string` | `"HTTP/1.1"`, etc. |
+| `method.to_string()` | Via `Show` trait — `"GET"`, `"POST"`, etc. |
+| `version.to_string()` | Via `Show` trait — `"HTTP/1.1"`, etc. |
+| `req_line.to_string()` | `"GET /path HTTP/1.1"` |
+| `header.to_string()` | `"Content-Type: text/html"` |
+| `request.to_string()` | Full HTTP request text |
+| `uri.to_string()` | Full URI string |
 
 ### Public API
 

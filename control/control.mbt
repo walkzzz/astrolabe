@@ -13,12 +13,7 @@ pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] {
     match (p.run)(state) {
       @core.Success(value, st) => @core.Success(value, st)
       @core.Failure(err) =>
-        @core.Failure({
-          pos: err.pos,
-          expected: err.expected,
-          committed: true,
-          context: err.context,
-        })
+        @core.Failure(err.commit())
     }
   })
 }
