@@ -267,6 +267,48 @@ pub fn ParseError::format(self : ParseError) -> String {
   "\{loc}:\nexpected \{exp}\{ctx}"
 }
 
+///| Format this error with a context snippet extracted from `input`.
+
+///|
+
+///| Produces the same header as `format()`, plus a snippet line showing
+
+///| up to 20 characters before and after the error position:
+
+///|
+
+///| ```text
+
+///| line 3, column 15 (offset 42):
+
+///| expected HTTP method
+
+///|   ...GET /path with-P<error>ayload...
+
+///|                ^
+
+///|
+/// ```
+pub fn ParseError::format_with_input(
+  self : ParseError,
+  input : String,
+) -> String {
+  let base = self.format()
+  let offset = self.pos.offset
+  let ctx_start = if offset > 20 { offset - 20 } else { 0 }
+  let ctx_end = if offset + 20 < input.length() {
+    offset + 20
+  } else {
+    input.length()
+  }
+  let snippet = input[ctx_start:ctx_end].to_owned()
+  let prefix = if ctx_start > 0 { "..." } else { "" }
+  let suffix = if ctx_end < input.length() { "..." } else { "" }
+  let caret_offset = offset - ctx_start + prefix.length()
+  let caret = " ".repeat(caret_offset) + "^"
+  "\{base}\n  \{prefix}\{snippet}\{suffix}\n  \{caret}"
+}
+
 /// ============================================================================
 /// Parse result & Parser core
 /// ============================================================================

@@ -80,3 +80,16 @@ test "ParseError::format" {
   assert_true(fmt.contains("offset 42"))
   assert_true(fmt.contains("HTTP method"))
 }
+
+///|
+test "ParseError::format_with_input" {
+  let input = "GET /path with-Payload HTTP/1.1"
+  let err = ParseError::at(
+    pos={ line: 1, column: 16, offset: 15, },
+    expected="HTTP method",
+  )
+  let fmt = err.format_with_input(input)
+  assert_true(fmt.contains("offset 15"))
+  assert_true(fmt.contains("HTTP method"))
+  assert_true(fmt.contains("^"))
+}

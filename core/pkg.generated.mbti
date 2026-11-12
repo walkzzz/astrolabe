@@ -20,6 +20,7 @@ pub(all) struct ParseError {
 pub fn ParseError::at(pos~ : Pos, expected~ : String) -> Self
 pub fn ParseError::equal(Self, Self) -> Bool
 pub fn ParseError::format(Self) -> String
+pub fn ParseError::format_with_input(Self, String) -> String
 pub fn ParseError::not_equal(Self, Self) -> Bool
 pub fn ParseError::to_repr(Self) -> @debug.Repr
 

@@ -24,17 +24,23 @@ pub fn end_of_input() -> @core.Parser[Unit]
 
 pub fn format_error(@core.ParseError) -> String
 
+pub fn format_error_with_input(@core.ParseError, String) -> String
+
 pub fn[T] label(@core.Parser[T], String) -> @core.Parser[T]
 
 pub fn[T] many(@core.Parser[T]) -> @core.Parser[Array[T]]
 
 pub fn[T] many1(@core.Parser[T]) -> @core.Parser[Array[T]]
 
+pub fn[T, E] many_till(@core.Parser[T], @core.Parser[E]) -> @core.Parser[Array[T]]
+
 pub fn[T, U] map(@core.Parser[T], (T) -> U) -> @core.Parser[U]
 
 pub fn[T] parse(@core.Parser[T], String) -> Result[T, @core.ParseError]
 
 pub fn[T] parse_full(@core.Parser[T], String) -> Result[T, @core.ParseError]
+
+pub fn[T] peek(@core.Parser[T]) -> @core.Parser[T]
 
 pub fn[T] pure(T) -> @core.Parser[T]
 
@@ -51,6 +57,8 @@ pub fn[A, B] seq2(@core.Parser[A], @core.Parser[B]) -> @core.Parser[(A, B)]
 pub fn[A, B, C] seq3(@core.Parser[A], @core.Parser[B], @core.Parser[C]) -> @core.Parser[(A, B, C)]
 
 pub fn[A, B, C, D] seq4(@core.Parser[A], @core.Parser[B], @core.Parser[C], @core.Parser[D]) -> @core.Parser[(A, B, C, D)]
+
+pub fn[T] skip(@core.Parser[T]) -> @core.Parser[Unit]
 
 pub fn string(String) -> @core.Parser[String]
 

@@ -50,6 +50,15 @@ pub fn format_error(err : @core.ParseError) -> String {
   err.format()
 }
 
+///|
+/// Format a `ParseError` with a context snippet from the original input.
+pub fn format_error_with_input(
+  err : @core.ParseError,
+  input : String,
+) -> String {
+  err.format_with_input(input)
+}
+
 /// ============================================================================
 /// Basic combinators (re-export from @basic)
 /// ============================================================================
@@ -91,6 +100,18 @@ pub fn satisfy(
 /// Succeed only at the end of input.
 pub fn end_of_input() -> @core.Parser[Unit] {
   @basic.end_of_input()
+}
+
+///|
+/// Look ahead without consuming input.
+pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] {
+  @basic.peek(p)
+}
+
+///|
+/// Run `p` and discard its result, but consume the input.
+pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
+  @basic.skip(p)
 }
 
 /// ============================================================================
@@ -188,6 +209,15 @@ pub fn[T, S] sep_by1(
 /// Match `p` exactly `n` times, collecting results into an array.
 pub fn[T] count(n : Int32, p : @core.Parser[T]) -> @core.Parser[Array[T]] {
   @compose.count(n, p)
+}
+
+///|
+/// Match `p` zero or more times until `end_` succeeds.
+pub fn[T, E] many_till(
+  p : @core.Parser[T],
+  end_ : @core.Parser[E],
+) -> @core.Parser[Array[T]] {
+  @compose.many_till(p, end_)
 }
 
 /// ============================================================================

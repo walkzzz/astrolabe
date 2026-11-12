@@ -334,6 +334,75 @@ pub fn[T] count(n : Int32, p : @core.Parser[T]) -> @core.Parser[Array[T]] {
   @core.Parser::of(fn(state) { count_step(p, state, n, [], true) })
 }
 
+///|
+/// Internal: collect matches of `p` until `end_` succeeds.
+fn[T, E] many_till_step(
+  p : @core.Parser[T],
+  end_ : @core.Parser[E],
+  state : @core.State,
+  acc : Array[T],
+) -> @core.ParseResult[Array[T]] {
+  let saved_offset = state.offset
+  let saved_pos : @core.Pos = {
+    line: state.pos.line,
+    column: state.pos.column,
+    offset: state.pos.offset,
+  }
+  match (end_.run)(state) {
+    @core.Success(_, _) => {
+      state.offset = saved_offset
+      state.pos = saved_pos
+      @core.Success(acc, state)
+    }
+    @core.Failure(_) =>
+      match (p.run)(state) {
+        @core.Success(value, st) => {
+          acc.push(value)
+          many_till_step(p, end_, st, acc)
+        }
+        @core.Failure(err) => @core.Failure(err)
+      }
+  }
+}
+
+///| Match `p` zero or more times until `end_` succeeds.
+
+///|
+
+///| `end_` is tried first at each position.  When `end_` succeeds,
+
+///| `many_till` stops and returns the collected results **without**
+
+///| consuming the input matched by `end_`.
+
+///|
+/// If `p` fails before `end_` matches, that failure propagates.
+pub fn[T, E] many_till(
+  p : @core.Parser[T],
+  end_ : @core.Parser[E],
+) -> @core.Parser[Array[T]] {
+  @core.Parser::of(fn(state) {
+    let saved_offset = state.offset
+    let saved_pos : @core.Pos = {
+      line: state.pos.line,
+      column: state.pos.column,
+      offset: state.pos.offset,
+    }
+    match (end_.run)(state) {
+      @core.Success(_, _) => {
+        state.offset = saved_offset
+        state.pos = saved_pos
+        @core.Success([], state)
+      }
+      @core.Failure(_) =>
+        match (p.run)(state) {
+          @core.Failure(err) => @core.Failure(err)
+          @core.Success(first, st) => many_till_step(p, end_, st, [first])
+        }
+    }
+  })
+}
+
 ///| Sequence four independent parsers and collect all results.
 
 ///|

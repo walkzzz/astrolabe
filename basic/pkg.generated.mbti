@@ -12,7 +12,11 @@ pub fn char(Char) -> @core.Parser[Char]
 
 pub fn end_of_input() -> @core.Parser[Unit]
 
+pub fn[T] peek(@core.Parser[T]) -> @core.Parser[T]
+
 pub fn satisfy((Char) -> Bool, label? : String) -> @core.Parser[Char]
+
+pub fn[T] skip(@core.Parser[T]) -> @core.Parser[Unit]
 
 pub fn string(String) -> @core.Parser[String]
 

@@ -142,3 +142,49 @@ test "end_of_input failure" {
     @core.Success(_, _) => fail("expected failure")
   }
 }
+
+///|
+test "peek success no consume" {
+  let p = peek(char('a'))
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Success(ch, st) => {
+      assert_eq(ch, 'a')
+      assert_eq(st.offset, 0)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "peek failure" {
+  let p = peek(char('x'))
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(err.expected.contains("'x'"))
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+test "skip success" {
+  let p = skip(char('a'))
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Success(unit, st) => {
+      ignore(unit)
+      assert_eq(st.offset, 1)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "skip failure" {
+  let p = skip(char('x'))
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(err.expected.contains("'x'"))
+    @core.Success(_, _) => fail("expected failure")
+  }
+}

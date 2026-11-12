@@ -203,3 +203,39 @@ test "count zero" {
     @core.Failure(_) => fail("expected success")
   }
 }
+
+///|
+test "many_till stops at end marker" {
+  let p = many_till(char_parser('a'), char_parser('}'))
+  let s = @core.State::new("aaa}")
+  match (p.run)(s) {
+    @core.Success(arr, st) => {
+      assert_eq(arr.length(), 3)
+      assert_eq(st.offset, 3)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "many_till empty" {
+  let p = many_till(char_parser('a'), char_parser('}'))
+  let s = @core.State::new("}")
+  match (p.run)(s) {
+    @core.Success(arr, st) => {
+      assert_eq(arr.length(), 0)
+      assert_eq(st.offset, 0)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "many_till p fails before end" {
+  let p = many_till(char_parser('a'), char_parser('}'))
+  let s = @core.State::new("aab}")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(err.expected.contains("'a'"))
+    @core.Success(_, _) => fail("expected failure")
+  }
+}

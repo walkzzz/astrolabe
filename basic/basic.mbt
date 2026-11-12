@@ -153,3 +153,49 @@ pub fn end_of_input() -> @core.Parser[Unit] {
     }
   })
 }
+
+///| Look ahead at the next character without consuming input.
+
+///|
+
+///| Runs `p` on a **snapshot** of the state; if `p` succeeds, returns its
+
+///| value but does **not** advance the cursor.  If `p` fails, the
+
+///|
+/// failure passes through unchanged.
+pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] {
+  @core.Parser::of(fn(state) {
+    let saved_offset = state.offset
+    let saved_pos : @core.Pos = {
+      line: state.pos.line,
+      column: state.pos.column,
+      offset: state.pos.offset,
+    }
+    match (p.run)(state) {
+      @core.Success(value, _) => {
+        state.offset = saved_offset
+        state.pos = saved_pos
+        @core.Success(value, state)
+      }
+      @core.Failure(err) => @core.Failure(err)
+    }
+  })
+}
+
+///| Run `p` and discard its result, but consume the input.
+
+///|
+
+///| Useful when you need to advance past a delimiter but don't care
+
+///|
+/// about its value.  Returns `Unit` on success.
+pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Success(_, st) => @core.Success((), st)
+      @core.Failure(err) => @core.Failure(err)
+    }
+  })
+}

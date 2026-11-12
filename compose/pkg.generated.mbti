@@ -14,6 +14,8 @@ pub fn[T] many(@core.Parser[T]) -> @core.Parser[Array[T]]
 
 pub fn[T] many1(@core.Parser[T]) -> @core.Parser[Array[T]]
 
+pub fn[T, E] many_till(@core.Parser[T], @core.Parser[E]) -> @core.Parser[Array[T]]
+
 pub fn[T, U] map(@core.Parser[T], (T) -> U) -> @core.Parser[U]
 
 pub fn[T] pure(T) -> @core.Parser[T]
