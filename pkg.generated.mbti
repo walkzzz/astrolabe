@@ -6,13 +6,35 @@ import {
 }
 
 // Values
+pub fn[T] alt(Parser[T], Parser[T]) -> Parser[T]
+
 pub fn any_char() -> Parser[Char]
+
+pub fn[T, U] bind(Parser[T], (T) -> Parser[U]) -> Parser[U]
 
 pub fn char(Char) -> Parser[Char]
 
+pub fn[T] choice(Array[Parser[T]]) -> Parser[T]
+
+pub fn[T] commit(Parser[T]) -> Parser[T]
+
 pub fn end_of_input() -> Parser[Unit]
 
+pub fn[T] label(Parser[T], String) -> Parser[T]
+
+pub fn[T, U] map(Parser[T], (T) -> U) -> Parser[U]
+
+pub fn[T] pure(T) -> Parser[T]
+
+pub fn[T] return_(T) -> Parser[T]
+
 pub fn satisfy((Char) -> Bool, label? : String) -> Parser[Char]
+
+pub fn[A, B] seq2(Parser[A], Parser[B]) -> Parser[(A, B)]
+
+pub fn[A, B, C] seq3(Parser[A], Parser[B], Parser[C]) -> Parser[(A, B, C)]
+
+pub fn[A, B, C, D] seq4(Parser[A], Parser[B], Parser[C], Parser[D]) -> Parser[(A, B, C, D)]
 
 pub fn string(String) -> Parser[String]
 
