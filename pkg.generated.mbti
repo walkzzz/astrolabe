@@ -33,7 +33,6 @@ pub fn ParseError::format(Self) -> String
 pub fn ParseError::not_equal(Self, Self) -> Bool
 pub fn ParseError::to_repr(Self) -> @debug.Repr
 
-#derive(@debug.Debug)
 type ParseResult[T]
 
 pub(all) struct Parser[T] {

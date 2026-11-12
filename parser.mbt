@@ -1,5 +1,4 @@
 ///|
-#derive(Debug)
 enum ParseResult[T] {
   Success(T, State)
   Failure(ParseError)

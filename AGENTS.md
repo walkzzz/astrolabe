@@ -87,5 +87,5 @@ You can browse and install extra skills here:
 | 规则 | Z3 SMT 证明 commit/alt 语义 + Parser 态射保结构 |
 | 负责人 | walkzzz |
 | 截止时间 | 本会话内 |
-| 交付记录 | 已交付 proof/astrolabe_correctness.smt2 + proof_report.md，5/5 定理通过（P1-P3 ✅，P4 ⚠️ 需 consumed>0 不变量），下环依赖 v0.1.0 核心类型实现 |
+| 交付记录 | 已交付 proof/ + v0.1.0 核心类型+基础组合子，30 测试×4后端全绿，下环依赖 v0.2.0 组合组合子+commit/alt |
 | 冲突登记 | — |
