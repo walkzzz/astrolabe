@@ -144,6 +144,196 @@ pub fn[A, B, C] seq3(
   })
 }
 
+///|
+/// Internal: collect zero or more matches of `p` from `state` into `acc`.
+fn[T] many_step(
+  p : @core.Parser[T],
+  state : @core.State,
+  acc : Array[T],
+) -> @core.ParseResult[Array[T]] {
+  match (p.run)(state) {
+    @core.Success(value, st) => {
+      acc.push(value)
+      many_step(p, st, acc)
+    }
+    @core.Failure(err) =>
+      if err.committed {
+        @core.Failure(err)
+      } else {
+        @core.Success(acc, state)
+      }
+  }
+}
+
+///| Match `p` zero or more times, collecting results into an array.
+
+///|
+
+///| Always succeeds (returns `[]` on zero matches).
+
+///| Stops when `p` fails with an **uncommitted** error.
+
+///|
+/// If `p` fails with a **committed** error, that error propagates.
+pub fn[T] many(p : @core.Parser[T]) -> @core.Parser[Array[T]] {
+  @core.Parser::of(fn(state) { many_step(p, state, []) })
+}
+
+///|
+/// Internal: collect one or more matches after the first success.
+fn[T] many1_step(
+  p : @core.Parser[T],
+  state : @core.State,
+  acc : Array[T],
+) -> @core.ParseResult[Array[T]] {
+  match (p.run)(state) {
+    @core.Success(value, st) => {
+      acc.push(value)
+      many1_step(p, st, acc)
+    }
+    @core.Failure(err) =>
+      if err.committed {
+        @core.Failure(err)
+      } else {
+        @core.Success(acc, state)
+      }
+  }
+}
+
+///| Match `p` one or more times, collecting results into an array.
+
+///|
+
+///| Fails if `p` does not match at least once.
+
+///| On first-match failure the error is uncommitted (backtracking allowed).
+
+///|
+/// On second-or-later failure the error is committed ("sequence commits").
+pub fn[T] many1(p : @core.Parser[T]) -> @core.Parser[Array[T]] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Failure(err) => @core.Failure(err)
+      @core.Success(first, st) => many1_step(p, st, [first])
+    }
+  })
+}
+
+///|
+/// Internal: collect `sep`-separated matches after the first success.
+fn[T, S] sep_by_step(
+  p : @core.Parser[T],
+  sep : @core.Parser[S],
+  state : @core.State,
+  acc : Array[T],
+) -> @core.ParseResult[Array[T]] {
+  match (sep.run)(state) {
+    @core.Failure(_) => @core.Success(acc, state)
+    @core.Success(_, st_sep) =>
+      match (p.run)(st_sep) {
+        @core.Failure(err) =>
+          if err.committed {
+            @core.Failure(err)
+          } else {
+            @core.Success(acc, state)
+          }
+        @core.Success(value, st_p) => {
+          acc.push(value)
+          sep_by_step(p, sep, st_p, acc)
+        }
+      }
+  }
+}
+
+///| Match `p` zero or more times, separated by `sep`.
+
+///|
+
+///| Only the values from `p` are collected; `sep` results are discarded.
+
+///|
+/// Always succeeds (returns `[]` on zero matches).
+pub fn[T, S] sep_by(
+  p : @core.Parser[T],
+  sep : @core.Parser[S],
+) -> @core.Parser[Array[T]] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Failure(err) =>
+        if err.committed {
+          @core.Failure(err)
+        } else {
+          @core.Success([], state)
+        }
+      @core.Success(first, st) => sep_by_step(p, sep, st, [first])
+    }
+  })
+}
+
+///| Match `p` one or more times, separated by `sep`.
+
+///|
+
+///| Only the values from `p` are collected; `sep` results are discarded.
+
+///|
+/// Fails if `p` does not match at least once.
+pub fn[T, S] sep_by1(
+  p : @core.Parser[T],
+  sep : @core.Parser[S],
+) -> @core.Parser[Array[T]] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Failure(err) => @core.Failure(err)
+      @core.Success(first, st) => sep_by_step(p, sep, st, [first])
+    }
+  })
+}
+
+///|
+/// Internal: collect exactly `n` matches, committing after the first success.
+fn[T] count_step(
+  p : @core.Parser[T],
+  state : @core.State,
+  remaining : Int32,
+  acc : Array[T],
+  isFirst : Bool,
+) -> @core.ParseResult[Array[T]] {
+  if remaining <= 0 {
+    @core.Success(acc, state)
+  } else {
+    match (p.run)(state) {
+      @core.Success(value, st) => {
+        acc.push(value)
+        count_step(p, st, remaining - 1, acc, false)
+      }
+      @core.Failure(err) =>
+        if isFirst {
+          @core.Failure(err)
+        } else {
+          @core.Failure({
+            pos: err.pos,
+            expected: err.expected,
+            committed: true,
+            context: err.context,
+          })
+        }
+    }
+  }
+}
+
+///| Match `p` exactly `n` times, collecting results into an array.
+
+///|
+
+///| Fails if any of the `n` applications fails.
+
+///|
+/// After the first successful match, subsequent failures are committed.
+pub fn[T] count(n : Int32, p : @core.Parser[T]) -> @core.Parser[Array[T]] {
+  @core.Parser::of(fn(state) { count_step(p, state, n, [], true) })
+}
+
 ///| Sequence four independent parsers and collect all results.
 
 ///|

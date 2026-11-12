@@ -8,11 +8,21 @@ import {
 // Values
 pub fn[T, U] bind(@core.Parser[T], (T) -> @core.Parser[U]) -> @core.Parser[U]
 
+pub fn[T] count(Int32, @core.Parser[T]) -> @core.Parser[Array[T]]
+
+pub fn[T] many(@core.Parser[T]) -> @core.Parser[Array[T]]
+
+pub fn[T] many1(@core.Parser[T]) -> @core.Parser[Array[T]]
+
 pub fn[T, U] map(@core.Parser[T], (T) -> U) -> @core.Parser[U]
 
 pub fn[T] pure(T) -> @core.Parser[T]
 
 pub fn[T] return_(T) -> @core.Parser[T]
+
+pub fn[T, S] sep_by(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
+
+pub fn[T, S] sep_by1(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
 
 pub fn[A, B] seq2(@core.Parser[A], @core.Parser[B]) -> @core.Parser[(A, B)]
 

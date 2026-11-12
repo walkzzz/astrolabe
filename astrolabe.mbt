@@ -154,6 +154,42 @@ pub fn[A, B, C, D] seq4(
   @compose.seq4(p1, p2, p3, p4)
 }
 
+///|
+/// Match `p` zero or more times, collecting results into an array.
+pub fn[T] many(p : @core.Parser[T]) -> @core.Parser[Array[T]] {
+  @compose.many(p)
+}
+
+///|
+/// Match `p` one or more times, collecting results into an array.
+pub fn[T] many1(p : @core.Parser[T]) -> @core.Parser[Array[T]] {
+  @compose.many1(p)
+}
+
+///|
+/// Match `p` zero or more times, separated by `sep`.
+pub fn[T, S] sep_by(
+  p : @core.Parser[T],
+  sep : @core.Parser[S],
+) -> @core.Parser[Array[T]] {
+  @compose.sep_by(p, sep)
+}
+
+///|
+/// Match `p` one or more times, separated by `sep`.
+pub fn[T, S] sep_by1(
+  p : @core.Parser[T],
+  sep : @core.Parser[S],
+) -> @core.Parser[Array[T]] {
+  @compose.sep_by1(p, sep)
+}
+
+///|
+/// Match `p` exactly `n` times, collecting results into an array.
+pub fn[T] count(n : Int32, p : @core.Parser[T]) -> @core.Parser[Array[T]] {
+  @compose.count(n, p)
+}
+
 /// ============================================================================
 /// Control combinators (re-export from @control)
 /// ============================================================================
