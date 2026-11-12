@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "walkzzz/astrolabe/proof"
+
+// Values
+pub fn advance_offset(Int32) -> Int32
+
+pub fn alt_committed_no_backtrack(Bool) -> Bool
+
+pub fn alt_uncommitted_backtracks(Bool) -> Bool
+
+pub fn commit_flag(Bool) -> Bool
+
+pub fn compute_is_eof(Int32, Int32) -> Bool
+
+pub fn compute_remaining(Int32, Int32) -> Int32
+
+pub fn sequence_commit_on_second_fail(Bool) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
