@@ -2,80 +2,53 @@
 package "walkzzz/astrolabe"
 
 import {
-  "moonbitlang/core/debug",
+  "walkzzz/astrolabe/core",
 }
 
 // Values
-pub fn[T] alt(Parser[T], Parser[T]) -> Parser[T]
+pub fn[T] alt(@core.Parser[T], @core.Parser[T]) -> @core.Parser[T]
 
-pub fn any_char() -> Parser[Char]
+pub fn any_char() -> @core.Parser[Char]
 
-pub fn[T, U] bind(Parser[T], (T) -> Parser[U]) -> Parser[U]
+pub fn[T, U] bind(@core.Parser[T], (T) -> @core.Parser[U]) -> @core.Parser[U]
 
-pub fn char(Char) -> Parser[Char]
+pub fn char(Char) -> @core.Parser[Char]
 
-pub fn[T] choice(Array[Parser[T]]) -> Parser[T]
+pub fn[T] choice(Array[@core.Parser[T]]) -> @core.Parser[T]
 
-pub fn[T] commit(Parser[T]) -> Parser[T]
+pub fn[T] commit(@core.Parser[T]) -> @core.Parser[T]
 
-pub fn end_of_input() -> Parser[Unit]
+pub fn end_of_input() -> @core.Parser[Unit]
 
-pub fn[T] label(Parser[T], String) -> Parser[T]
+pub fn format_error(@core.ParseError) -> String
 
-pub fn[T, U] map(Parser[T], (T) -> U) -> Parser[U]
+pub fn[T] label(@core.Parser[T], String) -> @core.Parser[T]
 
-pub fn[T] pure(T) -> Parser[T]
+pub fn[T, U] map(@core.Parser[T], (T) -> U) -> @core.Parser[U]
 
-pub fn[T] return_(T) -> Parser[T]
+pub fn[T] parse(@core.Parser[T], String) -> Result[T, @core.ParseError]
 
-pub fn satisfy((Char) -> Bool, label? : String) -> Parser[Char]
+pub fn[T] parse_full(@core.Parser[T], String) -> Result[T, @core.ParseError]
 
-pub fn[A, B] seq2(Parser[A], Parser[B]) -> Parser[(A, B)]
+pub fn[T] pure(T) -> @core.Parser[T]
 
-pub fn[A, B, C] seq3(Parser[A], Parser[B], Parser[C]) -> Parser[(A, B, C)]
+pub fn[T] return_(T) -> @core.Parser[T]
 
-pub fn[A, B, C, D] seq4(Parser[A], Parser[B], Parser[C], Parser[D]) -> Parser[(A, B, C, D)]
+pub fn satisfy((Char) -> Bool, label? : String) -> @core.Parser[Char]
 
-pub fn string(String) -> Parser[String]
+pub fn[A, B] seq2(@core.Parser[A], @core.Parser[B]) -> @core.Parser[(A, B)]
 
-pub fn take(Int32) -> Parser[String]
+pub fn[A, B, C] seq3(@core.Parser[A], @core.Parser[B], @core.Parser[C]) -> @core.Parser[(A, B, C)]
+
+pub fn[A, B, C, D] seq4(@core.Parser[A], @core.Parser[B], @core.Parser[C], @core.Parser[D]) -> @core.Parser[(A, B, C, D)]
+
+pub fn string(String) -> @core.Parser[String]
+
+pub fn take(Int32) -> @core.Parser[String]
 
 // Errors
 
 // Types and methods
-#derive(Eq, @debug.Debug)
-pub(all) struct ParseError {
-  pos : Pos
-  expected : Array[String]
-  committed : Bool
-  context : String
-}
-pub fn ParseError::equal(Self, Self) -> Bool
-pub fn ParseError::format(Self) -> String
-pub fn ParseError::not_equal(Self, Self) -> Bool
-pub fn ParseError::to_repr(Self) -> @debug.Repr
-
-type ParseResult[T]
-
-pub(all) struct Parser[T] {
-  run : (State) -> ParseResult[T]
-}
-pub fn[T] Parser::parse(Self[T], String) -> Result[T, ParseError]
-pub fn[T] Parser::parse_full(Self[T], String) -> Result[T, ParseError]
-
-#derive(Eq, @debug.Debug)
-pub(all) struct Pos {
-  mut line : Int32
-  mut column : Int32
-  mut offset : Int32
-}
-pub fn Pos::equal(Self, Self) -> Bool
-pub fn Pos::not_equal(Self, Self) -> Bool
-pub fn Pos::to_repr(Self) -> @debug.Repr
-
-#derive(@debug.Debug)
-type State
-pub fn State::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

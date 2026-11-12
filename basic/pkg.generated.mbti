@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "walkzzz/astrolabe/basic"
+
+import {
+  "walkzzz/astrolabe/core",
+}
+
+// Values
+pub fn any_char() -> @core.Parser[Char]
+
+pub fn char(Char) -> @core.Parser[Char]
+
+pub fn end_of_input() -> @core.Parser[Unit]
+
+pub fn satisfy((Char) -> Bool, label? : String) -> @core.Parser[Char]
+
+pub fn string(String) -> @core.Parser[String]
+
+pub fn take(Int32) -> @core.Parser[String]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

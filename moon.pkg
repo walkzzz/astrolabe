@@ -1,3 +1,6 @@
 import {
-  "moonbitlang/core/debug",
+  "walkzzz/astrolabe/core",
+  "walkzzz/astrolabe/basic",
+  "walkzzz/astrolabe/compose",
+  "walkzzz/astrolabe/control",
 }
