@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.10] - 2026-11-12
+
+### Added
+- Z3 SMT formal verification of core semantics (commit/alt backtracking, sequence commits)
+- Formal specification documented in `docs/formal-spec.md`
+- Comprehensive documentation suite (API reference, tutorial, migration guide)
+- Benchmark suite (25 benchmarks across 5 categories)
+- CLI demo + 3 examples (URI, CSV, calculator)
+
+### Changed
+- License changed from Apache-2.0 to MIT
+
+## [0.9.0] - 2026-11-12
+
+### Added
+- Full documentation: README, API reference, tutorial, migration guide
+- CHANGELOG.md and CONTRIBUTING.md
+
 ## [0.8.0] - 2026-11-12
 
 ### Added
