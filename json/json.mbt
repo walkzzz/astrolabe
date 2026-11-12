@@ -1,3 +1,7 @@
+///| JSON 值类型 — JSON 解析的输出。
+
+///|
+
 ///|
 /// JSON value type — the output of JSON parsing.
 #derive(Debug, Eq)
@@ -16,7 +20,12 @@ pub extend JValue with Eq::{not_equal, equal}
 ///|
 pub extend JValue with @debug.Debug::{to_repr}
 
+///| 对字符串进行 JSON 转义处理（内部辅助函数）。
+
 ///|
+
+///|
+/// Internal helper: escape a string for JSON output.
 fn stringify_string(s : String) -> String {
   let mut result : String = "\""
   for i in 0..<s.length() {
@@ -33,6 +42,10 @@ fn stringify_string(s : String) -> String {
   result = result + "\""
   result
 }
+
+///| 将 `JValue` 转换为 JSON 字符串表示。
+
+///|
 
 ///|
 /// Convert a `JValue` to its JSON string representation.
@@ -55,12 +68,8 @@ pub fn JValue::stringify(self : JValue) -> String {
   }
 }
 
-/// ============================================================================
-/// Internal helpers
-/// ============================================================================
-
 ///|
-/// Try to parse a string as a Double. Returns None on failure.
+/// 尝试将字符串解析为 Double，失败返回 None。
 fn try_parse_double(s : String) -> Double? {
   Some(@string.parse_double(s.to_string_view())) catch {
     _ => None
@@ -68,7 +77,7 @@ fn try_parse_double(s : String) -> Double? {
 }
 
 ///|
-/// Convert a 4-character hex string to a Char. Returns None on failure.
+/// 将 4 位十六进制字符串转换为 Char，失败返回 None。
 fn hex4_to_char(s : String) -> Char? {
   if s.length() != 4 {
     return None
@@ -92,7 +101,7 @@ fn hex4_to_char(s : String) -> Char? {
 }
 
 ///|
-/// Collect consecutive digits from state into a string.
+/// 从 state 收集连续数字到字符串。
 fn collect_digits(state : @core.State) -> String {
   let mut acc : String = ""
   let done : Bool = false
@@ -109,7 +118,7 @@ fn collect_digits(state : @core.State) -> String {
 }
 
 ///|
-/// Parse JSON whitespace (spaces, tabs, newlines), discarding result.
+/// 解析 JSON 空白符（空格、制表符、换行），丢弃结果。
 fn ws() -> @core.Parser[Unit] {
   @basic.skip(
     @compose.many(
@@ -122,13 +131,13 @@ fn ws() -> @core.Parser[Unit] {
 }
 
 ///|
-/// Parse the literal `null`.
+/// 解析字面量 `null`。
 fn null_() -> @core.Parser[JValue] {
   @compose.map(@basic.string("null"), fn(_) { JNull })
 }
 
 ///|
-/// Parse a JSON boolean (`true` / `false`).
+/// 解析 JSON 布尔值（`true` / `false`）。
 fn bool_() -> @core.Parser[JValue] {
   @control.alt(
     @compose.map(@basic.string("true"), fn(_) { JBool(true) }),
@@ -137,7 +146,7 @@ fn bool_() -> @core.Parser[JValue] {
 }
 
 ///|
-/// Parse a JSON number.
+/// 解析 JSON 数字。
 fn number() -> @core.Parser[JValue] {
   @core.Parser::of(fn(state) {
     let negative = match state.peek() {
@@ -187,7 +196,7 @@ fn number() -> @core.Parser[JValue] {
 }
 
 ///|
-/// Parse exponent part after 'e'/'E'.
+/// 解析 'e'/'E' 之后的指数部分。
 fn parse_exp(state : @core.State) -> String {
   let sign : String = match state.peek() {
     Some('+') => {
@@ -205,7 +214,7 @@ fn parse_exp(state : @core.State) -> String {
 }
 
 ///|
-/// Parse a JSON string with escape sequences.
+/// 解析 JSON 字符串（含转义序列）。
 fn string_() -> @core.Parser[JValue] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -225,7 +234,7 @@ fn string_() -> @core.Parser[JValue] {
 }
 
 ///|
-/// Internal: parse string body after opening quote.
+/// 内部：解析开引号后的字符串主体。
 fn parse_string_body(state : @core.State) -> @core.ParseResult[String] {
   let mut acc : String = ""
   let done : Bool = false
@@ -301,6 +310,10 @@ fn parse_string_body(state : @core.State) -> @core.ParseResult[String] {
   @core.Success(acc, state)
 }
 
+///| 解析任意 JSON 值。
+
+///|
+
 ///|
 /// Parse any JSON value.
 pub fn value() -> @core.Parser[JValue] {
@@ -308,7 +321,7 @@ pub fn value() -> @core.Parser[JValue] {
 }
 
 ///|
-/// Parse a JSON array: `[value, value, ...]`
+/// 解析 JSON 数组：`[value, value, ...]`
 fn array_() -> @core.Parser[JValue] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -340,7 +353,7 @@ fn array_() -> @core.Parser[JValue] {
 }
 
 ///|
-/// Internal: parse remaining array items after first value.
+/// 内部：解析第一个值后的数组剩余项。
 fn parse_array_tail(
   state : @core.State,
   acc : Array[JValue],
@@ -375,7 +388,7 @@ fn parse_array_tail(
 }
 
 ///|
-/// Parse a JSON object: `{"key": value, ...}`
+/// 解析 JSON 对象：`{"key": value, ...}`
 fn object_() -> @core.Parser[JValue] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -407,7 +420,7 @@ fn object_() -> @core.Parser[JValue] {
 }
 
 ///|
-/// Internal: parse remaining object pairs after first.
+/// 内部：解析第一对之后的对象剩余键值对。
 fn parse_object_tail(
   state : @core.State,
   acc : Array[(String, JValue)],
@@ -442,7 +455,7 @@ fn parse_object_tail(
 }
 
 ///|
-/// Parse a key-value pair: `"key": value`
+/// 解析键值对：`"key": value`
 fn pair_() -> @core.Parser[(String, JValue)] {
   @core.Parser::of(fn(state) {
     match (string_().run)(state) {
@@ -468,6 +481,10 @@ fn pair_() -> @core.Parser[(String, JValue)] {
     }
   })
 }
+
+///| 将完整 JSON 字符串解析为 `JValue`。
+
+///|
 
 ///|
 /// Parse a complete JSON string into a `JValue`.

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.13] - 2026-11-12
+
+### Added
+- Bilingual (中文/English) doc comments for all public API:
+  - `core/core.mbt`: Pos, State, ParseError, Parser, ParseResult
+  - `basic/basic.mbt`: char, string, any_char, take, satisfy, end_of_input, peek, skip, char_range, char_class
+  - `compose/compose.mbt`: map, bind, pure, return_, seq2/3/4, many/many1, sep_by/sep_by1, count, many_till
+  - `control/control.mbt`: commit, alt, choice, label
+  - `http/http.mbt`: Method, Version, RequestLine, Header, Request, Uri, parsers, to_string methods
+  - `json/json.mbt`: JValue, stringify, value, parse
+  - `astrolabe.mbt`: Root facade re-exports
+
 ## [0.1.10] - 2026-11-12
 
 ### Added

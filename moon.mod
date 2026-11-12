@@ -11,7 +11,7 @@
 
 name = "walkzzz/astrolabe"
 
-version = "0.1.12"
+version = "0.1.13"
 
 readme = "README.md"
 
@@ -19,7 +19,7 @@ repository = "https://github.com/walkzzz/astrolabe.git"
 
 license = "MIT"
 
-keywords = ["parser", "combinator", "parse", "position-aware", "angstrom"]
+keywords = [ "parser", "combinator", "parse", "position-aware", "angstrom" ]
 
 preferred_target = "wasm"
 

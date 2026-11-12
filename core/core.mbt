@@ -1,6 +1,14 @@
-///| Source position in the input being parsed.
+///| 源码位置 — 解析过程中追踪的位置信息。
 
 ///|
+
+///| 同时追踪行号、列号和字节偏移，使错误信息可以指向精确的可读位置，
+
+///| 同时偏移量支持对输入字符串的 O(1) 切片。
+
+///|
+
+///| Source position tracked during parsing.
 
 ///| Tracks line, column, and byte-offset simultaneously so error messages
 
@@ -10,19 +18,16 @@
 
 ///|
 
-///| - `line`   — 1-based line number, incremented by `'\n'`
+///| - `line` — 1 起始的行号，遇到 `'\n'` 递增
 
-///| - `column` — 1-based column number, reset to 1 on `'\n'`
+///| - `column` — 1 起始的列号，遇到 `'\n'` 重置为 1
 
 ///|
-/// - `offset` — 0-based byte offset from the start of input
+/// - `offset` — 0 起始的字节偏移
 #derive(Eq, Debug)
 pub(all) struct Pos {
-  /// 1-based line number, starting at 1. Incremented when `'\n'` is consumed.
   mut line : Int32
-  /// 1-based column number, starting at 1. Reset to 1 after `'\n'`.
   mut column : Int32
-  /// 0-based byte offset from the beginning of the input string.
   mut offset : Int32
 }
 
@@ -32,23 +37,33 @@ pub extend Pos with Eq::{not_equal, equal}
 ///|
 pub extend Pos with @debug.Debug::{to_repr}
 
+///| 创建初始位置（行 1，列 1，偏移 0）。
+
+///|
+
 ///|
 /// Create the initial position (line 1, column 1, offset 0).
 pub fn Pos::initial() -> Pos {
   { line: 1, column: 1, offset: 0, }
 }
 
+///| 将位置前进一个字符。
+
+///|
+
+///| - 若 `ch` 为 `'\n'`，行号递增、列号重置为 1
+
+///| - 否则列号递增 1
+
+///| - 偏移量始终递增 1
+
+///|
+
+///| 返回一个**新的** Pos，原对象不被修改。
+
+///|
+
 ///| Advance the position by one character.
-
-///|
-
-///| - If `ch` is `'\n'`, line increments and column resets to 1.
-
-///| - Otherwise, column increments by 1.
-
-///| - offset always increments by 1.
-
-///|
 
 ///|
 /// Returns a **new** Pos; the original is not mutated.
@@ -60,13 +75,17 @@ pub fn Pos::advance(self : Pos, ch : Char) -> Pos {
   }
 }
 
-/// ============================================================================
-/// Parsing state
-/// ============================================================================
-
-///| Mutable parsing state that wraps the input string and a cursor.
+///| 可变解析状态 — 包装输入字符串和游标。
 
 ///|
+
+///| 每个 `Parser.run` 接收一个 `State`，可以修改它（推进游标），
+
+///| 并返回携带（可能已前进的）状态的 `ParseResult`。
+
+///|
+
+///| Mutable parsing state that wraps the input string and a cursor.
 
 ///| Each `Parser.run` receives a `State`, may mutate it (advance the cursor),
 
@@ -74,24 +93,25 @@ pub fn Pos::advance(self : Pos, ch : Char) -> Pos {
 
 ///|
 
-///| - `input`  — the full input string, never modified
+///| - `input` — 完整输入字符串，构造后不可变
 
-///| - `offset` — current read position as a byte offset
+///| - `offset` — 当前读取位置（字节偏移）
 
 ///|
-/// - `pos`    — current human-readable (line, column, offset) position
+/// - `pos` — 当前可读位置（行、列、偏移）
 #derive(Debug)
 pub(all) struct State {
-  /// The complete input string. Immutable after construction.
   input : String
-  /// Current read position as a 0-based byte offset into `input`.
   mut offset : Int32
-  /// Current source position (line, column, offset) for error reporting.
   mut pos : Pos
 }
 
 ///|
 pub extend State with @debug.Debug::{to_repr}
+
+///| 创建一个位于 `input` 起始位置的新 `State`。
+
+///|
 
 ///|
 /// Create a fresh `State` positioned at the start of `input`.
@@ -99,11 +119,19 @@ pub fn State::new(input : String) -> State {
   { input, offset: 0, pos: Pos::initial(), }
 }
 
+///| 从当前偏移到输入末尾的剩余字符数。
+
+///|
+
 ///|
 /// Number of characters remaining from the current offset to end-of-input.
 pub fn State::remaining(self : State) -> Int32 {
   self.input.length() - self.offset
 }
+
+///| 游标是否已到达或越过输入末尾。
+
+///|
 
 ///|
 /// True when the cursor has reached or passed the end of input.
@@ -111,9 +139,15 @@ pub fn State::is_eof(self : State) -> Bool {
   self.offset >= self.input.length()
 }
 
-///| Peek at the character under the cursor without advancing.
+///| 查看游标下方的字符，不推进游标。
 
 ///|
+
+///| 未到 EOF 返回 `Some(ch)`，否则返回 `None`。
+
+///|
+
+///| Peek at the character under the cursor without advancing.
 
 ///|
 /// Returns `Some(ch)` if not at EOF, `None` otherwise.
@@ -125,9 +159,15 @@ pub fn State::peek(self : State) -> Char? {
   }
 }
 
-///| Advance the cursor by exactly one character, updating position tracking.
+///| 将游标前进一个字符，更新位置追踪。
 
 ///|
+
+///| 已在 EOF 时无操作。
+
+///|
+
+///| Advance the cursor by exactly one character, updating position tracking.
 
 ///|
 /// No-op when already at EOF.
@@ -139,9 +179,17 @@ pub fn State::advance_one(self : State) -> Unit {
   }
 }
 
-///| Advance the cursor by `n` characters, updating position tracking.
+///| 将游标前进 `n` 个字符，更新位置追踪。
 
 ///|
+
+///| 等价于调用 `advance_one` `n` 次。
+
+///| 调用者必须确保 `n <= remaining()`。
+
+///|
+
+///| Advance the cursor by `n` characters, updating position tracking.
 
 ///| Equivalent to calling `advance_one` `n` times.
 
@@ -153,70 +201,57 @@ pub fn State::advance_by(self : State, n : Int32) -> Unit {
   }
 }
 
+///| 从字节偏移 `[start, end)` 提取子字符串。
+
+///|
+
+///| 不修改游标。内部用于先读取匹配的输入再按已知长度前进。
+
+///|
+
 ///| Extract a substring of `input` from byte offset `[start, end)`.
 
 ///|
-
-///| Does not modify the cursor.  Used internally to read matched input
-
-///|
-/// without advancing first, then advancing by the known length.
+/// Does not modify the cursor. Used internally to read matched input.
 pub fn State::slice(self : State, start : Int32, end : Int32) -> String {
   self.input[start:end].to_owned()
 }
 
-/// ============================================================================
-/// Error reporting
-/// ============================================================================
+///| 解析错误 — 携带位置、期望词元和承诺状态。
+
+///|
+
+///| `committed` 标志实现了 Angstrom 的承诺语义：
+
+///|
+
+///| - `committed = false` — 解析器未消耗有效输入，`alt` 可尝试下一个备选（允许回溯）
+
+///| - `committed = true` — 解析器已消耗有效输入，`alt` **不会**尝试下一个备选（禁止回溯）
+
+///|
+
+///| 承诺由以下方式设定：
+
+///| - `commit(p)` — 显式将 `p` 的失败标记为已承诺
+
+///| - `bind` / `seq2` / `seq3` / `seq4` — 若第二个解析器失败，错误被承诺（"序列承诺"）
+
+///|
 
 ///| A parse error carrying position, expected tokens, and commitment status.
 
-///|
-
 ///| The `committed` flag implements Angstrom's commitment semantics:
 
-///|
-
-///| - `committed = false` — the parser has not consumed significant input,
-
-///|   so `alt` may try the next alternative (backtracking is allowed).
-
-///| - `committed = true`  — the parser has consumed significant input,
-
-///|   so `alt` will **not** try the next alternative (no backtracking).
+///| - `committed = false` — backtracking is allowed in `alt`
 
 ///|
-
-///| Commitment is set by:
-
-///| - `commit(p)` — explicitly marks `p`'s failure as committed
-
-///| - `bind` / `seq2` / `seq3` / `seq4` — if the *second* parser fails,
-
-///|   the error is committed ("sequence commits")
-
-///|
-
-///| - `pos`       — where the error occurred
-
-///| - `expected`  — human-readable descriptions of what was expected
-
-///| - `committed` — whether backtracking should be suppressed
-
-///|
-/// - `context`   — optional context label for nested error reporting
+/// - `committed = true` — backtracking is suppressed in `alt`
 #derive(Debug, Eq)
 pub(all) struct ParseError {
-  /// Source position where the error was detected.
   pos : Pos
-  /// Descriptions of what the parser expected at this position.
-  ///| Multiple entries arise from `alt` merging expectations.
   expected : Array[String]
-  /// Whether this error is committed (suppresses backtracking in `alt`).
-  ///| `false` = uncommitted (backtracking allowed), `true` = committed.
   committed : Bool
-  /// Optional context label for structured error messages.
-  ///| Empty string means no context.
   context : String
 }
 
@@ -226,19 +261,42 @@ pub extend ParseError with Eq::{not_equal, equal}
 ///|
 pub extend ParseError with @debug.Debug::{to_repr}
 
+///| 在 `pos` 处构造一个未承诺的错误，期望 `expected`。
+
+///|
+
+///| 便捷工厂：单个期望词元、无上下文、未承诺。
+
+///|
+
+///| Construct an uncommitted error at `pos` expecting `expected`.
+
+///|
+/// Convenience factory for the common case: single expected token, no context, uncommitted.
 pub fn ParseError::at(pos~ : Pos, expected~ : String) -> ParseError {
   { pos, expected: [expected], committed: false, context: "", }
 }
 
-pub fn ParseError::commit(self : ParseError) -> ParseError {
-  { pos: self.pos, expected: self.expected, committed: true, context: self.context, }
-}
-
-///| Format this error as a human-readable string.
+///| 返回 `committed = true` 的副本，用于序列承诺语义。
 
 ///|
 
-///| Output format:
+///|
+/// Return a copy with `committed = true`, used for sequence-commit semantics.
+pub fn ParseError::commit(self : ParseError) -> ParseError {
+  {
+    pos: self.pos,
+    expected: self.expected,
+    committed: true,
+    context: self.context,
+  }
+}
+
+///| 将错误格式化为人类可读的字符串。
+
+///|
+
+///| 输出格式：
 
 ///| ```text
 
@@ -252,6 +310,12 @@ pub fn ParseError::commit(self : ParseError) -> ParseError {
 
 ///|
 
+///| 多个 `expected` 条目用 `" or "` 连接。`context` 为空时省略。
+
+///|
+
+///| Format this error as a human-readable string.
+
 ///| Multiple `expected` entries are joined with `" or "`.
 
 ///|
@@ -263,13 +327,11 @@ pub fn ParseError::format(self : ParseError) -> String {
   "\{loc}:\nexpected \{exp}\{ctx}"
 }
 
-///| Format this error with a context snippet extracted from `input`.
+///| 将错误格式化，并附加从 `input` 提取的上下文片段。
 
 ///|
 
-///| Produces the same header as `format()`, plus a snippet line showing
-
-///| up to 20 characters before and after the error position:
+///| 生成与 `format()` 相同的头部，加上显示错误位置前后各最多 20 个字符的片段：
 
 ///|
 
@@ -283,8 +345,16 @@ pub fn ParseError::format(self : ParseError) -> String {
 
 ///|                ^
 
+///| ```
+
 ///|
-/// ```
+
+///| Format this error with a context snippet extracted from `input`.
+
+///| Produces the same header as `format()`, plus a snippet line showing
+
+///|
+/// up to 20 characters before and after the error position.
 pub fn ParseError::format_with_input(
   self : ParseError,
   input : String,
@@ -305,75 +375,79 @@ pub fn ParseError::format_with_input(
   "\{base}\n  \{prefix}\{snippet}\{suffix}\n  \{caret}"
 }
 
-/// ============================================================================
-/// Parse result & Parser core
-/// ============================================================================
+///| 解析结果 — 运行 `Parser[T]` 后的输出。
+
+///|
+
+///| - `Success(value, state)` — 匹配成功；`value` 为解析结果，`state` 为消耗后的游标位置
+
+///| - `Failure(error)` — 匹配失败；`error` 携带位置和承诺信息，供 `alt` 回溯决策
+
+///|
 
 ///| The result of running a `Parser[T]` against a `State`.
 
-///|
-
-///| - `Success(value, state)` — matched successfully; `value` is the parsed
-
-///|   result and `state` is the cursor position after consumption.
-
-///| - `Failure(error)` — failed to match; `error` carries position and
+///| - `Success(value, state)` — matched successfully
 
 ///|
-///   commitment information for `alt` backtracking decisions.
+/// - `Failure(error)` — failed; `error` carries position and commitment for `alt`
 pub(all) enum ParseResult[T] {
   Success(T, State)
   Failure(ParseError)
 }
 
+///| 位置感知解析器组合子。
+
+///|
+
+///| 包装函数 `State -> ParseResult[T]`，尝试在当前游标位置匹配输入。
+
+///| 组合子（`map`、`bind`、`alt`、`seq2` 等）将 `Parser` 组合为更大的解析器，
+
+///| 无需暴露内部 `State` 机制。
+
+///|
+
+///| 使用 `Parser::parse` 进行简单解析，或 `Parser::parse_full` 要求全部输入被消耗。
+
+///|
+
 ///| A position-aware parser combinator.
 
-///|
+///| Wraps a function `State -> ParseResult[T]` that attempts to match input
 
-///| Wraps a function `State -> ParseResult[T]` that attempts to match
-
-///| input at the current cursor position.  Combinators (`map`, `bind`,
-
-///| `alt`, `seq2`, etc.) compose `Parser` values into larger parsers
-
-///| without exposing the internal `State` machinery.
+///| at the current cursor position. Combinators compose `Parser` values
 
 ///|
-
-///| Use `Parser::parse` for a simple parse-entire-string entry point,
-
-///| or `Parser::parse_full` to also enforce that the entire input was
-
-///|
-/// consumed.
+/// into larger parsers without exposing the internal `State` machinery.
 pub(all) struct Parser[T] {
-  /// The core parsing function. Takes a `State` and returns either
-  ///| `Success(value, nextState)` or `Failure(error)`.
   run : (State) -> ParseResult[T]
 }
 
+///| 将原始函数包装为 `Parser[T]` — 通用扩展点。
+
 ///|
-/// Wrap a raw function into a `Parser[T]`.
+
+///|
+/// Wrap a raw function into a `Parser[T]` — the universal extension point.
 pub fn[T] Parser::of(f : (State) -> ParseResult[T]) -> Parser[T] {
   { run: f, }
 }
 
+///| 解析 `input`，允许尾部未消耗的输入。
+
+///|
+
+///| 这是最宽松的入口：只要解析器匹配了 `input` 的前缀即成功。
+
+///| 需要确保全部输入被消耗时使用 `parse_full`。
+
+///|
+
 ///| Parse `input` and return the result, allowing trailing unconsumed input.
 
 ///|
-
-///| This is the loosest entry point: it succeeds as long as the parser
-
-///| matches a prefix of `input`.  Use `parse_full` when you need to
-
-///| ensure the entire input is consumed.
-
-///|
-
-///| - Returns `Ok(value)` on success.
-
-///|
-/// - Returns `Err(ParseError)` on failure.
+/// Use `parse_full` when you need to ensure the entire input is consumed.
 pub fn[T] Parser::parse(
   self : Parser[T],
   input : String,
@@ -385,20 +459,20 @@ pub fn[T] Parser::parse(
   }
 }
 
+///| 解析 `input`，要求全部输入被消耗。
+
+///|
+
+///| 类似 `parse`，但若解析器成功却未到达 EOF，
+
+///| 返回 `Err` 且 `expected = "end of input"`。
+
+///|
+
 ///| Parse `input` and require that the entire input is consumed.
 
 ///|
-
-///| Like `parse`, but if the parser succeeds without reaching EOF,
-
-///| returns an `Err` with `expected = "end of input"`.
-
-///|
-
-///| Use this for validation-style parsing where leftover input indicates
-
-///|
-/// a malformed input.
+/// If the parser succeeds without reaching EOF, returns an `Err`.
 pub fn[T] Parser::parse_full(
   self : Parser[T],
   input : String,

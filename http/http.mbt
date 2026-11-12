@@ -1,3 +1,7 @@
+///| HTTP 方法枚举。
+
+///|
+
 ///|
 /// HTTP method as an enum.
 #derive(Debug, Eq)
@@ -19,7 +23,9 @@ pub extend Method with Eq::{not_equal, equal}
 ///|
 pub extend Method with @debug.Debug::{to_repr}
 
-pub impl Show for Method with output(self, logger) {
+///|
+/// 实现 `Show` 特征，支持 `.to_string()` 点调用。
+pub impl Show for Method with fn output(self, logger) {
   match self {
     GET => logger.write_string("GET")
     POST => logger.write_string("POST")
@@ -33,7 +39,12 @@ pub impl Show for Method with output(self, logger) {
   }
 }
 
+///|
 pub extend Method with Show::{output, to_string}
+
+///| HTTP 版本。
+
+///|
 
 ///|
 /// HTTP version.
@@ -50,14 +61,20 @@ pub extend Version with Eq::{not_equal, equal}
 pub extend Version with @debug.Debug::{to_repr}
 
 ///|
-pub impl Show for Version with output(self, logger) {
+/// 实现 `Show` 特征，输出如 `"HTTP/1.1"`。
+pub impl Show for Version with fn output(self, logger) {
   logger.write_string("HTTP/")
   logger.write_string(self.major.to_string())
   logger.write_string(".")
   logger.write_string(self.minor.to_string())
 }
 
+///|
 pub extend Version with Show::{output, to_string}
+
+///| HTTP 请求行：方法 + 路径 + 版本。
+
+///|
 
 ///|
 /// HTTP request line: method + path + version.
@@ -74,6 +91,10 @@ pub extend RequestLine with Eq::{not_equal, equal}
 ///|
 pub extend RequestLine with @debug.Debug::{to_repr}
 
+///| HTTP 头 — 键值对。
+
+///|
+
 ///|
 /// HTTP header as a key-value pair.
 #derive(Debug, Eq)
@@ -87,6 +108,10 @@ pub extend Header with Eq::{not_equal, equal}
 
 ///|
 pub extend Header with @debug.Debug::{to_repr}
+
+///| 已解析的 HTTP 请求（请求行 + 头部）。
+
+///|
 
 ///|
 /// Parsed HTTP request (request line + headers).
@@ -104,8 +129,12 @@ pub extend Request with Eq::{not_equal, equal}
 ///|
 pub extend Request with @debug.Debug::{to_repr}
 
+///| URI 组件。
+
 ///|
-/// URI components.
+
+///|
+/// URI components (RFC 3986 subset).
 #derive(Debug, Eq)
 pub(all) struct Uri {
   scheme : String
@@ -122,14 +151,32 @@ pub extend Uri with Eq::{not_equal, equal}
 ///|
 pub extend Uri with @debug.Debug::{to_repr}
 
+///| 将请求行格式化为字符串，如 `"GET /path HTTP/1.1"`。
+
+///|
+
+///|
+/// Format the request line as a string.
 pub fn RequestLine::to_string(self : RequestLine) -> String {
   "\{self.req_method} \{self.uri} \{self.version.to_string()}"
 }
 
+///| 将头部格式化为字符串，如 `"Content-Type: text/html"`。
+
+///|
+
+///|
+/// Format the header as a string.
 pub fn Header::to_string(self : Header) -> String {
   "\{self.name}: \{self.value}"
 }
 
+///| 将完整请求格式化为字符串。
+
+///|
+
+///|
+/// Format the complete request as a string.
 pub fn Request::to_string(self : Request) -> String {
   let line = "\{self.req_method} \{self.uri} \{self.version.to_string()}"
   let headers = self.headers.map(fn(h) { h.to_string() }).join("\r\n")
@@ -140,6 +187,12 @@ pub fn Request::to_string(self : Request) -> String {
   }
 }
 
+///| 将 URI 格式化为完整字符串。
+
+///|
+
+///|
+/// Format the URI as a complete string.
 pub fn Uri::to_string(self : Uri) -> String {
   let mut s = "\{self.scheme}://\{self.host}"
   match self.port {
@@ -159,7 +212,6 @@ pub fn Uri::to_string(self : Uri) -> String {
 }
 
 ///|
-/// Parse characters while predicate holds, returning the string.
 fn take_while(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
   @compose.map(@compose.many(@basic.satisfy(pred, label=label_)), fn(chars) {
     let mut s : String = ""
@@ -171,7 +223,6 @@ fn take_while(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
 }
 
 ///|
-/// Parse 1+ characters while predicate holds, returning the string.
 fn take_while1(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
   @compose.map(@compose.many1(@basic.satisfy(pred, label=label_)), fn(chars) {
     chars.fold(fn(acc, c) { acc + c.to_string() }, init="")
@@ -179,7 +230,6 @@ fn take_while1(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
 }
 
 ///|
-/// Parse CRLF or LF line ending, discarding it.
 fn crlf() -> @core.Parser[Unit] {
   @control.alt(
     @compose.map(@basic.string("\r\n"), fn(_) { () }),
@@ -188,7 +238,6 @@ fn crlf() -> @core.Parser[Unit] {
 }
 
 ///|
-/// Try to parse a string as an Int32.
 fn try_parse_int(s : String) -> Int32? {
   Some(@string.parse_int(s.to_string_view())) catch {
     _ => None
@@ -196,17 +245,11 @@ fn try_parse_int(s : String) -> Int32? {
 }
 
 ///|
-/// Parse 1+ digits as a string.
 fn digits1() -> @core.Parser[String] {
   take_while1(fn(c) { c >= '0' && c <= '9' }, "digit")
 }
 
-/// ============================================================================
-/// Method parser
-/// ============================================================================
-
 ///|
-/// Parse an HTTP method: uppercase letters until space.
 fn http_method() -> @core.Parser[Method] {
   @compose.bind(take_while1(fn(c) { c >= 'A' && c <= 'Z' }, "HTTP method"), fn(
     tok,
@@ -231,18 +274,12 @@ fn http_method() -> @core.Parser[Method] {
   })
 }
 
-/// ============================================================================
-/// Request line parser
-/// ============================================================================
-
 ///|
-/// Parse the request target (URI path): non-space, non-CR, non-LF chars.
 fn request_target() -> @core.Parser[String] {
   take_while1(fn(c) { c != ' ' && c != '\r' && c != '\n' }, "request target")
 }
 
 ///|
-/// Parse HTTP version: HTTP/X.Y
 fn http_version() -> @core.Parser[Version] {
   @compose.bind(@basic.string("HTTP/"), fn(_) {
     @compose.bind(digits1(), fn(major_s) {
@@ -263,6 +300,10 @@ fn http_version() -> @core.Parser[Version] {
   })
 }
 
+///| 解析 HTTP 请求行：`METHOD /path HTTP/1.1\r\n`
+
+///|
+
 ///|
 /// Parse an HTTP request line: `METHOD /path HTTP/1.1\r\n`
 pub fn parse_request_line() -> @core.Parser[RequestLine] {
@@ -279,16 +320,12 @@ pub fn parse_request_line() -> @core.Parser[RequestLine] {
   })
 }
 
-/// ============================================================================
-/// Header parser
-/// ============================================================================
-
-///| Parse a single header line: `Key: Value\r\n`
-
-///| Key is everything before the first ':', value is everything after ': '
+///| 解析单个头部行：`Key: Value\r\n`
 
 ///|
-/// until line end.
+
+///|
+/// Parse a single header line: `Key: Value\r\n`
 pub fn parse_header() -> @core.Parser[Header] {
   @compose.bind(
     take_while1(fn(c) { c != ':' && c != '\r' && c != '\n' }, "header name"),
@@ -307,6 +344,10 @@ pub fn parse_header() -> @core.Parser[Header] {
   )
 }
 
+///| 解析所有头部，直到空行。
+
+///|
+
 ///|
 /// Parse all headers until the empty line.
 pub fn parse_headers() -> @core.Parser[Array[Header]] {
@@ -324,6 +365,10 @@ fn parse_headers_step(acc : Array[Header]) -> @core.Parser[Array[Header]] {
     }),
   )
 }
+
+///| 解析完整的 HTTP 请求：请求行 + 头部 + 空行。
+
+///|
 
 ///|
 /// Parse a complete HTTP request: request line + headers + empty line.
@@ -346,9 +391,6 @@ pub fn parse_request() -> @core.Parser[Request] {
 }
 
 ///|
-/// ============================================================================
-/// URI parser (RFC 3986 subset)
-/// ============================================================================
 fn uri_scheme() -> @core.Parser[String] {
   take_while1(fn(c) { c != ':' }, "scheme")
 }
@@ -411,6 +453,10 @@ fn uri_fragment() -> @core.Parser[String?] {
   )
 }
 
+///| 解析 URI 为其组件。
+
+///|
+
 ///|
 /// Parse a URI into its components.
 pub fn parse_uri() -> @core.Parser[Uri] {
@@ -431,11 +477,19 @@ pub fn parse_uri() -> @core.Parser[Uri] {
   })
 }
 
+///| 便捷函数：将 URI 字符串解析为 `Result`。
+
+///|
+
 ///|
 /// Convenience: parse a URI string into Result.
 pub fn parse_uri_string(input : String) -> Result[Uri, @core.ParseError] {
   @core.Parser::parse(parse_uri(), input)
 }
+
+///| 便捷函数：将 HTTP 请求字符串解析为 `Result`。
+
+///|
 
 ///|
 /// Convenience: parse an HTTP request string into Result.

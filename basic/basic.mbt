@@ -1,11 +1,19 @@
-///| Match a single specific character.
+///| 匹配单个指定字符。
 
 ///|
+
+///| 若下一个字符等于 `expected`，成功并消耗该字符；
+
+///| 否则在当前位置产生未承诺的错误。
+
+///|
+
+///| Match a single specific character.
 
 ///| Succeeds and consumes one character if it equals `expected`.
 
 ///|
-/// Fails with an uncommitted error at the current position otherwise.
+/// Fails with an uncommitted error otherwise.
 pub fn char(expected : Char) -> @core.Parser[Char] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -26,14 +34,22 @@ pub fn char(expected : Char) -> @core.Parser[Char] {
   })
 }
 
+///| 匹配精确字符串字面量。
+
+///|
+
+///| 若输入从游标起等于 `expected`，成功并消耗整个字面量；
+
+///| 否则产生未承诺的错误。
+
+///|
+
 ///| Match an exact string literal.
 
-///|
-
-///| Succeeds and consumes `expected` if the input starting at the cursor
+///| Succeeds and consumes `expected` if the input at cursor equals it.
 
 ///|
-/// equals `expected`.  Fails with an uncommitted error otherwise.
+/// Fails with an uncommitted error otherwise.
 pub fn string(expected : String) -> @core.Parser[String] {
   @core.Parser::of(fn(state) {
     let len = expected.length()
@@ -55,14 +71,16 @@ pub fn string(expected : String) -> @core.Parser[String] {
   })
 }
 
-///| Match any single character.
+///| 匹配任意单个字符。
 
 ///|
 
-///| Succeeds and consumes exactly one character from the input.
+///| 成功并消耗一个字符；仅在 EOF 时失败。
 
 ///|
-/// Fails with an uncommitted error at EOF.
+
+///|
+/// Match any single character. Fails only at EOF.
 pub fn any_char() -> @core.Parser[Char] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -78,16 +96,20 @@ pub fn any_char() -> @core.Parser[Char] {
   })
 }
 
+///| 消费恰好 `n` 个字符。
+
+///|
+
+///| 若剩余字符不少于 `n`，返回消耗的子字符串；
+
+///| 否则产生未承诺的错误。
+
+///|
+
 ///| Consume exactly `n` characters from the input.
 
 ///|
-
-///| Succeeds if at least `n` characters remain, returning the consumed
-
-///| substring.  Fails with an uncommitted error if fewer than `n`
-
-///|
-/// characters are available.
+/// Fails with an uncommitted error if fewer than `n` remain.
 pub fn take(n : Int32) -> @core.Parser[String] {
   @core.Parser::of(fn(state) {
     if state.remaining() < n {
@@ -102,20 +124,20 @@ pub fn take(n : Int32) -> @core.Parser[String] {
   })
 }
 
+///| 匹配满足谓词的单个字符。
+
+///|
+
+///| 查看当前字符，若 `pred` 返回 `true` 则成功消耗；
+
+///| 否则产生未承诺的错误。`label` 参数自定义错误信息。
+
+///|
+
 ///| Match a single character that satisfies a predicate.
 
 ///|
-
-///| Peeks at the current character; succeeds and consumes it if `pred`
-
-///| returns `true`.  Fails with an uncommitted error otherwise.
-
-///|
-
-///| The `label` parameter controls the error message — use it to give
-
-///|
-/// a human-readable description of what was expected.
+/// The `label` parameter customizes error messages.
 pub fn satisfy(
   pred : (Char) -> Bool,
   label~ : String = "satisfy",
@@ -134,14 +156,18 @@ pub fn satisfy(
   })
 }
 
+///| 仅在输入末尾成功。
+
+///|
+
+///| 匹配零个字符，当游标在 EOF 时成功；有剩余输入时失败。
+
+///|
+
 ///| Succeed only at the end of input.
 
 ///|
-
-///| Matches zero characters and succeeds when the cursor is at EOF.
-
-///|
-/// Fails with an uncommitted error if any input remains.
+/// Matches zero characters and succeeds when the cursor is at EOF.
 pub fn end_of_input() -> @core.Parser[Unit] {
   @core.Parser::of(fn(state) {
     if state.is_eof() {
@@ -154,16 +180,22 @@ pub fn end_of_input() -> @core.Parser[Unit] {
   })
 }
 
-///| Look ahead at the next character without consuming input.
+///| 前瞻 — 运行 `p` 但不消耗输入。
 
 ///|
 
-///| Runs `p` on a **snapshot** of the state; if `p` succeeds, returns its
+///| 在状态的**快照**上运行 `p`；若成功返回其值但**不**推进游标；
 
-///| value but does **not** advance the cursor.  If `p` fails, the
+///| 若失败，失败直接传递。
 
 ///|
-/// failure passes through unchanged.
+
+///| Look ahead without consuming input.
+
+///| Runs `p` on a snapshot of the state; if `p` succeeds, returns its
+
+///|
+/// value but does not advance the cursor.
 pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] {
   @core.Parser::of(fn(state) {
     let saved_offset = state.offset
@@ -183,14 +215,18 @@ pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] {
   })
 }
 
+///| 运行 `p` 并消耗输入，但丢弃结果。
+
+///|
+
+///| 用于需要跳过分隔符但不关心其值的场景。
+
+///|
+
 ///| Run `p` and discard its result, but consume the input.
 
 ///|
-
-///| Useful when you need to advance past a delimiter but don't care
-
-///|
-/// about its value.  Returns `Unit` on success.
+/// Useful when you need to advance past a delimiter.
 pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
@@ -200,9 +236,15 @@ pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
   })
 }
 
-///| Parse a single character in the inclusive range [lo, hi].
+///| 匹配闭区间 `[lo, hi]` 内的单个字符。
 
 ///|
+
+///| 若下一个字符不在范围内则失败。
+
+///|
+
+///| Parse a single character in the inclusive range [lo, hi].
 
 ///|
 /// Fails if the next character is outside the range.
@@ -219,16 +261,20 @@ pub fn char_range(lo : Char, hi : Char) -> @core.Parser[Char] {
   })
 }
 
-///| Parse a single character matching a predicate function.
+///| 匹配满足谓词的单个字符（带自定义标签）。
 
 ///|
 
-///| This is the most flexible single-character parser: pass any `(Char) -> Bool`
+///| 最灵活的单字符解析器：传入任意 `(Char) -> Bool`
+
+///| 定义自定义字符类（如十六进制数字、标识符起始等）。
 
 ///|
 
+///| Parse a single character matching a predicate function with a custom label.
+
 ///|
-/// to define custom character classes (e.g., hex digits, identifier starts).
+/// Use for named character classes (hex digits, identifier starts, etc.).
 pub fn char_class(pred : (Char) -> Bool, label_ : String) -> @core.Parser[Char] {
   @core.Parser::of(fn(state) {
     match state.peek() {
