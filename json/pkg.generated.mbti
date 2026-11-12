@@ -1,0 +1,33 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "walkzzz/astrolabe/json"
+
+import {
+  "moonbitlang/core/debug",
+  "walkzzz/astrolabe/core",
+}
+
+// Values
+pub fn parse(String) -> Result[JValue, @core.ParseError]
+
+pub fn value() -> @core.Parser[JValue]
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) enum JValue {
+  JNull
+  JBool(Bool)
+  JNum(Double)
+  JStr(String)
+  JArr(Array[JValue])
+  JObj(Array[(String, JValue)])
+}
+pub fn JValue::equal(Self, Self) -> Bool
+pub fn JValue::not_equal(Self, Self) -> Bool
+pub fn JValue::stringify(Self) -> String
+pub fn JValue::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
