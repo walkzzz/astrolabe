@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.14] - 2026-11-12
+
+### Added
+- Bilingual doc comments for proof/proof.mbt (7 verified properties)
+- Bilingual doc comments for json/json.mbt internal functions
+- Bilingual doc comments for http/http.mbt internal functions
+- Comprehensive README.md rewrite with bilingual sections
+
+### Changed
+- README.md: updated badge to 0.1.13+, added Features section, commitment propagation table,
+  formal verification table, expanded HTTP type methods, MoonBit idioms section
+
 ## [0.1.13] - 2026-11-12
 
 ### Added

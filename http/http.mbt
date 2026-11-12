@@ -211,7 +211,12 @@ pub fn Uri::to_string(self : Uri) -> String {
   s
 }
 
+///| 当 `pred` 成立时持续消费字符，返回字符串。
+
 ///|
+
+///|
+/// Parse characters while predicate holds, returning the string.
 fn take_while(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
   @compose.map(@compose.many(@basic.satisfy(pred, label=label_)), fn(chars) {
     let mut s : String = ""
@@ -222,14 +227,24 @@ fn take_while(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
   })
 }
 
+///| 当 `pred` 成立时消费 1+ 字符，返回字符串。
+
 ///|
+
+///|
+/// Parse 1+ characters while predicate holds, returning the string.
 fn take_while1(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
   @compose.map(@compose.many1(@basic.satisfy(pred, label=label_)), fn(chars) {
     chars.fold(fn(acc, c) { acc + c.to_string() }, init="")
   })
 }
 
+///| 解析 CRLF 或 LF 行尾，丢弃结果。
+
 ///|
+
+///|
+/// Parse CRLF or LF line ending, discarding it.
 fn crlf() -> @core.Parser[Unit] {
   @control.alt(
     @compose.map(@basic.string("\r\n"), fn(_) { () }),
@@ -237,19 +252,34 @@ fn crlf() -> @core.Parser[Unit] {
   )
 }
 
+///| 尝试将字符串解析为 Int32，失败返回 None。
+
 ///|
+
+///|
+/// Try to parse a string as Int32, returning None on failure.
 fn try_parse_int(s : String) -> Int32? {
   Some(@string.parse_int(s.to_string_view())) catch {
     _ => None
   }
 }
 
+///| 解析 1+ 数字字符为字符串。
+
 ///|
+
+///|
+/// Parse 1+ digits as a string.
 fn digits1() -> @core.Parser[String] {
   take_while1(fn(c) { c >= '0' && c <= '9' }, "digit")
 }
 
+///| 解析 HTTP 方法：大写字母直到空格。
+
 ///|
+
+///|
+/// Parse an HTTP method: uppercase letters until space.
 fn http_method() -> @core.Parser[Method] {
   @compose.bind(take_while1(fn(c) { c >= 'A' && c <= 'Z' }, "HTTP method"), fn(
     tok,
@@ -274,12 +304,22 @@ fn http_method() -> @core.Parser[Method] {
   })
 }
 
+///| 解析请求目标（URI 路径）：非空格、非换行字符。
+
 ///|
+
+///|
+/// Parse the request target (URI path): non-space, non-CR, non-LF chars.
 fn request_target() -> @core.Parser[String] {
   take_while1(fn(c) { c != ' ' && c != '\r' && c != '\n' }, "request target")
 }
 
+///| 解析 HTTP 版本：HTTP/X.Y
+
 ///|
+
+///|
+/// Parse HTTP version: HTTP/X.Y
 fn http_version() -> @core.Parser[Version] {
   @compose.bind(@basic.string("HTTP/"), fn(_) {
     @compose.bind(digits1(), fn(major_s) {
@@ -354,7 +394,12 @@ pub fn parse_headers() -> @core.Parser[Array[Header]] {
   parse_headers_step([])
 }
 
+///| 递归收集头部行。
+
 ///|
+
+///|
+/// Recursively collect header lines.
 fn parse_headers_step(acc : Array[Header]) -> @core.Parser[Array[Header]] {
   @control.alt(
     @compose.map(crlf(), fn(_) { acc }),
@@ -390,17 +435,32 @@ pub fn parse_request() -> @core.Parser[Request] {
   })
 }
 
+///| 解析 URI scheme 部分（冒号前）。
+
 ///|
+
+///|
+/// Parse URI scheme (before colon).
 fn uri_scheme() -> @core.Parser[String] {
   take_while1(fn(c) { c != ':' }, "scheme")
 }
 
+///| 解析 URI host 部分。
+
 ///|
+
+///|
+/// Parse URI host.
 fn uri_host() -> @core.Parser[String] {
   take_while1(fn(c) { c != ':' && c != '/' && c != '?' && c != '#' }, "host")
 }
 
+///| 解析可选的 URI 端口号。
+
 ///|
+
+///|
+/// Parse optional URI port number.
 fn uri_port() -> @core.Parser[Int32?] {
   @control.alt(
     @compose.bind(@basic.char(':'), fn(_) {
@@ -415,7 +475,12 @@ fn uri_port() -> @core.Parser[Int32?] {
   )
 }
 
+///| 解析 URI 路径。
+
 ///|
+
+///|
+/// Parse URI path.
 fn uri_path() -> @core.Parser[String] {
   @control.alt(
     @compose.bind(@basic.char('/'), fn(_) {
@@ -429,7 +494,12 @@ fn uri_path() -> @core.Parser[String] {
   )
 }
 
+///| 解析可选的 URI 查询字符串。
+
 ///|
+
+///|
+/// Parse optional URI query string.
 fn uri_query() -> @core.Parser[String?] {
   @control.alt(
     @compose.bind(@basic.char('?'), fn(_) {
@@ -441,7 +511,12 @@ fn uri_query() -> @core.Parser[String?] {
   )
 }
 
+///| 解析可选的 URI 片段标识符。
+
 ///|
+
+///|
+/// Parse optional URI fragment.
 fn uri_fragment() -> @core.Parser[String?] {
   @control.alt(
     @compose.bind(@basic.char('#'), fn(_) {

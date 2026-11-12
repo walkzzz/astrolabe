@@ -68,16 +68,24 @@ pub fn JValue::stringify(self : JValue) -> String {
   }
 }
 
+///| 尝试将字符串解析为 Double，失败返回 None。
+
 ///|
-/// 尝试将字符串解析为 Double，失败返回 None。
+
+///|
+/// Try to parse a string as Double, returning None on failure.
 fn try_parse_double(s : String) -> Double? {
   Some(@string.parse_double(s.to_string_view())) catch {
     _ => None
   }
 }
 
+///| 将 4 位十六进制字符串转换为 Char，失败返回 None。
+
 ///|
-/// 将 4 位十六进制字符串转换为 Char，失败返回 None。
+
+///|
+/// Convert a 4-digit hex string to Char, returning None on failure.
 fn hex4_to_char(s : String) -> Char? {
   if s.length() != 4 {
     return None
@@ -100,8 +108,12 @@ fn hex4_to_char(s : String) -> Char? {
   code.to_char()
 }
 
+///| 从 state 收集连续数字到字符串。
+
 ///|
-/// 从 state 收集连续数字到字符串。
+
+///|
+/// Collect consecutive digits from state into a string.
 fn collect_digits(state : @core.State) -> String {
   let mut acc : String = ""
   let done : Bool = false
@@ -117,8 +129,12 @@ fn collect_digits(state : @core.State) -> String {
   acc
 }
 
+///| 解析 JSON 空白符（空格、制表符、换行），丢弃结果。
+
 ///|
-/// 解析 JSON 空白符（空格、制表符、换行），丢弃结果。
+
+///|
+/// Parse JSON whitespace (space, tab, newline), discarding the result.
 fn ws() -> @core.Parser[Unit] {
   @basic.skip(
     @compose.many(
@@ -130,14 +146,22 @@ fn ws() -> @core.Parser[Unit] {
   )
 }
 
+///| 解析字面量 `null`。
+
 ///|
-/// 解析字面量 `null`。
+
+///|
+/// Parse the literal `null`.
 fn null_() -> @core.Parser[JValue] {
   @compose.map(@basic.string("null"), fn(_) { JNull })
 }
 
+///| 解析 JSON 布尔值（`true` / `false`）。
+
 ///|
-/// 解析 JSON 布尔值（`true` / `false`）。
+
+///|
+/// Parse a JSON boolean (`true` / `false`).
 fn bool_() -> @core.Parser[JValue] {
   @control.alt(
     @compose.map(@basic.string("true"), fn(_) { JBool(true) }),
@@ -145,8 +169,12 @@ fn bool_() -> @core.Parser[JValue] {
   )
 }
 
+///| 解析 JSON 数字。
+
 ///|
-/// 解析 JSON 数字。
+
+///|
+/// Parse a JSON number.
 fn number() -> @core.Parser[JValue] {
   @core.Parser::of(fn(state) {
     let negative = match state.peek() {
@@ -195,8 +223,12 @@ fn number() -> @core.Parser[JValue] {
   })
 }
 
+///| 解析 'e'/'E' 之后的指数部分。
+
 ///|
-/// 解析 'e'/'E' 之后的指数部分。
+
+///|
+/// Parse the exponent part after 'e'/'E'.
 fn parse_exp(state : @core.State) -> String {
   let sign : String = match state.peek() {
     Some('+') => {
@@ -213,8 +245,12 @@ fn parse_exp(state : @core.State) -> String {
   "e" + sign + exp
 }
 
+///| 解析 JSON 字符串（含转义序列）。
+
 ///|
-/// 解析 JSON 字符串（含转义序列）。
+
+///|
+/// Parse a JSON string (with escape sequences).
 fn string_() -> @core.Parser[JValue] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -233,8 +269,12 @@ fn string_() -> @core.Parser[JValue] {
   })
 }
 
+///| 内部：解析开引号后的字符串主体。
+
 ///|
-/// 内部：解析开引号后的字符串主体。
+
+///|
+/// Internal: parse the string body after the opening quote.
 fn parse_string_body(state : @core.State) -> @core.ParseResult[String] {
   let mut acc : String = ""
   let done : Bool = false
@@ -320,8 +360,12 @@ pub fn value() -> @core.Parser[JValue] {
   @control.choice([null_(), bool_(), number(), string_(), array_(), object_()])
 }
 
+///| 解析 JSON 数组：`[value, value, ...]`
+
 ///|
-/// 解析 JSON 数组：`[value, value, ...]`
+
+///|
+/// Parse a JSON array: `[value, value, ...]`
 fn array_() -> @core.Parser[JValue] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -352,8 +396,12 @@ fn array_() -> @core.Parser[JValue] {
   })
 }
 
+///| 内部：解析第一个值后的数组剩余项。
+
 ///|
-/// 内部：解析第一个值后的数组剩余项。
+
+///|
+/// Internal: parse remaining array items after the first value.
 fn parse_array_tail(
   state : @core.State,
   acc : Array[JValue],
@@ -387,8 +435,12 @@ fn parse_array_tail(
   @core.Success(items, current)
 }
 
+///| 解析 JSON 对象：`{"key": value, ...}`
+
 ///|
-/// 解析 JSON 对象：`{"key": value, ...}`
+
+///|
+/// Parse a JSON object: `{"key": value, ...}`
 fn object_() -> @core.Parser[JValue] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -419,8 +471,12 @@ fn object_() -> @core.Parser[JValue] {
   })
 }
 
+///| 内部：解析第一对之后的对象剩余键值对。
+
 ///|
-/// 内部：解析第一对之后的对象剩余键值对。
+
+///|
+/// Internal: parse remaining object pairs after the first one.
 fn parse_object_tail(
   state : @core.State,
   acc : Array[(String, JValue)],
@@ -454,8 +510,12 @@ fn parse_object_tail(
   @core.Success(pairs, current)
 }
 
+///| 解析键值对：`"key": value`
+
 ///|
-/// 解析键值对：`"key": value`
+
+///|
+/// Parse a key-value pair: `"key": value`
 fn pair_() -> @core.Parser[(String, JValue)] {
   @core.Parser::of(fn(state) {
     match (string_().run)(state) {
