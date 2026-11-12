@@ -1,5 +1,9 @@
-// import {
-//   "walkzzz/astrolabe" @lib,
-// }
+import {
+  "moonbitlang/core/string",
+  "walkzzz/astrolabe/core",
+  "walkzzz/astrolabe" @astro,
+  "walkzzz/astrolabe/json",
+  "walkzzz/astrolabe/http",
+}
 
 pkgtype(kind: "executable")

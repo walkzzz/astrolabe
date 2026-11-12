@@ -20,6 +20,21 @@ pub extend Method with Eq::{not_equal, equal}
 pub extend Method with @debug.Debug::{to_repr}
 
 ///|
+pub fn Method::to_string(self : Method) -> String {
+  match self {
+    GET => "GET"
+    POST => "POST"
+    PUT => "PUT"
+    DELETE => "DELETE"
+    HEAD => "HEAD"
+    OPTIONS => "OPTIONS"
+    PATCH => "PATCH"
+    CONNECT => "CONNECT"
+    TRACE => "TRACE"
+  }
+}
+
+///|
 /// HTTP version.
 #derive(Debug, Eq)
 pub(all) struct Version {

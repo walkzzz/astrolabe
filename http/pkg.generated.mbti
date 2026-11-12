@@ -48,6 +48,7 @@ pub(all) enum Method {
 pub fn Method::equal(Self, Self) -> Bool
 pub fn Method::not_equal(Self, Self) -> Bool
 pub fn Method::to_repr(Self) -> @debug.Repr
+pub fn Method::to_string(Self) -> String
 
 #derive(Eq, @debug.Debug)
 pub(all) struct Request {

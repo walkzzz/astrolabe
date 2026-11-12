@@ -1,0 +1,5 @@
+import {
+  "walkzzz/astrolabe/http",
+}
+
+pkgtype(kind: "executable")

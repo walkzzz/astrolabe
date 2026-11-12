@@ -1,0 +1,6 @@
+import {
+  "walkzzz/astrolabe/core",
+  "walkzzz/astrolabe" @astro,
+}
+
+pkgtype(kind: "executable")

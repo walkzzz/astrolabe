@@ -1,0 +1,7 @@
+import {
+  "moonbitlang/core/string",
+  "walkzzz/astrolabe/core",
+  "walkzzz/astrolabe" @astro,
+}
+
+pkgtype(kind: "executable")
