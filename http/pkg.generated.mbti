@@ -1,0 +1,98 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "walkzzz/astrolabe/http"
+
+import {
+  "moonbitlang/core/debug",
+  "walkzzz/astrolabe/core",
+}
+
+// Values
+pub fn parse_header() -> @core.Parser[Header]
+
+pub fn parse_headers() -> @core.Parser[Array[Header]]
+
+pub fn parse_request() -> @core.Parser[Request]
+
+pub fn parse_request_line() -> @core.Parser[RequestLine]
+
+pub fn parse_request_string(String) -> Result[Request, @core.ParseError]
+
+pub fn parse_uri() -> @core.Parser[Uri]
+
+pub fn parse_uri_string(String) -> Result[Uri, @core.ParseError]
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct Header {
+  name : String
+  value : String
+}
+pub fn Header::equal(Self, Self) -> Bool
+pub fn Header::not_equal(Self, Self) -> Bool
+pub fn Header::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum Method {
+  GET
+  POST
+  PUT
+  DELETE
+  HEAD
+  OPTIONS
+  PATCH
+  CONNECT
+  TRACE
+}
+pub fn Method::equal(Self, Self) -> Bool
+pub fn Method::not_equal(Self, Self) -> Bool
+pub fn Method::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Request {
+  req_method : Method
+  uri : String
+  version : Version
+  headers : Array[Header]
+}
+pub fn Request::equal(Self, Self) -> Bool
+pub fn Request::not_equal(Self, Self) -> Bool
+pub fn Request::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct RequestLine {
+  req_method : Method
+  uri : String
+  version : Version
+}
+pub fn RequestLine::equal(Self, Self) -> Bool
+pub fn RequestLine::not_equal(Self, Self) -> Bool
+pub fn RequestLine::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Uri {
+  scheme : String
+  host : String
+  port : Int32?
+  path : String
+  query : String?
+  fragment : String?
+}
+pub fn Uri::equal(Self, Self) -> Bool
+pub fn Uri::not_equal(Self, Self) -> Bool
+pub fn Uri::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Version {
+  major : Int32
+  minor : Int32
+}
+pub fn Version::equal(Self, Self) -> Bool
+pub fn Version::not_equal(Self, Self) -> Bool
+pub fn Version::to_repr(Self) -> @debug.Repr
+pub fn Version::to_string(Self) -> String
+
+// Type aliases
+
+// Traits
