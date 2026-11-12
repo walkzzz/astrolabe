@@ -19,8 +19,8 @@ repository = "https://github.com/walkzzz/astrolabe.git"
 
 license = "Apache-2.0"
 
-keywords = []
+keywords = [ ]
 
 preferred_target = "wasm"
 
-description = ""
+description = "Position-aware parser combinators for MoonBit — inspired by OCaml Angstrom"

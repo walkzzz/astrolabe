@@ -1,0 +1,61 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "walkzzz/astrolabe"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn any_char() -> Parser[Char]
+
+pub fn char(Char) -> Parser[Char]
+
+pub fn end_of_input() -> Parser[Unit]
+
+pub fn satisfy((Char) -> Bool, label? : String) -> Parser[Char]
+
+pub fn string(String) -> Parser[String]
+
+pub fn take(Int32) -> Parser[String]
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct ParseError {
+  pos : Pos
+  expected : Array[String]
+  committed : Bool
+  context : String
+}
+pub fn ParseError::equal(Self, Self) -> Bool
+pub fn ParseError::format(Self) -> String
+pub fn ParseError::not_equal(Self, Self) -> Bool
+pub fn ParseError::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+type ParseResult[T]
+
+pub(all) struct Parser[T] {
+  run : (State) -> ParseResult[T]
+}
+pub fn[T] Parser::parse(Self[T], String) -> Result[T, ParseError]
+pub fn[T] Parser::parse_full(Self[T], String) -> Result[T, ParseError]
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Pos {
+  mut line : Int32
+  mut column : Int32
+  mut offset : Int32
+}
+pub fn Pos::equal(Self, Self) -> Bool
+pub fn Pos::not_equal(Self, Self) -> Bool
+pub fn Pos::to_repr(Self) -> @debug.Repr
+
+#derive(@debug.Debug)
+type State
+pub fn State::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
