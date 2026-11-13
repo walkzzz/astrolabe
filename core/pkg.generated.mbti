@@ -6,6 +6,13 @@ import {
 }
 
 // Values
+pub fn[A] palt((State) -> ParseResult[A], (State) -> ParseResult[A]) -> Parser[A]
+
+pub fn[A, B] pbind((State) -> ParseResult[A], (A) -> Parser[B]) -> Parser[B]
+
+pub fn[A, B] pmap((State) -> ParseResult[A], (A) -> B) -> Parser[B]
+
+pub fn[A] poption((State) -> ParseResult[A], A) -> Parser[A]
 
 // Errors
 #derive(Eq, @debug.Debug)
@@ -47,6 +54,7 @@ pub fn[T] Parser::parse(Self[T], String) -> Result[T, ParseError]
 pub fn[T] Parser::parse_full(Self[T], String) -> Result[T, ParseError]
 pub fn[T] Parser::parse_full_raise(Self[T], String) -> T raise ParseError
 pub fn[T] Parser::parse_raise(Self[T], String) -> T raise ParseError
+pub fn[T] Parser::run_fn(Self[T]) -> (State) -> ParseResult[T]
 
 #derive(Eq, @debug.Debug)
 pub(all) struct Pos {

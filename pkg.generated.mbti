@@ -60,6 +60,8 @@ pub fn[T] not_followed_by(@core.Parser[T], label? : String) -> @core.Parser[Unit
 
 pub fn[T] option(@core.Parser[T], T) -> @core.Parser[T]
 
+pub fn[A] palt((@core.State) -> @core.ParseResult[A], (@core.State) -> @core.ParseResult[A]) -> @core.Parser[A]
+
 pub fn[T] parse(@core.Parser[T], String) -> Result[T, @core.ParseError]
 
 pub fn[T] parse_full(@core.Parser[T], String) -> Result[T, @core.ParseError]
@@ -68,7 +70,13 @@ pub fn[T] parse_full_raise(@core.Parser[T], String) -> T raise @core.ParseError
 
 pub fn[T] parse_raise(@core.Parser[T], String) -> T raise @core.ParseError
 
+pub fn[A, B] pbind((@core.State) -> @core.ParseResult[A], (A) -> @core.Parser[B]) -> @core.Parser[B]
+
 pub fn[T] peek(@core.Parser[T]) -> @core.Parser[T]
+
+pub fn[A, B] pmap((@core.State) -> @core.ParseResult[A], (A) -> B) -> @core.Parser[B]
+
+pub fn[A] poption((@core.State) -> @core.ParseResult[A], A) -> @core.Parser[A]
 
 pub fn[T] pure(T) -> @core.Parser[T]
 

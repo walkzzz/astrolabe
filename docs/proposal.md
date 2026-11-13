@@ -4,7 +4,7 @@
 
 - **项目名称**：Astrolabe — MoonBit 位置感知解析器组合子库（Position-Aware Parser Combinator Library）
 - **参赛者**：蒋本雄（GitHub: walkzzz）
-- **联系方式**：745244185@qq.com / 13689047817
+- **联系方式**：745244190@qq.com / 13689047817
 - **GitHub 仓库链接**：https://github.com/walkzzz/astrolabe.git
 - **参赛方向**：季度优秀社区项目评选方向（既有生态项目维护与升级，章程 5.2）
 - **项目性质**：参考已有开源项目思想进行 MoonBit 原生实现（非代码移植，见第四节）
@@ -35,7 +35,7 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 | 回溯语义 | 消费即承诺，回溯需 `attempt` 显式开启 | Angstrom 语义：`alt` 默认回溯，`commit` 显式切断；**语义经 7 个证明函数形式化** |
 | 许可证 | AGPL-3.0（传染性，闭源集成受限） | MIT（生态采用零门槛） |
 | 定位 | 纯组合子框架（无格式解析器） | 组合子内核 + JSON/HTTP 开箱解析器 + 5 示例包 |
-| 工程证据 | examples，无公开基准 | 185 测试 × 4 后端全绿、25 基准、CI 三门禁 |
+| 工程证据 | examples，无公开基准 | 190 测试 × 4 后端全绿、25 基准、CI 三门禁 |
 | 错误模型 | trait 分层（可替换错误类型） | 位置 + 上下文片段 + committed 标志，raise/try 原生集成 |
 
 **核心差异**：Astrolabe 的回溯语义有形式化背书且默认路径对使用者更直觉（需要切断时才写 `commit`）；MIT 许可证使库可被任何 MoonBit 项目无顾虑集成。
@@ -84,7 +84,7 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 | 5 个示例包 | uri、json、http、csv_header、calc，含白盒测试 | `moon test --target all` |
 | CLI 演示 `cmd/main` | JSON/URI/HTTP 交互式展示 | `moon run cmd/main` |
 | CI 三门禁 | `moon check --deny-warn --target all` + `moon test --target all` + `moon bench` | `.github/workflows/ci.yml` |
-| 文档一致性审计修复 | README 中英 10 处与实际包结构/API 对齐、测试数口径更新（147→185）、版本三方统一 0.2.0、形式化性质表与 proof.mbt 一一对应 | `docs/assessment.md` |
+| 文档一致性审计修复 | README 中英 10 处与实际包结构/API 对齐、测试数口径更新（147→190）、版本三方统一 0.2.0、形式化性质表与 proof.mbt 一一对应 | `docs/assessment.md` |
 | 双语文档体系 | API 参考、教程、迁移指南、形式化规范、路线图，全 API 中英 `///` 注释 | `docs/` |
 
 ## 六、核心功能范围
@@ -107,15 +107,15 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 
 ## 八、实现路径与技术理解
 
-- **语义模型先行**：先固化 commit/alt 承诺传播表（README 公开），再用 proof 条件把表中的关键不变量交给编译期 SMT 验证，最后以 185 项测试（含边界与错误路径）覆盖实现——"语义 → 证明 → 测试"三层递进，这是本项目区别于同类项目的方法论。
+- **语义模型先行**：先固化 commit/alt 承诺传播表（README 公开），再用 proof 条件把表中的关键不变量交给编译期 SMT 验证，最后以 190 项测试（含边界与错误路径）覆盖实现——"语义 → 证明 → 测试"三层递进，这是本项目区别于同类项目的方法论。
 - **门面架构**：core/char/sequence/branch 四包单一职责，根包 `pub using` 扁平化导出；格式解析器放示例子包，避免内核膨胀。
 - **MoonBit 惯用法**：`suberror ParseError` 接入原生 raise/try；`#derive(Eq, Debug)` 与 `impl Show` 全覆盖；尾递归 step 函数实现重复组合子；`#inline` 零成本门面。
 - **质量门禁**：CI 固化 `check --deny-warn --target all`（零警告）+ `test --target all` + `bench`，四后端回归自动化。
 
 ## 九、预期验收产物
 
-- `walkzzz/astrolabe` v0.4.0 开发完成待发布（0.2.0 已上线），`moon add walkzzz/astrolabe` 直接可用；
-- 四后端（wasm / wasm-gc / js / native）测试全绿（当前 185 × 4）、25 项基准、CI 门禁；
+- `walkzzz/astrolabe` v0.5.0 开发完成待发布（0.2.0 已上线），`moon add walkzzz/astrolabe` 直接可用；
+- 四后端（wasm / wasm-gc / js / native）测试全绿（当前 190 × 4）、25 项基准、CI 门禁；
 - 双语文档 + 评估报告（`docs/assessment.md`，含实测数据与竞品分析）+ 本申报书（`docs/proposal.md`）；
 - 本期全部新增贡献在 CHANGELOG `[0.2.0]` / `[0.2.1]` 条目与 git 提交历史中可追踪。
 
@@ -136,7 +136,7 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 | 版本 | 内容 | 大赛维度 |
 |:---|:---|:---|
 | v0.4.0 ✅ | choice 错误聚合（吸收 talcparsec CanMerge 思想，独立实现）：`ParseError::merge`、多候选期望输出 | 工程质量 |
-| v0.5.0 | `ParserLike` trait 与自定义输入流 | 项目完成度 |
+| v0.5.0 ✅ | ParserLike 函数式扩展点：`pmap`/`pbind`/`palt`/`poption` + `run_fn` 入口 + Traced[T] 扩展示例 | 项目完成度 |
 | v0.6.0 | 惰性行列计算等性能优化；与 parkit / talcparsec / stdlib JSON 的三方对比基准（仅实测数据，零代码引入） | 工程质量 + 生态贡献 |
 | v0.7.0 | 生态采用案例（INI/表达式求值器完整链路）与 wasm Web Playground（错误位置高亮演示） | 生态贡献 + 展示表现 |
 
@@ -144,4 +144,4 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 
 ---
 
-*本申报书基于项目实测数据（moon 0.1.20261104：check 零警告、test 185×4、bench 25/25）与 mooncakes.io 生态快照（2026-11-09）撰写，竞品数据取自各项目 mooncakes 页面公开信息。*
+*本申报书基于项目实测数据（moon 0.1.20261104：check 零警告、test 190×4、bench 25/25）与 mooncakes.io 生态快照（2026-11-09）撰写，竞品数据取自各项目 mooncakes 页面公开信息。*

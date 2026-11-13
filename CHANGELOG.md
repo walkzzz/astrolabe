@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2026-11-13
+
+### Added
+- `ParserLike` extension-point combinator set (`core/parser_like.mbt`): `pmap` / `pbind` / `palt` / `poption` work over any `(State) -> ParseResult[A]` run-function, so third-party parser types plug into astrolabe combinators by exposing a `run_fn` method; `Parser::run_fn` provided as the standard entry
+- Worked extension example `examples/ext` — `Traced[T]`, a logging wrapper parser, with 5 white-box tests demonstrating pmap/pbind/palt/poption integration (190 total × 4 backends)
+- Design note: MoonBit traits do not support parameterization separating the implementing type from the result type (`trait ParserLike[A]` is rejected by the parser); the extension point therefore uses the functional convention — the same extension point as `Parser::of`
+
 ## [0.4.0] - 2026-11-13
 
 ### Added

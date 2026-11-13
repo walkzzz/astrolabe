@@ -122,6 +122,43 @@ pub using @branch {
 }
 
 // ============================================================================
+// 从 @core 重导出 ParserLike 通用组合子 / Re-export ParserLike generic combinators
+// ============================================================================
+
+///| 通用组合子作用于任何实现 `@core.ParserLike` 的类型：
+
+///| 第三方类型实现 `run_like(self, state)` 后即可直接使用。
+
+///|
+
+///| Generic combinators work over any type implementing `@core.ParserLike`:
+
+///| third-party types become usable after implementing `run_like(self, state)`.
+
+///|
+
+///| The `ParserLike` trait itself is re-exported as `@core.ParserLike`.
+
+///|
+
+///| 示例见 `examples/ext`（Traced[T] 带调用日志的包装解析器）：
+
+///| See `examples/ext` for a worked example (Traced[T], a logging wrapper):
+
+///|
+
+///|   let t = @ext.Traced::new(@astrolabe.char('a'))
+
+///|   let p = @astrolabe.pmap(t, fn(c) { c.to_string() })
+
+pub using @core {
+  pmap,
+  pbind,
+  palt,
+  poption,
+}
+
+// ============================================================================
 // 便捷入口 / Convenience entry points
 // ============================================================================
 

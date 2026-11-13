@@ -9,7 +9,7 @@
 | 版本 | 主题 | 核心内容 | 大赛维度映射 | 可验证产物 |
 |:---|:---|:---|:---|:---|
 | **v0.4.0 ✅**（11-13 开发完成） | 错误聚合与诊断质量 | `ParseError::merge`（furthest-position + expected 标签合并，吸收 talcparsec CanMerge 思想，独立实现）；`choice`/`alt` 失败聚合；多候选期望的格式化输出 | 工程质量：诊断对齐 talcparsec、超越 parkit | ✅ 185×4 测试全绿 + check 零警告，待 mooncakes 发布 |
-| **v0.5.0**（11-17~11-18 冲刺） | ParserLike trait | `trait ParserLike[A]` + Parser impl；自定义组合子扩展示例 | 完成度：兑现 proposal.md 承诺（章程红线） | mooncakes 发布 + 扩展示例可运行 |
+| **v0.5.0 ✅**（11-13 开发完成） | ParserLike 函数式扩展点 | `pmap`/`pbind`/`palt`/`poption` 通用组合子 + `Parser::run_fn` 入口；`examples/ext` 的 Traced[T] 扩展示例（设计说明：MoonBit trait 不支持实现类型/结果类型分离的参数化，采用函数式约定，与 `Parser::of` 同一扩展点） | 完成度：兑现 proposal.md 承诺（章程红线） | ✅ 190×4 测试全绿 + check 零警告，待 mooncakes 发布 |
 | v0.6.0（下赛期） | 性能优化 + 三方对比基准 | String View / 惰性行列；astrolabe vs parkit vs talcparsec vs stdlib JSON 同 workload 对比表 | 工程质量 + 生态贡献 | README 性能对比章节 |
 | v0.7.0（下赛期） | 生态采用案例 + Playground | INI/表达式完整用例；wasm Web Playground（错误位置高亮） | 生态贡献 + 展示表现 | 可访问 demo 页 |
 | 持续动作 | 证据链维护 | 每版本 git tag + CHANGELOG + badge 同步；proof 前端增强跟进；mooncakes 索引收录跟进；赛事群阶段性展示 | 全维度 | 可追踪提交历史 |
@@ -33,9 +33,9 @@
 | v0.7.0 | CLI 演示 + 示例 | ✅ 超额完成（cmd/main + 5 个示例包） |
 | v0.8.0 | 性能优化 + 基准 | 🔶 部分完成（25 项基准已建立；String View/竞品对比基准待做） |
 | v0.9.0 | 文档完善 | 🔶 部分完成（双语五份文档已交付；测试覆盖分析待做） |
-| v1.0.0 | mooncakes.io 完整发布 | 🔶 部分完成（0.2.0 已发布，0.4.0 开发完成待发布） |
+| v1.0.0 | mooncakes.io 完整发布 | 🔶 部分完成（0.2.0 已发布，0.4.0/0.5.0 开发完成待发布） |
 
-实际测试数：**185 × 4 后端全绿**（初版规划累积 135+），`moon check --deny-warn --target all` 零警告，CI 三门禁已建立。
+实际测试数：**190 × 4 后端全绿**（初版规划累积 135+），`moon check --deny-warn --target all` 零警告，CI 三门禁已建立。
 
 ---
 

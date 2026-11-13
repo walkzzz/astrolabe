@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "walkzzz/astrolabe/examples/ext"
+
+import {
+  "walkzzz/astrolabe/core",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct Traced[T] {
+  inner : @core.Parser[T]
+  mut log : Array[String]
+}
+pub fn[T] Traced::entries(Self[T]) -> Array[String]
+pub fn[T] Traced::new(@core.Parser[T]) -> Self[T]
+pub fn[T] Traced::run_fn(Self[T]) -> (@core.State) -> @core.ParseResult[T]
+
+// Type aliases
+
+// Traits

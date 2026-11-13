@@ -100,7 +100,8 @@ parser 场景推荐方案仅 2 个：`moonbitlang/yacc`（LR(1) 生成器，重�
 2. README 中英两节一致性修复 10 处（结构图、子包路径、测试数、badge）
 3. 形式化表格与 proof.mbt 对齐 + 表述精确化
 4. CHANGELOG 补 [0.2.0] 条目（含本次修复，保持"公开、连续、可追踪的工程记录"）
-5. v0.4.0 错误聚合开发 — `ParseError::merge`（furthest-position + expected 标签合并）+ `alt`/`choice` 失败聚合 + 7 个新测试，185 × 4 后端全绿（吸收 talcparsec CanMerge 思想，独立实现，零代码引入）
+5. v0.4.0 错误聚合开发 — `ParseError::merge`（furthest-position + expected 标签合并）+ `alt`/`choice` 失败聚合 + 7 个新测试（吸收 talcparsec CanMerge 思想，独立实现，零代码引入）
+6. v0.5.0 ParserLike 扩展点开发 — `pmap`/`pbind`/`palt`/`poption` 通用组合子 + `Parser::run_fn` 入口 + `examples/ext` 的 Traced[T] 扩展示例 + 5 个新测试（设计说明：MoonBit trait 不支持实现类型/结果类型分离的参数化，经编译器实测确认后采用函数式约定，与 `Parser::of` 同一扩展点）
 
 ---
 
@@ -108,7 +109,7 @@ parser 场景推荐方案仅 2 个：`moonbitlang/yacc`（LR(1) 生成器，重�
 
 | 优先级 | 行动 | 状态 |
 |:---:|:---|:---|
-| 🔴 | `moon login` + `moon publish` | mooncakes 上 0.2.0 已存在（409 冲突）；CHANGELOG 历史 [0.3.0] 条目已占用 0.3.0，新版本定为 **0.4.0**（错误聚合已开发完成，185×4 测试全绿），待用户 commit + `moon publish` |
+| 🔴 | `moon login` + `moon publish` | mooncakes 上 0.2.0 已存在（409 冲突）；0.3.0 为本地历史条目未发布；**v0.4.0 / v0.5.0 已开发完成**（0.4.0 错误聚合 + 0.5.0 ParserLike 扩展点，190×4 测试全绿），待用户 commit + `moon publish` |
 | 🟡 | roadmap.md 增补完成记录 | ✅ 已完成（顶部进度快照表 + 测试累积表注记） |
 | 🟡 | 申报书差异化段落 | ✅ 已完成（`docs/proposal.md`：竞品双表对比 + 思想吸收 + 选型自检 + AI 把控声明） |
 | 🟢 | README 性能表加注 | ✅ 已完成（中英两节） |
