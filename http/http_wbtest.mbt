@@ -1,4 +1,6 @@
 ///|
+/// 测试 HTTP GET 方法解析
+/// Test HTTP GET method parsing
 test "method_get" {
   let state = @core.State::new("GET ")
   match (http_method().run)(state) {
@@ -8,6 +10,8 @@ test "method_get" {
 }
 
 ///|
+/// 测试 HTTP POST 方法解析
+/// Test HTTP POST method parsing
 test "method_post" {
   let state = @core.State::new("POST ")
   match (http_method().run)(state) {
@@ -17,6 +21,8 @@ test "method_post" {
 }
 
 ///|
+/// 测试 HTTP PUT 方法解析
+/// Test HTTP PUT method parsing
 test "method_put" {
   let state = @core.State::new("PUT ")
   match (http_method().run)(state) {
@@ -26,6 +32,8 @@ test "method_put" {
 }
 
 ///|
+/// 测试 HTTP DELETE 方法解析
+/// Test HTTP DELETE method parsing
 test "method_delete" {
   let state = @core.State::new("DELETE ")
   match (http_method().run)(state) {
@@ -35,6 +43,8 @@ test "method_delete" {
 }
 
 ///|
+/// 测试 HTTP HEAD 方法解析
+/// Test HTTP HEAD method parsing
 test "method_head" {
   let state = @core.State::new("HEAD ")
   match (http_method().run)(state) {
@@ -44,6 +54,8 @@ test "method_head" {
 }
 
 ///|
+/// 测试 HTTP OPTIONS 方法解析
+/// Test HTTP OPTIONS method parsing
 test "method_options" {
   let state = @core.State::new("OPTIONS ")
   match (http_method().run)(state) {
@@ -53,6 +65,8 @@ test "method_options" {
 }
 
 ///|
+/// 测试 HTTP PATCH 方法解析
+/// Test HTTP PATCH method parsing
 test "method_patch" {
   let state = @core.State::new("PATCH ")
   match (http_method().run)(state) {
@@ -62,6 +76,8 @@ test "method_patch" {
 }
 
 ///|
+/// 测试 GET 请求行解析
+/// Test GET request line parsing
 test "request_line_get" {
   let state = @core.State::new("GET /index.html HTTP/1.1\n")
   match (parse_request_line().run)(state) {
@@ -75,6 +91,8 @@ test "request_line_get" {
 }
 
 ///|
+/// 测试 POST 请求行解析（CRLF 换行）
+/// Test POST request line parsing (CRLF line ending)
 test "request_line_post_crlf" {
   let state = @core.State::new("POST /api/data HTTP/1.0\r\n")
   match (parse_request_line().run)(state) {
@@ -88,6 +106,8 @@ test "request_line_post_crlf" {
 }
 
 ///|
+/// 测试带查询参数的请求行解析
+/// Test request line parsing with query string
 test "request_line_with_query" {
   let state = @core.State::new("GET /search?q=hello HTTP/2.0\n")
   match (parse_request_line().run)(state) {
@@ -100,6 +120,8 @@ test "request_line_with_query" {
 }
 
 ///|
+/// 测试 DELETE 请求行解析
+/// Test DELETE request line parsing
 test "request_line_delete" {
   let state = @core.State::new("DELETE /resource/42 HTTP/1.1\n")
   match (parse_request_line().run)(state) {
@@ -112,6 +134,8 @@ test "request_line_delete" {
 }
 
 ///|
+/// 测试单个 HTTP 头部解析
+/// Test single HTTP header parsing
 test "header_single" {
   let state = @core.State::new("Content-Type: text/html\n")
   match (parse_header().run)(state) {
@@ -124,6 +148,8 @@ test "header_single" {
 }
 
 ///|
+/// 测试 Host 头部解析
+/// Test Host header parsing
 test "header_host" {
   let state = @core.State::new("Host: example.com\n")
   match (parse_header().run)(state) {
@@ -136,6 +162,8 @@ test "header_host" {
 }
 
 ///|
+/// 测试 Content-Length 头部解析
+/// Test Content-Length header parsing
 test "header_content_length" {
   let state = @core.State::new("Content-Length: 42\n")
   match (parse_header().run)(state) {
@@ -148,6 +176,8 @@ test "header_content_length" {
 }
 
 ///|
+/// 测试 CRLF 换行的头部解析
+/// Test header parsing with CRLF line ending
 test "header_with_crlf" {
   let state = @core.State::new("Accept: */*\r\n")
   match (parse_header().run)(state) {
@@ -160,6 +190,8 @@ test "header_with_crlf" {
 }
 
 ///|
+/// 测试 Accept-Encoding 头部解析
+/// Test Accept-Encoding header parsing
 test "header_accept_encoding" {
   let state = @core.State::new("Accept-Encoding: gzip, deflate\n")
   match (parse_header().run)(state) {
@@ -172,6 +204,8 @@ test "header_accept_encoding" {
 }
 
 ///|
+/// 测试多个头部解析（LF 换行）
+/// Test multiple headers parsing (LF line endings)
 test "headers_multiple" {
   let state = @core.State::new("Host: example.com\nContent-Type: text/html\n\n")
   match (parse_headers().run)(state) {
@@ -181,6 +215,8 @@ test "headers_multiple" {
 }
 
 ///|
+/// 测试多个头部解析（CRLF 换行）
+/// Test multiple headers parsing (CRLF line endings)
 test "headers_multiple_crlf" {
   let state = @core.State::new(
     "Host: example.com\r\nContent-Type: text/html\r\n\r\n",
@@ -192,6 +228,8 @@ test "headers_multiple_crlf" {
 }
 
 ///|
+/// 测试空头部区域（LF 换行）
+/// Test empty headers section (LF line ending)
 test "headers_empty_lf" {
   let state = @core.State::new("\n")
   match (parse_headers().run)(state) {
@@ -201,6 +239,8 @@ test "headers_empty_lf" {
 }
 
 ///|
+/// 测试空头部区域（CRLF 换行）
+/// Test empty headers section (CRLF line ending)
 test "headers_empty_crlf" {
   let state = @core.State::new("\r\n")
   match (parse_headers().run)(state) {
@@ -210,6 +250,8 @@ test "headers_empty_crlf" {
 }
 
 ///|
+/// 测试完整 HTTP GET 请求解析
+/// Test full HTTP GET request parsing
 test "parse_request_full" {
   let input = "GET /index.html HTTP/1.1\nHost: example.com\nAccept: text/html\n\n"
   match parse_request_string(input) {
@@ -224,6 +266,8 @@ test "parse_request_full" {
 }
 
 ///|
+/// 测试完整 HTTP POST 请求解析
+/// Test full HTTP POST request parsing
 test "parse_request_post" {
   let input = "POST /api HTTP/1.1\nContent-Type: application/json\nContent-Length: 13\n\n"
   match parse_request_string(input) {
@@ -236,6 +280,8 @@ test "parse_request_post" {
 }
 
 ///|
+/// 测试 CRLF 换行的完整请求解析
+/// Test full request parsing with CRLF line endings
 test "parse_request_crlf" {
   let input = "GET /path HTTP/1.1\r\nHost: localhost\r\n\r\n"
   match parse_request_string(input) {
@@ -248,6 +294,8 @@ test "parse_request_crlf" {
 }
 
 ///|
+/// 测试简单 URI 解析（http + 路径）
+/// Test simple URI parsing (http + path)
 test "uri_simple" {
   let state = @core.State::new("http://example.com/path")
   match (parse_uri().run)(state) {
@@ -264,6 +312,8 @@ test "uri_simple" {
 }
 
 ///|
+/// 测试 HTTPS URI 解析
+/// Test HTTPS URI parsing
 test "uri_https" {
   let state = @core.State::new("https://secure.site.com/endpoint")
   match (parse_uri().run)(state) {
@@ -277,6 +327,8 @@ test "uri_https" {
 }
 
 ///|
+/// 测试带端口号的 URI 解析
+/// Test URI parsing with port number
 test "uri_with_port" {
   let state = @core.State::new("https://example.com:8443/secure")
   match (parse_uri().run)(state) {
@@ -291,6 +343,8 @@ test "uri_with_port" {
 }
 
 ///|
+/// 测试带查询参数的 URI 解析
+/// Test URI parsing with query string
 test "uri_with_query" {
   let state = @core.State::new("http://example.com/search?q=hello")
   match (parse_uri().run)(state) {
@@ -303,6 +357,8 @@ test "uri_with_query" {
 }
 
 ///|
+/// 测试带片段标识的 URI 解析
+/// Test URI parsing with fragment identifier
 test "uri_with_fragment" {
   let state = @core.State::new("http://example.com/page#section")
   match (parse_uri().run)(state) {
@@ -316,6 +372,8 @@ test "uri_with_fragment" {
 }
 
 ///|
+/// 测试完整 URI 解析（协议+主机+端口+路径+查询+片段）
+/// Test full URI parsing (scheme+host+port+path+query+fragment)
 test "uri_full" {
   let state = @core.State::new(
     "https://example.com:8080/api/v1?key=val&x=2#top",
@@ -334,6 +392,8 @@ test "uri_full" {
 }
 
 ///|
+/// 测试无路径的 URI 解析（默认路径为 "/"）
+/// Test URI parsing without path (default path is "/")
 test "uri_no_path" {
   let state = @core.State::new("http://example.com")
   match (parse_uri().run)(state) {
@@ -347,6 +407,8 @@ test "uri_no_path" {
 }
 
 ///|
+/// 测试 parse_uri_string 便捷函数
+/// Test parse_uri_string convenience function
 test "parse_uri_string_convenience" {
   match
     parse_uri_string("https://api.example.com:443/v2/users?limit=10#results") {
@@ -363,12 +425,16 @@ test "parse_uri_string_convenience" {
 }
 
 ///|
+/// 测试 Version::to_string 输出格式
+/// Test Version::to_string output format
 test "version_to_string" {
   let v : Version = { major: 1, minor: 1, }
   assert_eq(v.to_string(), "HTTP/1.1")
 }
 
 ///|
+/// 测试请求行在非法方法时报错
+/// Test request line reports error on invalid method
 test "request_line_error_bad_method" {
   let state = @core.State::new("BADMETHOD / HTTP/1.1\n")
   match (parse_request_line().run)(state) {
@@ -378,6 +444,8 @@ test "request_line_error_bad_method" {
 }
 
 ///|
+/// 测试头部在缺少冒号时报错
+/// Test header reports error when colon is missing
 test "header_error_no_colon" {
   let state = @core.State::new("NoColonHere\n")
   match (parse_header().run)(state) {
@@ -387,6 +455,8 @@ test "header_error_no_colon" {
 }
 
 ///|
+/// 测试 URI 在缺少协议时报错
+/// Test URI reports error when scheme is missing
 test "uri_error_no_scheme" {
   let state = @core.State::new("example.com/path")
   match (parse_uri().run)(state) {
@@ -396,6 +466,8 @@ test "uri_error_no_scheme" {
 }
 
 ///|
+/// 测试 take_until 解析到逗号为止
+/// Test take_until parsing until comma
 test "take_until_comma" {
   let state = @core.State::new("hello,world")
   match (take_while(fn(c) { c != ',' }, "until comma").run)(state) {
@@ -405,6 +477,8 @@ test "take_until_comma" {
 }
 
 ///|
+/// 测试 take_while 数字字符解析
+/// Test take_while digit character parsing
 test "take_while_digits" {
   let state = @core.State::new("123abc")
   match (take_while(fn(c) { c >= '0' && c <= '9' }, "digit").run)(state) {
@@ -414,6 +488,8 @@ test "take_while_digits" {
 }
 
 ///|
+/// 测试 digits1 解析器（至少一位数字）
+/// Test digits1 parser (at least one digit)
 test "digits1_parser" {
   let state = @core.State::new("42abc")
   match (digits1().run)(state) {
@@ -423,6 +499,8 @@ test "digits1_parser" {
 }
 
 ///|
+/// 测试 HTTP token 解析
+/// Test HTTP token parsing
 test "http_token_parser" {
   let state = @core.State::new("GET ")
   match (take_while1(fn(c) { c >= 'A' && c <= 'Z' }, "uppercase").run)(state) {
@@ -432,6 +510,8 @@ test "http_token_parser" {
 }
 
 ///|
+/// 测试 crlf 解析 LF 换行
+/// Test crlf parsing LF line ending
 test "crlf_lf" {
   let state = @core.State::new("\nabc")
   match (crlf().run)(state) {
@@ -441,6 +521,8 @@ test "crlf_lf" {
 }
 
 ///|
+/// 测试 crlf 解析 CRLF 换行
+/// Test crlf parsing CRLF line ending
 test "crlf_crlf" {
   let state = @core.State::new("\r\nabc")
   match (crlf().run)(state) {

@@ -1,9 +1,13 @@
 ///|
+/// 辅助函数：浮点数近似相等比较
+/// Helper: approximate equality for floating-point comparison
 fn approx_eq(actual : Double, expected : Double) -> Bool {
   (actual - expected).abs() < 0.0001
 }
 
 ///|
+/// 测试 JSON null 解析
+/// Test JSON null parsing
 test "json_null" {
   let state = @core.State::new("null")
   match (null_().run)(state) {
@@ -13,6 +17,8 @@ test "json_null" {
 }
 
 ///|
+/// 测试 JSON true 布尔值解析
+/// Test JSON true boolean parsing
 test "json_bool_true" {
   let state = @core.State::new("true")
   match (bool_().run)(state) {
@@ -22,6 +28,8 @@ test "json_bool_true" {
 }
 
 ///|
+/// 测试 JSON false 布尔值解析
+/// Test JSON false boolean parsing
 test "json_bool_false" {
   let state = @core.State::new("false")
   match (bool_().run)(state) {
@@ -31,6 +39,8 @@ test "json_bool_false" {
 }
 
 ///|
+/// 测试 JSON 整数解析
+/// Test JSON integer parsing
 test "json_number_integer" {
   let state = @core.State::new("42")
   match (number().run)(state) {
@@ -40,6 +50,8 @@ test "json_number_integer" {
 }
 
 ///|
+/// 测试 JSON 负数解析
+/// Test JSON negative number parsing
 test "json_number_negative" {
   let state = @core.State::new("-3")
   match (number().run)(state) {
@@ -49,6 +61,8 @@ test "json_number_negative" {
 }
 
 ///|
+/// 测试 JSON 浮点数解析
+/// Test JSON floating-point number parsing
 test "json_number_float" {
   let state = @core.State::new("3.14")
   match (number().run)(state) {
@@ -58,6 +72,8 @@ test "json_number_float" {
 }
 
 ///|
+/// 测试 JSON 科学计数法解析
+/// Test JSON exponent notation parsing
 test "json_number_exponent" {
   let state = @core.State::new("1e2")
   match (number().run)(state) {
@@ -67,6 +83,8 @@ test "json_number_exponent" {
 }
 
 ///|
+/// 测试 JSON 简单字符串解析
+/// Test JSON simple string parsing
 test "json_string_simple" {
   let state = @core.State::new("\"hello\"")
   match (string_().run)(state) {
@@ -76,6 +94,8 @@ test "json_string_simple" {
 }
 
 ///|
+/// 测试 JSON 转义字符解析（\\n）
+/// Test JSON escape sequence parsing (\\n)
 test "json_string_escape" {
   let state = @core.State::new("\"a\\nb\"")
   match (string_().run)(state) {
@@ -85,6 +105,8 @@ test "json_string_escape" {
 }
 
 ///|
+/// 测试 JSON Unicode 转义解析（\\u0041 → 'A'）
+/// Test JSON Unicode escape parsing (\\u0041 → 'A')
 test "json_string_unicode_escape" {
   let state = @core.State::new("\"\\u0041\"")
   match (string_().run)(state) {
@@ -94,6 +116,8 @@ test "json_string_unicode_escape" {
 }
 
 ///|
+/// 测试 JSON 空数组解析
+/// Test JSON empty array parsing
 test "json_array_empty" {
   let state = @core.State::new("[]")
   match (array_().run)(state) {
@@ -103,6 +127,8 @@ test "json_array_empty" {
 }
 
 ///|
+/// 测试 JSON 含值数组解析
+/// Test JSON array with values parsing
 test "json_array_values" {
   let state = @core.State::new("[1, 2, 3]")
   match (array_().run)(state) {
@@ -112,6 +138,8 @@ test "json_array_values" {
 }
 
 ///|
+/// 测试 JSON 空对象解析
+/// Test JSON empty object parsing
 test "json_object_empty" {
   let state = @core.State::new("{}")
   match (object_().run)(state) {
@@ -121,6 +149,8 @@ test "json_object_empty" {
 }
 
 ///|
+/// 测试 JSON 含键值对对象解析
+/// Test JSON object with key-value pairs parsing
 test "json_object_pairs" {
   let state = @core.State::new("{\"a\":1,\"b\":2}")
   match (object_().run)(state) {
@@ -134,6 +164,8 @@ test "json_object_pairs" {
 }
 
 ///|
+/// 测试 JSON parse 完整解析带空白
+/// Test JSON parse full parsing with whitespace
 test "json_parse_full" {
   match parse("{\"name\":\"Alice\",\"age\":30}") {
     Ok(JObj(pairs)) => assert_eq(pairs.length(), 2)
@@ -142,6 +174,8 @@ test "json_parse_full" {
 }
 
 ///|
+/// 测试 JSON parse 嵌套结构
+/// Test JSON parse nested structure
 test "json_parse_nested" {
   match parse("{\"items\":[1,2,3]}") {
     Ok(JObj(pairs)) => {
@@ -157,6 +191,8 @@ test "json_parse_nested" {
 }
 
 ///|
+/// 测试 JSON parse 容忍前后空白
+/// Test JSON parse tolerates leading/trailing whitespace
 test "json_parse_whitespace" {
   match parse("  null  ") {
     Ok(JNull) => assert_true(true)
@@ -165,6 +201,8 @@ test "json_parse_whitespace" {
 }
 
 ///|
+/// 测试 JSON parse 在非法输入时报错
+/// Test JSON parse reports error on invalid input
 test "json_parse_error" {
   match parse("{bad}") {
     Err(_) => assert_true(true)
@@ -173,6 +211,8 @@ test "json_parse_error" {
 }
 
 ///|
+/// 测试 JSON stringify 往返一致性
+/// Test JSON stringify round-trip consistency
 test "json_stringify_roundtrip" {
   let v = JObj([("key", JNum(42.0)), ("arr", JArr([JBool(true), JNull]))])
   let s = v.stringify()
@@ -183,6 +223,8 @@ test "json_stringify_roundtrip" {
 }
 
 ///|
+/// 测试 hex4_to_char 对有效输入的转换
+/// Test hex4_to_char conversion for valid input
 test "hex4_to_char_valid" {
   assert_eq(hex4_to_char("0041"), Some('A'))
   assert_eq(hex4_to_char("0030"), Some('0'))
@@ -190,6 +232,8 @@ test "hex4_to_char_valid" {
 }
 
 ///|
+/// 测试 hex4_to_char 对无效输入返回 None
+/// Test hex4_to_char returns None for invalid input
 test "hex4_to_char_invalid" {
   assert_eq(hex4_to_char(""), None)
   assert_eq(hex4_to_char("GGGG"), None)

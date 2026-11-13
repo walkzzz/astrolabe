@@ -1,4 +1,6 @@
 ///|
+/// 测试通过根包门面调用 Parser::parse 方法
+/// Test calling Parser::parse method through root facade
 test "Parser::parse via root" {
   let p = @basic.char('a')
   match p.parse("abc") {
@@ -8,6 +10,8 @@ test "Parser::parse via root" {
 }
 
 ///|
+/// 测试通过根包门面调用 Parser::parse_full 方法（要求完整消耗输入）
+/// Test calling Parser::parse_full method through root facade (requires full input consumption)
 test "Parser::parse_full via root" {
   let p = @basic.char('a')
   match p.parse_full("a") {

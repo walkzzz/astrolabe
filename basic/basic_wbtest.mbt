@@ -1,4 +1,6 @@
 ///|
+/// 测试 char 组合器成功匹配指定字符
+/// Test char combinator successfully matches the specified character
 test "char success" {
   let p = char('a')
   let s = @core.State::new("abc")
@@ -12,6 +14,8 @@ test "char success" {
 }
 
 ///|
+/// 测试 char 组合器在字符不匹配时失败
+/// Test char combinator fails when character does not match
 test "char failure wrong char" {
   let p = char('a')
   let s = @core.State::new("xyz")
@@ -22,6 +26,8 @@ test "char failure wrong char" {
 }
 
 ///|
+/// 测试 char 组合器在输入结束时失败
+/// Test char combinator fails at end of input
 test "char failure eof" {
   let p = char('a')
   let s = @core.State::new("")
@@ -32,6 +38,8 @@ test "char failure eof" {
 }
 
 ///|
+/// 测试 string 组合器成功匹配指定字符串
+/// Test string combinator successfully matches the specified string
 test "string success" {
   let p = string("hello")
   let s = @core.State::new("hello world")
@@ -45,6 +53,8 @@ test "string success" {
 }
 
 ///|
+/// 测试 string 组合器在字符串不匹配时失败
+/// Test string combinator fails when string does not match
 test "string failure" {
   let p = string("hello")
   let s = @core.State::new("world")
@@ -55,6 +65,8 @@ test "string failure" {
 }
 
 ///|
+/// 测试 any_char 成功消耗任意一个字符
+/// Test any_char successfully consumes any single character
 test "any_char success" {
   let p = any_char()
   let s = @core.State::new("abc")
@@ -68,6 +80,8 @@ test "any_char success" {
 }
 
 ///|
+/// 测试 any_char 在空输入时失败
+/// Test any_char fails on empty input
 test "any_char failure eof" {
   let p = any_char()
   let s = @core.State::new("")
@@ -78,6 +92,8 @@ test "any_char failure eof" {
 }
 
 ///|
+/// 测试 take 成功截取指定数量的字符
+/// Test take successfully slices the specified number of characters
 test "take success" {
   let p = take(3)
   let s = @core.State::new("hello")
@@ -91,6 +107,8 @@ test "take success" {
 }
 
 ///|
+/// 测试 take 在输入不足时失败
+/// Test take fails when input is insufficient
 test "take failure insufficient" {
   let p = take(5)
   let s = @core.State::new("hi")
@@ -101,6 +119,8 @@ test "take failure insufficient" {
 }
 
 ///|
+/// 测试 satisfy 成功匹配满足谓词的字符
+/// Test satisfy successfully matches a character satisfying the predicate
 test "satisfy success" {
   let p = satisfy(fn(c) { c >= 'a' && c <= 'z' }, label="lowercase")
   let s = @core.State::new("abc")
@@ -114,6 +134,8 @@ test "satisfy success" {
 }
 
 ///|
+/// 测试 satisfy 在无字符满足谓词时失败
+/// Test satisfy fails when no character satisfies the predicate
 test "satisfy failure" {
   let p = satisfy(fn(c) { c >= 'a' && c <= 'z' }, label="lowercase")
   let s = @core.State::new("ABC")
@@ -124,6 +146,8 @@ test "satisfy failure" {
 }
 
 ///|
+/// 测试 end_of_input 在空输入时成功
+/// Test end_of_input succeeds on empty input
 test "end_of_input success" {
   let p = end_of_input()
   let s = @core.State::new("")
@@ -134,6 +158,8 @@ test "end_of_input success" {
 }
 
 ///|
+/// 测试 end_of_input 在有剩余输入时失败
+/// Test end_of_input fails when input remains
 test "end_of_input failure" {
   let p = end_of_input()
   let s = @core.State::new("abc")
@@ -144,6 +170,8 @@ test "end_of_input failure" {
 }
 
 ///|
+/// 测试 peek 预览字符但不消耗输入
+/// Test peek previews a character without consuming input
 test "peek success no consume" {
   let p = peek(char('a'))
   let s = @core.State::new("abc")
@@ -157,6 +185,8 @@ test "peek success no consume" {
 }
 
 ///|
+/// 测试 peek 在内部解析器失败时传播错误
+/// Test peek propagates error when inner parser fails
 test "peek failure" {
   let p = peek(char('x'))
   let s = @core.State::new("abc")
@@ -167,6 +197,8 @@ test "peek failure" {
 }
 
 ///|
+/// 测试 skip 消耗输入但丢弃结果
+/// Test skip consumes input but discards the result
 test "skip success" {
   let p = skip(char('a'))
   let s = @core.State::new("abc")
@@ -180,6 +212,8 @@ test "skip success" {
 }
 
 ///|
+/// 测试 skip 在内部解析器失败时传播错误
+/// Test skip propagates error when inner parser fails
 test "skip failure" {
   let p = skip(char('x'))
   let s = @core.State::new("abc")
@@ -190,6 +224,8 @@ test "skip failure" {
 }
 
 ///|
+/// 测试 char_range 匹配范围中的小写字母
+/// Test char_range matches lowercase letter within range
 test "char_range lowercase" {
   let p = char_range('a', 'z')
   let s = @core.State::new("hello")
@@ -203,6 +239,8 @@ test "char_range lowercase" {
 }
 
 ///|
+/// 测试 char_range 匹配数字字符
+/// Test char_range matches digit character within range
 test "char_range digit" {
   let p = char_range('0', '9')
   let s = @core.State::new("42")
@@ -213,6 +251,8 @@ test "char_range digit" {
 }
 
 ///|
+/// 测试 char_range 在字符超出范围时失败
+/// Test char_range fails when character is out of range
 test "char_range failure out of range" {
   let p = char_range('a', 'z')
   let s = @core.State::new("Z")
@@ -223,6 +263,8 @@ test "char_range failure out of range" {
 }
 
 ///|
+/// 测试 char_range 在下边界成功匹配
+/// Test char_range matches at lower boundary
 test "char_range boundary_lo" {
   let p = char_range('a', 'z')
   let s = @core.State::new("a")
@@ -233,6 +275,8 @@ test "char_range boundary_lo" {
 }
 
 ///|
+/// 测试 char_range 在上边界成功匹配
+/// Test char_range matches at upper boundary
 test "char_range boundary_hi" {
   let p = char_range('a', 'z')
   let s = @core.State::new("z")
@@ -243,6 +287,8 @@ test "char_range boundary_hi" {
 }
 
 ///|
+/// 测试 char_class 匹配十六进制数字
+/// Test char_class matches hex digit characters
 test "char_class hex_digit" {
   let hex_digit = char_class(
     fn(c) {
@@ -261,6 +307,8 @@ test "char_class hex_digit" {
 }
 
 ///|
+/// 测试 char_class 匹配标识符起始字符
+/// Test char_class matches identifier start characters
 test "char_class identifier_start" {
   let ident_start = char_class(
     fn(c) { (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' },
@@ -274,6 +322,8 @@ test "char_class identifier_start" {
 }
 
 ///|
+/// 测试 char_class 在无字符满足条件时失败
+/// Test char_class fails when no character satisfies the condition
 test "char_class failure" {
   let ident_start = char_class(
     fn(c) { (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' },
@@ -288,7 +338,8 @@ test "char_class failure" {
 }
 
 ///|
-/// Test custom parser via Parser::of — a parser that consumes exactly 2 hex chars
+/// 测试通过 Parser::of 构建自定义解析器 — 消耗恰好两个十六进制字符
+/// Test building a custom parser via Parser::of — consuming exactly 2 hex chars
 test "custom_parser_via_of" {
   let hex_char = char_class(
     fn(c) {
@@ -309,6 +360,8 @@ test "custom_parser_via_of" {
 }
 
 ///|
+/// 测试 take_while 零次或多次匹配数字字符
+/// Test take_while matches zero or more digit characters
 test "take_while digits" {
   let p = take_while(fn(c) { c >= '0' && c <= '9' })
   let s = @core.State::new("123abc")
@@ -322,6 +375,8 @@ test "take_while digits" {
 }
 
 ///|
+/// 测试 take_while 在零次匹配时返回空字符串
+/// Test take_while returns empty string on zero matches
 test "take_while zero matches" {
   let p = take_while(fn(c) { c >= '0' && c <= '9' })
   let s = @core.State::new("abc")
@@ -335,6 +390,8 @@ test "take_while zero matches" {
 }
 
 ///|
+/// 测试 take_while1 一次或多次匹配数字字符
+/// Test take_while1 matches one or more digit characters
 test "take_while1 digits" {
   let p = take_while1(fn(c) { c >= '0' && c <= '9' }, label="digit")
   let s = @core.State::new("123abc")
@@ -348,6 +405,8 @@ test "take_while1 digits" {
 }
 
 ///|
+/// 测试 take_while1 在零次匹配时失败
+/// Test take_while1 fails on zero matches
 test "take_while1 failure no match" {
   let p = take_while1(fn(c) { c >= '0' && c <= '9' }, label="digit")
   let s = @core.State::new("abc")

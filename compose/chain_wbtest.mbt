@@ -1,4 +1,6 @@
 ///|
+/// 辅助函数：构建匹配指定字符的解析器
+/// Helper: build a parser matching a specific character
 fn char(expected : Char) -> @core.Parser[Char] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -20,6 +22,8 @@ fn char(expected : Char) -> @core.Parser[Char] {
 }
 
 ///|
+/// 辅助函数：解析单个数字并返回其整数值
+/// Helper: parse a single digit and return its integer value
 fn digit_val() -> @core.Parser[Int32] {
   @core.Parser::of(fn(state) {
     match state.peek() {
@@ -33,6 +37,8 @@ fn digit_val() -> @core.Parser[Int32] {
 }
 
 ///|
+/// 测试 filter 通过满足谓词的值
+/// Test filter passes value satisfying the predicate
 test "filter passes matching value" {
   let p = filter(digit_val(), fn(v) { v > 5 }, label="digit > 5")
   let s = @core.State::new("7")
@@ -46,6 +52,8 @@ test "filter passes matching value" {
 }
 
 ///|
+/// 测试 filter 拒绝不满足谓词的值
+/// Test filter rejects value not satisfying the predicate
 test "filter rejects non-matching value" {
   let p = filter(digit_val(), fn(v) { v > 5 }, label="digit > 5")
   let s = @core.State::new("3")
@@ -56,6 +64,8 @@ test "filter rejects non-matching value" {
 }
 
 ///|
+/// 测试 validate 在验证函数返回 Ok 时转换结果
+/// Test validate transforms result when validation function returns Ok
 test "validate transforms Ok result" {
   let p = validate(
     digit_val(),
@@ -70,6 +80,8 @@ test "validate transforms Ok result" {
 }
 
 ///|
+/// 测试 validate 在验证函数返回 Err 时失败
+/// Test validate fails when validation function returns Err
 test "validate fails on Err result" {
   let p = validate(
     digit_val(),
@@ -84,6 +96,8 @@ test "validate fails on Err result" {
 }
 
 ///|
+/// 测试 chainl1 左结合加法运算
+/// Test chainl1 left-associative addition
 test "chainl1 left-associative addition" {
   let add_op = @core.Parser::of(fn(state) {
     match state.peek() {
@@ -106,6 +120,8 @@ test "chainl1 left-associative addition" {
 }
 
 ///|
+/// 测试 chainr1 右结合幂运算
+/// Test chainr1 right-associative exponentiation
 test "chainr1 right-associative exponent" {
   let pow_op = @core.Parser::of(fn(state) {
     match state.peek() {
@@ -137,6 +153,8 @@ test "chainr1 right-associative exponent" {
 }
 
 ///|
+/// 测试 count_min_max 在范围内匹配
+/// Test count_min_max matches within bounds
 test "count_min_max within bounds" {
   let p = count_min_max(min=2, max=4, char('a'))
   let s = @core.State::new("aaa")
@@ -150,6 +168,8 @@ test "count_min_max within bounds" {
 }
 
 ///|
+/// 测试 count_min_max 超过上限时截断
+/// Test count_min_max truncates when exceeding max
 test "count_min_max exceeds max" {
   let p = count_min_max(min=1, max=2, char('a'))
   let s = @core.State::new("aaa")
@@ -163,6 +183,8 @@ test "count_min_max exceeds max" {
 }
 
 ///|
+/// 测试 count_min_max 低于下限时失败
+/// Test count_min_max fails when below min
 test "count_min_max below min fails" {
   let p = count_min_max(min=3, max=5, char('a'))
   let s = @core.State::new("aa")
@@ -173,6 +195,8 @@ test "count_min_max below min fails" {
 }
 
 ///|
+/// 测试 sep_end_by 带尾部分隔符
+/// Test sep_end_by with trailing separator
 test "sep_end_by with trailing separator" {
   let p = sep_end_by(char('a'), char(','))
   let s = @core.State::new("a,a,")
@@ -186,6 +210,8 @@ test "sep_end_by with trailing separator" {
 }
 
 ///|
+/// 测试 sep_end_by 不带尾部分隔符
+/// Test sep_end_by without trailing separator
 test "sep_end_by without trailing separator" {
   let p = sep_end_by(char('a'), char(','))
   let s = @core.State::new("a,a")
@@ -199,6 +225,8 @@ test "sep_end_by without trailing separator" {
 }
 
 ///|
+/// 测试 sep_end_by 空输入返回空数组
+/// Test sep_end_by returns empty array on empty input
 test "sep_end_by empty input" {
   let p = sep_end_by(char('a'), char(','))
   let s = @core.State::new("")
@@ -212,6 +240,8 @@ test "sep_end_by empty input" {
 }
 
 ///|
+/// 测试 sep_end_by1 空输入时失败
+/// Test sep_end_by1 fails on empty input
 test "sep_end_by1 requires at least one" {
   let p = sep_end_by1(char('a'), char(','))
   let s = @core.State::new("")

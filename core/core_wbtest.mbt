@@ -1,4 +1,6 @@
 ///|
+/// 测试 Pos::initial 初始位置为 (1,1,0)
+/// Test Pos::initial starts at (1,1,0)
 test "Pos::initial" {
   let p = Pos::initial()
   assert_eq(p.line, 1)
@@ -7,6 +9,8 @@ test "Pos::initial" {
 }
 
 ///|
+/// 测试 Pos::advance 普通字符使列号+1、偏移+1
+/// Test Pos::advance normal char increments column and offset
 test "Pos::advance normal char" {
   let p = Pos::initial().advance('a')
   assert_eq(p.line, 1)
@@ -15,6 +19,8 @@ test "Pos::advance normal char" {
 }
 
 ///|
+/// 测试 Pos::advance 换行符使行号+1、列号重置为1
+/// Test Pos::advance newline increments line and resets column
 test "Pos::advance newline" {
   let p = Pos::initial().advance('\n')
   assert_eq(p.line, 2)
@@ -23,6 +29,8 @@ test "Pos::advance newline" {
 }
 
 ///|
+/// 测试 Pos::advance 多字符序列的位置累积
+/// Test Pos::advance accumulates position across a character sequence
 test "Pos::advance sequence" {
   let p = Pos::initial().advance('H').advance('i').advance('\n').advance('!')
   assert_eq(p.line, 2)
@@ -31,6 +39,8 @@ test "Pos::advance sequence" {
 }
 
 ///|
+/// 测试 State::new 初始化偏移为0、剩余长度正确
+/// Test State::new initializes offset to 0 and remaining length correctly
 test "State::new" {
   let s = State::new("hello")
   assert_eq(s.offset, 0)
@@ -39,6 +49,8 @@ test "State::new" {
 }
 
 ///|
+/// 测试 State::peek 查看当前字符但不消耗
+/// Test State::peek views current character without consuming
 test "State::peek" {
   let s = State::new("abc")
   assert_eq(s.peek(), Some('a'))
@@ -46,6 +58,8 @@ test "State::peek" {
 }
 
 ///|
+/// 测试 State::advance_one 前进一个字符
+/// Test State::advance_one advances by one character
 test "State::advance_one" {
   let s = State::new("abc")
   s.advance_one()
@@ -54,6 +68,8 @@ test "State::advance_one" {
 }
 
 ///|
+/// 测试 State::is_eof 正确判断输入结束
+/// Test State::is_eof correctly detects end of input
 test "State::is_eof" {
   let s = State::new("ab")
   assert_true(!s.is_eof())
@@ -63,12 +79,16 @@ test "State::is_eof" {
 }
 
 ///|
+/// 测试 State::slice 截取输入子串
+/// Test State::slice extracts a substring from input
 test "State::slice" {
   let s = State::new("hello world")
   assert_eq(s.slice(0, 5), "hello")
 }
 
 ///|
+/// 测试 ParseError::format 包含行号、列号、偏移和期望信息
+/// Test ParseError::format includes line, column, offset and expected info
 test "ParseError::format" {
   let err = ParseError::at(
     pos={ line: 3, column: 15, offset: 42, },
@@ -82,6 +102,8 @@ test "ParseError::format" {
 }
 
 ///|
+/// 测试 ParseError::format_with_input 包含源文本位置指示符
+/// Test ParseError::format_with_input includes source text position indicator
 test "ParseError::format_with_input" {
   let input = "GET /path with-Payload HTTP/1.1"
   let err = ParseError::at(
