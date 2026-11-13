@@ -2,6 +2,6 @@ import {
   "moonbitlang/core/bench",
   "walkzzz/astrolabe/core",
   "walkzzz/astrolabe" @astro,
-  "walkzzz/astrolabe/json",
-  "walkzzz/astrolabe/http",
+  "walkzzz/astrolabe/examples/json",
+  "walkzzz/astrolabe/examples/http",
 }

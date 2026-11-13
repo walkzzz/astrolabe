@@ -227,7 +227,7 @@ pub fn Uri::to_string(self : Uri) -> String noraise {
 ///|
 /// Parse characters while predicate holds, returning the string.
 fn take_while(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
-  @compose.map(@compose.many(@basic.satisfy(pred, label=label_)), fn(chars) {
+  @sequence.map(@sequence.many(@char.satisfy(pred, label=label_)), fn(chars) {
     let mut s : String = ""
     for c in chars {
       s = s + c.to_string()
@@ -243,7 +243,7 @@ fn take_while(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
 ///|
 /// Parse 1+ characters while predicate holds, returning the string.
 fn take_while1(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
-  @compose.map(@compose.many1(@basic.satisfy(pred, label=label_)), fn(chars) {
+  @sequence.map(@sequence.many1(@char.satisfy(pred, label=label_)), fn(chars) {
     chars.fold(fn(acc, c) { acc + c.to_string() }, init="")
   })
 }
@@ -255,9 +255,9 @@ fn take_while1(pred : (Char) -> Bool, label_ : String) -> @core.Parser[String] {
 ///|
 /// Parse CRLF or LF line ending, discarding it.
 fn crlf() -> @core.Parser[Unit] {
-  @control.alt(
-    @compose.map(@basic.string("\r\n"), fn(_) { () }),
-    @compose.map(@basic.string("\n"), fn(_) { () }),
+  @branch.alt(
+    @sequence.map(@char.string("\r\n"), fn(_) { () }),
+    @sequence.map(@char.string("\n"), fn(_) { () }),
   )
 }
 
@@ -290,19 +290,19 @@ fn digits1() -> @core.Parser[String] {
 ///|
 /// Parse an HTTP method: uppercase letters until space.
 fn http_method() -> @core.Parser[Method] noraise {
-  @compose.bind(
-    @basic.take_while1(fn(c) { c >= 'A' && c <= 'Z' }, label="HTTP method"),
+  @sequence.bind(
+    @char.take_while1(fn(c) { c >= 'A' && c <= 'Z' }, label="HTTP method"),
     fn(tok) {
       match tok {
-        "GET" => @compose.pure(GET)
-        "POST" => @compose.pure(POST)
-        "PUT" => @compose.pure(PUT)
-        "DELETE" => @compose.pure(DELETE)
-        "HEAD" => @compose.pure(HEAD)
-        "OPTIONS" => @compose.pure(OPTIONS)
-        "PATCH" => @compose.pure(PATCH)
-        "CONNECT" => @compose.pure(CONNECT)
-        "TRACE" => @compose.pure(TRACE)
+        "GET" => @sequence.pure(GET)
+        "POST" => @sequence.pure(POST)
+        "PUT" => @sequence.pure(PUT)
+        "DELETE" => @sequence.pure(DELETE)
+        "HEAD" => @sequence.pure(HEAD)
+        "OPTIONS" => @sequence.pure(OPTIONS)
+        "PATCH" => @sequence.pure(PATCH)
+        "CONNECT" => @sequence.pure(CONNECT)
+        "TRACE" => @sequence.pure(TRACE)
         _ =>
           @core.Parser::of(fn(state) {
             @core.Failure(
@@ -331,14 +331,14 @@ fn request_target() -> @core.Parser[String] {
 ///|
 /// Parse HTTP version: HTTP/X.Y
 fn http_version() -> @core.Parser[Version] {
-  @compose.bind(@basic.string("HTTP/"), fn(_) {
-    @compose.bind(digits1(), fn(major_s) {
+  @sequence.bind(@char.string("HTTP/"), fn(_) {
+    @sequence.bind(digits1(), fn(major_s) {
       let major = match try_parse_int(major_s) {
         Some(n) => n
         None => 0
       }
-      @compose.bind(@basic.char('.'), fn(_) {
-        @compose.map(digits1(), fn(minor_s) {
+      @sequence.bind(@char.char('.'), fn(_) {
+        @sequence.map(digits1(), fn(minor_s) {
           let minor = match try_parse_int(minor_s) {
             Some(n) => n
             None => 0
@@ -357,12 +357,12 @@ fn http_version() -> @core.Parser[Version] {
 ///|
 /// Parse an HTTP request line: `METHOD /path HTTP/1.1\r\n`
 pub fn parse_request_line() -> @core.Parser[RequestLine] noraise {
-  @compose.bind(http_method(), fn(m) {
-    @compose.bind(@basic.char(' '), fn(_) {
-      @compose.bind(request_target(), fn(uri) {
-        @compose.bind(@basic.char(' '), fn(_) {
-          @compose.bind(http_version(), fn(v) {
-            @compose.map(crlf(), fn(_) { { req_method: m, uri, version: v, } })
+  @sequence.bind(http_method(), fn(m) {
+    @sequence.bind(@char.char(' '), fn(_) {
+      @sequence.bind(request_target(), fn(uri) {
+        @sequence.bind(@char.char(' '), fn(_) {
+          @sequence.bind(http_version(), fn(v) {
+            @sequence.map(crlf(), fn(_) { { req_method: m, uri, version: v, } })
           })
         })
       })
@@ -377,15 +377,15 @@ pub fn parse_request_line() -> @core.Parser[RequestLine] noraise {
 ///|
 /// Parse a single header line: `Key: Value\r\n`
 pub fn parse_header() -> @core.Parser[Header] noraise {
-  @compose.bind(
+  @sequence.bind(
     take_while1(fn(c) { c != ':' && c != '\r' && c != '\n' }, "header name"),
     fn(name) {
-      @compose.bind(@basic.char(':'), fn(_) {
-        @compose.bind(@basic.char(' '), fn(_) {
-          @compose.bind(
+      @sequence.bind(@char.char(':'), fn(_) {
+        @sequence.bind(@char.char(' '), fn(_) {
+          @sequence.bind(
             take_while(fn(c) { c != '\r' && c != '\n' }, "header value"),
             fn(value_) {
-              @compose.map(crlf(), fn(_) { { name, value: value_, } })
+              @sequence.map(crlf(), fn(_) { { name, value: value_, } })
             },
           )
         })
@@ -411,9 +411,9 @@ pub fn parse_headers() -> @core.Parser[Array[Header]] noraise {
 ///|
 /// Recursively collect header lines.
 fn parse_headers_step(acc : Array[Header]) -> @core.Parser[Array[Header]] {
-  @control.alt(
-    @compose.map(crlf(), fn(_) { acc }),
-    @compose.bind(parse_header(), fn(h : Header) {
+  @branch.alt(
+    @sequence.map(crlf(), fn(_) { acc }),
+    @sequence.bind(parse_header(), fn(h : Header) {
       let new_acc = acc.copy()
       new_acc.push(h)
       parse_headers_step(new_acc)
@@ -428,8 +428,8 @@ fn parse_headers_step(acc : Array[Header]) -> @core.Parser[Array[Header]] {
 ///|
 /// Parse a complete HTTP request: request line + headers + empty line.
 pub fn parse_request() -> @core.Parser[Request] noraise {
-  @compose.bind(parse_request_line(), fn(rl) {
-    @compose.bind(parse_headers(), fn(headers) {
+  @sequence.bind(parse_request_line(), fn(rl) {
+    @sequence.bind(parse_headers(), fn(headers) {
       @core.Parser::of(fn(state) {
         @core.Success(
           {
@@ -472,16 +472,16 @@ fn uri_host() -> @core.Parser[String] {
 ///|
 /// Parse optional URI port number.
 fn uri_port() -> @core.Parser[Int32?] {
-  @control.alt(
-    @compose.bind(@basic.char(':'), fn(_) {
-      @compose.map(digits1(), fn(s) {
+  @branch.alt(
+    @sequence.bind(@char.char(':'), fn(_) {
+      @sequence.map(digits1(), fn(s) {
         match try_parse_int(s) {
           Some(n) => Some(n)
           None => None
         }
       })
     }),
-    @compose.pure(None),
+    @sequence.pure(None),
   )
 }
 
@@ -492,15 +492,15 @@ fn uri_port() -> @core.Parser[Int32?] {
 ///|
 /// Parse URI path.
 fn uri_path() -> @core.Parser[String] {
-  @control.alt(
-    @compose.bind(@basic.char('/'), fn(_) {
-      @compose.map(take_while(fn(c) { c != '?' && c != '#' }, "path char"), fn(
+  @branch.alt(
+    @sequence.bind(@char.char('/'), fn(_) {
+      @sequence.map(take_while(fn(c) { c != '?' && c != '#' }, "path char"), fn(
         rest,
       ) {
         "/" + rest
       })
     }),
-    @compose.pure("/"),
+    @sequence.pure("/"),
   )
 }
 
@@ -511,13 +511,13 @@ fn uri_path() -> @core.Parser[String] {
 ///|
 /// Parse optional URI query string.
 fn uri_query() -> @core.Parser[String?] {
-  @control.alt(
-    @compose.bind(@basic.char('?'), fn(_) {
-      @compose.map(take_while(fn(c) { c != '#' }, "query char"), fn(s) {
+  @branch.alt(
+    @sequence.bind(@char.char('?'), fn(_) {
+      @sequence.map(take_while(fn(c) { c != '#' }, "query char"), fn(s) {
         Some(s)
       })
     }),
-    @compose.pure(None),
+    @sequence.pure(None),
   )
 }
 
@@ -528,13 +528,13 @@ fn uri_query() -> @core.Parser[String?] {
 ///|
 /// Parse optional URI fragment.
 fn uri_fragment() -> @core.Parser[String?] {
-  @control.alt(
-    @compose.bind(@basic.char('#'), fn(_) {
-      @compose.map(take_while(fn(c) { c != '\n' }, "fragment char"), fn(s) {
+  @branch.alt(
+    @sequence.bind(@char.char('#'), fn(_) {
+      @sequence.map(take_while(fn(c) { c != '\n' }, "fragment char"), fn(s) {
         Some(s)
       })
     }),
-    @compose.pure(None),
+    @sequence.pure(None),
   )
 }
 
@@ -545,13 +545,13 @@ fn uri_fragment() -> @core.Parser[String?] {
 ///|
 /// Parse a URI into its components.
 pub fn parse_uri() -> @core.Parser[Uri] noraise {
-  @compose.bind(uri_scheme(), fn(scheme) {
-    @compose.bind(@basic.string("://"), fn(_) {
-      @compose.bind(uri_host(), fn(host) {
-        @compose.bind(uri_port(), fn(port) {
-          @compose.bind(uri_path(), fn(path) {
-            @compose.bind(uri_query(), fn(query) {
-              @compose.map(uri_fragment(), fn(fragment) {
+  @sequence.bind(uri_scheme(), fn(scheme) {
+    @sequence.bind(@char.string("://"), fn(_) {
+      @sequence.bind(uri_host(), fn(host) {
+        @sequence.bind(uri_port(), fn(port) {
+          @sequence.bind(uri_path(), fn(path) {
+            @sequence.bind(uri_query(), fn(query) {
+              @sequence.map(uri_fragment(), fn(fragment) {
                 { scheme, host, port, path, query, fragment, }
               })
             })

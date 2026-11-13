@@ -2,7 +2,7 @@ import {
   "moonbitlang/core/debug",
   "moonbitlang/core/string",
   "walkzzz/astrolabe/core",
-  "walkzzz/astrolabe/basic",
-  "walkzzz/astrolabe/compose",
-  "walkzzz/astrolabe/control",
+  "walkzzz/astrolabe/char",
+  "walkzzz/astrolabe/sequence",
+  "walkzzz/astrolabe/branch",
 }

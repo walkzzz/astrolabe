@@ -2,8 +2,8 @@ import {
   "moonbitlang/core/string",
   "walkzzz/astrolabe/core",
   "walkzzz/astrolabe" @astro,
-  "walkzzz/astrolabe/json",
-  "walkzzz/astrolabe/http",
+  "walkzzz/astrolabe/examples/json",
+  "walkzzz/astrolabe/examples/http",
 }
 
 pkgtype(kind: "executable")

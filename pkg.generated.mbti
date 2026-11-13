@@ -70,7 +70,6 @@ pub fn[T] parse_raise(@core.Parser[T], String) -> T raise @core.ParseError
 
 pub fn[T] peek(@core.Parser[T]) -> @core.Parser[T]
 
-#alias(return_, deprecated)
 pub fn[T] pure(T) -> @core.Parser[T]
 
 pub fn[T] recover(@core.Parser[T], (@core.ParseError) -> @core.Parser[T]) -> @core.Parser[T]
@@ -120,5 +119,16 @@ pub fn[T] with_hint(@core.Parser[T], hint~ : @core.ParseHint) -> @core.Parser[T]
 // Types and methods
 
 // Type aliases
+pub using @core {type ParseError}
+
+pub using @core {type ParseHint}
+
+pub using @core {type ParseResult}
+
+pub using @core {type Parser}
+
+pub using @core {type Pos}
+
+pub using @core {type State}
 
 // Traits

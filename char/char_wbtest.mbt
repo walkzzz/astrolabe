@@ -347,7 +347,7 @@ test "custom_parser_via_of" {
     },
     "hex digit",
   )
-  let hex_byte = @compose.seq2(hex_char, hex_char)
+  let hex_byte = @sequence.seq2(hex_char, hex_char)
   let s = @core.State::new("4A")
   match (hex_byte.run)(s) {
     @core.Success((c1, c2), st) => {

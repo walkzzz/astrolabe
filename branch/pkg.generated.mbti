@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "walkzzz/astrolabe/control"
+package "walkzzz/astrolabe/branch"
 
 import {
   "walkzzz/astrolabe/core",

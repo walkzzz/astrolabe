@@ -1,3 +1,31 @@
+///| 组合子正确性证明 — 本包使用 MoonBit 的 proof 条件对核心组合子的
+
+///| 关键不变量进行静态验证。这些证明函数不是运行时 API 的一部分，
+
+///| 而是作为开发阶段的正确性保障，确保偏移量前进、位置追踪、
+
+///| 解析状态回溯等操作的数学性质在编译期得到确认。
+
+///|
+
+///| Combinator correctness proofs — This package uses MoonBit's proof conditions
+
+///| to statically verify key invariants of core combinators. These proof functions
+
+///| are not part of the runtime API but serve as development-phase correctness
+
+///| guarantees, ensuring mathematical properties of offset advancement, position
+
+///| tracking, parse state backtracking, etc. are confirmed at compile time.
+
+///|
+
+///| 注意：本包不导出公共 API，仅供内部验证使用。
+
+///| Note: This package does not export public API; it is for internal verification only.
+
+///|
+
 ///| P1: 偏移量前进 — 验证 `offset + 1` 保持非负。
 
 ///|

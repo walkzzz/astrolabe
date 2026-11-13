@@ -1,5 +1,5 @@
 import {
-  "walkzzz/astrolabe/http",
+  "walkzzz/astrolabe/examples/http",
 }
 
 pkgtype(kind: "executable")

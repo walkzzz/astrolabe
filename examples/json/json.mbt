@@ -136,9 +136,9 @@ fn collect_digits(state : @core.State) -> String {
 ///|
 /// Parse JSON whitespace (space, tab, newline), discarding the result.
 fn ws() -> @core.Parser[Unit] {
-  @basic.skip(
-    @compose.many(
-      @basic.satisfy(
+  @char.skip(
+    @sequence.many(
+      @char.satisfy(
         fn(c) { c == ' ' || c == '\t' || c == '\n' || c == '\r' },
         label="whitespace",
       ),
@@ -153,7 +153,7 @@ fn ws() -> @core.Parser[Unit] {
 ///|
 /// Parse the literal `null`.
 fn null_() -> @core.Parser[JValue] {
-  @compose.map(@basic.string("null"), fn(_) { JNull })
+  @sequence.map(@char.string("null"), fn(_) { JNull })
 }
 
 ///| 解析 JSON 布尔值（`true` / `false`）。
@@ -163,9 +163,9 @@ fn null_() -> @core.Parser[JValue] {
 ///|
 /// Parse a JSON boolean (`true` / `false`).
 fn bool_() -> @core.Parser[JValue] {
-  @control.alt(
-    @compose.map(@basic.string("true"), fn(_) { JBool(true) }),
-    @compose.map(@basic.string("false"), fn(_) { JBool(false) }),
+  @branch.alt(
+    @sequence.map(@char.string("true"), fn(_) { JBool(true) }),
+    @sequence.map(@char.string("false"), fn(_) { JBool(false) }),
   )
 }
 
@@ -357,7 +357,7 @@ fn parse_string_body(state : @core.State) -> @core.ParseResult[String] {
 ///|
 /// Parse any JSON value.
 pub fn value() -> @core.Parser[JValue] noraise {
-  @control.choice([null_(), bool_(), number(), string_(), array_(), object_()])
+  @branch.choice([null_(), bool_(), number(), string_(), array_(), object_()])
 }
 
 ///| 解析 JSON 数组：`[value, value, ...]`
@@ -550,10 +550,10 @@ fn pair_() -> @core.Parser[(String, JValue)] {
 /// Parse a complete JSON string into a `JValue`.
 #warnings("-result_error_return")
 pub fn parse(input : String) -> Result[JValue, @core.ParseError] noraise {
-  let p = @compose.bind(ws(), fn(_) {
-    @compose.bind(value(), fn(v) {
-      @compose.bind(ws(), fn(_) {
-        @compose.map(@basic.end_of_input(), fn(_) { v })
+  let p = @sequence.bind(ws(), fn(_) {
+    @sequence.bind(value(), fn(v) {
+      @sequence.bind(ws(), fn(_) {
+        @sequence.map(@char.end_of_input(), fn(_) { v })
       })
     })
   })
