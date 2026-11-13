@@ -307,3 +307,52 @@ test "custom_parser_via_of" {
     @core.Failure(_) => fail("expected success")
   }
 }
+
+///|
+test "take_while digits" {
+  let p = take_while(fn(c) { c >= '0' && c <= '9' })
+  let s = @core.State::new("123abc")
+  match (p.run)(s) {
+    @core.Success(val, st) => {
+      assert_eq(val, "123")
+      assert_eq(st.offset, 3)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "take_while zero matches" {
+  let p = take_while(fn(c) { c >= '0' && c <= '9' })
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Success(val, st) => {
+      assert_eq(val, "")
+      assert_eq(st.offset, 0)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "take_while1 digits" {
+  let p = take_while1(fn(c) { c >= '0' && c <= '9' }, label="digit")
+  let s = @core.State::new("123abc")
+  match (p.run)(s) {
+    @core.Success(val, st) => {
+      assert_eq(val, "123")
+      assert_eq(st.offset, 3)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "take_while1 failure no match" {
+  let p = take_while1(fn(c) { c >= '0' && c <= '9' }, label="digit")
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(err.expected().contains("digit"))
+    @core.Success(_, _) => fail("expected failure")
+  }
+}

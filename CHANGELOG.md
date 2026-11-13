@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.17] - 2026-11-13
+
+### Added
+- `take_while(pred)` — consume consecutive chars matching predicate, return String (always succeeds)
+- `take_while1(pred, label~)` — same but requires at least one match
+- `option(p, default)` — try `p`, return `default` on uncommitted failure
+- `skip_many(p)` / `skip_many1(p)` — repeat `p` discarding results
+- `between(open, p, close)` — match `open` + `p` + `close`, return only `p`'s result
+- `not_followed_by(p, label~)` — succeed when `p` fails, without consuming input
+- `fix(f)` — fixpoint combinator for recursive grammars
+- All 8 new combinators exported via root package facade
+- 25 new tests across basic/compose/control packages (147 total, up from 122)
+
 ## [0.1.16] - 2026-11-13
 
 ### Added

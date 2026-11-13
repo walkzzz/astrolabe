@@ -286,3 +286,57 @@ pub fn char_class(pred : (Char) -> Bool, label_ : String) -> @core.Parser[Char] 
     }
   })
 }
+
+///| 消费满足谓词的连续字符，返回拼接字符串。
+
+///| 零次匹配也成功（返回空字符串）。
+
+///| Consume consecutive characters satisfying `pred`, returning the matched string.
+
+///|
+/// Succeeds with an empty string on zero matches.
+pub fn take_while(pred : (Char) -> Bool) -> @core.Parser[String] {
+  @core.Parser::of(fn(state) {
+    let start = state.offset
+    take_while_step(pred, state)
+    let result = state.slice(start, state.offset)
+    @core.Success(result, state)
+  })
+}
+
+///|
+fn take_while_step(pred : (Char) -> Bool, state : @core.State) -> Unit {
+  match state.peek() {
+    Some(ch) if pred(ch) => {
+      state.advance_one()
+      take_while_step(pred, state)
+    }
+    _ => ()
+  }
+}
+
+///| 消费满足谓词的连续字符（至少一个），返回拼接字符串。
+
+///| 零次匹配时产生未承诺的错误。
+
+///| Consume consecutive characters satisfying `pred` (at least one).
+
+///|
+/// Fails with an uncommitted error on zero matches.
+pub fn take_while1(
+  pred : (Char) -> Bool,
+  label~ : String = "take_while1",
+) -> @core.Parser[String] {
+  @core.Parser::of(fn(state) {
+    match state.peek() {
+      Some(ch) if pred(ch) => {
+        let start = state.offset
+        state.advance_one()
+        take_while_step(pred, state)
+        let result = state.slice(start, state.offset)
+        @core.Success(result, state)
+      }
+      _ => @core.Failure(@core.ParseError::at(pos=state.pos, expected=label))
+    }
+  })
+}

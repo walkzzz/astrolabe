@@ -26,6 +26,10 @@ pub fn string(String) -> @core.Parser[String]
 
 pub fn take(Int32) -> @core.Parser[String]
 
+pub fn take_while((Char) -> Bool) -> @core.Parser[String]
+
+pub fn take_while1((Char) -> Bool, label? : String) -> @core.Parser[String]
+
 // Errors
 
 // Types and methods

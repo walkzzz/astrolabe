@@ -224,6 +224,26 @@ pub fn char_class(pred : (Char) -> Bool, label_ : String) -> @core.Parser[Char] 
   @basic.char_class(pred, label_)
 }
 
+///| 消费满足谓词的连续字符，返回拼接字符串。
+
+///|
+/// Consume consecutive characters satisfying `pred`, returning the matched string.
+#inline
+pub fn take_while(pred : (Char) -> Bool) -> @core.Parser[String] {
+  @basic.take_while(pred)
+}
+
+///| 消费满足谓词的连续字符（至少一个）。
+
+///|
+/// Consume consecutive characters satisfying `pred` (at least one).
+pub fn take_while1(
+  pred : (Char) -> Bool,
+  label~ : String = "take_while1",
+) -> @core.Parser[String] {
+  @basic.take_while1(pred, label~)
+}
+
 /// ============================================================================
 /// 组合组合子（从 @compose 重新导出）/ Compose combinators (re-export from @compose)
 /// ============================================================================
@@ -376,6 +396,44 @@ pub fn[T, E] many_till(
   @compose.many_till(p, end_)
 }
 
+///| 尝试 `p`，未承诺失败时返回 `default`。
+
+///|
+/// Try `p`; on uncommitted failure, return `default`.
+pub fn[T] option(p : @core.Parser[T], default : T) -> @core.Parser[T] {
+  @compose.option(p, default)
+}
+
+///| 零次或多次运行 `p`，丢弃结果。
+
+///|
+/// Run `p` zero or more times, discarding results.
+#inline
+pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] {
+  @compose.skip_many(p)
+}
+
+///| 一次或多次运行 `p`，丢弃结果。
+
+///|
+/// Run `p` one or more times, discarding results.
+#inline
+pub fn[T] skip_many1(p : @core.Parser[T]) -> @core.Parser[Unit] {
+  @compose.skip_many1(p)
+}
+
+///| 匹配 `open` + `p` + `close`，只返回 `p` 的结果。
+
+///|
+/// Match `open` + `p` + `close`, returning only `p`'s result.
+pub fn[O, T, C] between(
+  open : @core.Parser[O],
+  p : @core.Parser[T],
+  close : @core.Parser[C],
+) -> @core.Parser[T] {
+  @compose.between(open, p, close)
+}
+
 /// ============================================================================
 /// 控制组合子（从 @control 重新导出）/ Control combinators (re-export from @control)
 /// ============================================================================
@@ -421,4 +479,23 @@ pub fn[T] choice(parsers : Array[@core.Parser[T]]) -> @core.Parser[T] {
 #inline
 pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
   @control.label(p, name)
+}
+
+///| 仅当 `p` 失败时成功；不消耗输入。
+
+///|
+/// Succeed only when `p` fails; does not consume input.
+pub fn[T] not_followed_by(
+  p : @core.Parser[T],
+  label~ : String = "not_followed_by",
+) -> @core.Parser[Unit] {
+  @control.not_followed_by(p, label~)
+}
+
+///| 不动点组合子 — 支持递归文法。
+
+///|
+/// Fixpoint combinator for recursive grammars.
+pub fn[T] fix(f : (@core.Parser[T]) -> @core.Parser[T]) -> @core.Parser[T] {
+  @control.fix(f)
 }

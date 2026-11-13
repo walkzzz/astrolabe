@@ -462,3 +462,83 @@ pub fn[A, B, C, D] seq4(
     }
   })
 }
+
+///| 尝试 `p`，未承诺失败时返回 `default`。
+
+///|
+/// Try `p`; on uncommitted failure, return `default`.
+pub fn[T] option(p : @core.Parser[T], default : T) -> @core.Parser[T] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Success(value, st) => @core.Success(value, st)
+      @core.Failure(err) =>
+        if err.committed() {
+          @core.Failure(err)
+        } else {
+          @core.Success(default, state)
+        }
+    }
+  })
+}
+
+///|
+fn[T] skip_many_step(
+  p : @core.Parser[T],
+  state : @core.State,
+) -> @core.ParseResult[Unit] {
+  match (p.run)(state) {
+    @core.Success(_, st) => skip_many_step(p, st)
+    @core.Failure(err) =>
+      if err.committed() {
+        @core.Failure(err)
+      } else {
+        @core.Success((), state)
+      }
+  }
+}
+
+///| 零次或多次运行 `p`，丢弃结果。总是成功。
+
+///|
+/// Run `p` zero or more times, discarding results. Always succeeds.
+pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] {
+  @core.Parser::of(fn(state) { skip_many_step(p, state) })
+}
+
+///| 一次或多次运行 `p`，丢弃结果。首次失败为未承诺。
+
+///|
+/// Run `p` one or more times, discarding results. First failure is uncommitted.
+pub fn[T] skip_many1(p : @core.Parser[T]) -> @core.Parser[Unit] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Failure(err) => @core.Failure(err)
+      @core.Success(_, st) => skip_many_step(p, st)
+    }
+  })
+}
+
+///| 匹配 `open` + `p` + `close`，只返回 `p` 的结果。
+
+///|
+/// Match `open` followed by `p` followed by `close`, returning only `p`'s result.
+pub fn[O, T, C] between(
+  open : @core.Parser[O],
+  p : @core.Parser[T],
+  close : @core.Parser[C],
+) -> @core.Parser[T] {
+  @core.Parser::of(fn(state) {
+    match (open.run)(state) {
+      @core.Failure(err) => @core.Failure(err)
+      @core.Success(_, st1) =>
+        match (p.run)(st1) {
+          @core.Failure(err) => @core.Failure(err.commit())
+          @core.Success(value, st2) =>
+            match (close.run)(st2) {
+              @core.Failure(err) => @core.Failure(err.commit())
+              @core.Success(_, st3) => @core.Success(value, st3)
+            }
+        }
+    }
+  })
+}

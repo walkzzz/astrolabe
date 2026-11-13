@@ -6,6 +6,8 @@ import {
 }
 
 // Values
+pub fn[O, T, C] between(@core.Parser[O], @core.Parser[T], @core.Parser[C]) -> @core.Parser[T]
+
 pub fn[T, U] bind(@core.Parser[T], (T) -> @core.Parser[U]) -> @core.Parser[U]
 
 pub fn[T] count(Int32, @core.Parser[T]) -> @core.Parser[Array[T]]
@@ -17,6 +19,8 @@ pub fn[T] many1(@core.Parser[T]) -> @core.Parser[Array[T]]
 pub fn[T, E] many_till(@core.Parser[T], @core.Parser[E]) -> @core.Parser[Array[T]]
 
 pub fn[T, U] map(@core.Parser[T], (T) -> U) -> @core.Parser[U]
+
+pub fn[T] option(@core.Parser[T], T) -> @core.Parser[T]
 
 #alias(return_, deprecated)
 pub fn[T] pure(T) -> @core.Parser[T]
@@ -30,6 +34,10 @@ pub fn[A, B] seq2(@core.Parser[A], @core.Parser[B]) -> @core.Parser[(A, B)]
 pub fn[A, B, C] seq3(@core.Parser[A], @core.Parser[B], @core.Parser[C]) -> @core.Parser[(A, B, C)]
 
 pub fn[A, B, C, D] seq4(@core.Parser[A], @core.Parser[B], @core.Parser[C], @core.Parser[D]) -> @core.Parser[(A, B, C, D)]
+
+pub fn[T] skip_many(@core.Parser[T]) -> @core.Parser[Unit]
+
+pub fn[T] skip_many1(@core.Parser[T]) -> @core.Parser[Unit]
 
 // Errors
 

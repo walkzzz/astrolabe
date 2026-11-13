@@ -228,3 +228,124 @@ test "many_till p fails before end" {
     @core.Success(_, _) => fail("expected failure")
   }
 }
+
+///|
+test "option success" {
+  let p = option(char_parser('a'), 'z')
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Success(val, st) => {
+      assert_eq(val, 'a')
+      assert_eq(st.offset, 1)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "option fallback default" {
+  let p = option(char_parser('x'), 'z')
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Success(val, st) => {
+      assert_eq(val, 'z')
+      assert_eq(st.offset, 0)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "option committed failure propagates" {
+  let committed_x : @core.Parser[Char] = @core.Parser::of(fn(state) {
+    @core.Failure(@core.ParseError(state.pos, ["'x'"], true, ""))
+  })
+  let p = option(committed_x, 'z')
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(err.committed())
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+test "skip_many zero" {
+  let p = skip_many(char_parser('a'))
+  let s = @core.State::new("bbb")
+  match (p.run)(s) {
+    @core.Success(unit, st) => {
+      ignore(unit)
+      assert_eq(st.offset, 0)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "skip_many multiple" {
+  let p = skip_many(char_parser('a'))
+  let s = @core.State::new("aaab")
+  match (p.run)(s) {
+    @core.Success(unit, st) => {
+      ignore(unit)
+      assert_eq(st.offset, 3)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "skip_many1 success" {
+  let p = skip_many1(char_parser('a'))
+  let s = @core.State::new("aab")
+  match (p.run)(s) {
+    @core.Success(unit, st) => {
+      ignore(unit)
+      assert_eq(st.offset, 2)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "skip_many1 failure" {
+  let p = skip_many1(char_parser('a'))
+  let s = @core.State::new("bbb")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(!err.committed())
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+test "between parens" {
+  let p = between(char_parser('('), char_parser('x'), char_parser(')'))
+  let s = @core.State::new("(x)")
+  match (p.run)(s) {
+    @core.Success(val, st) => {
+      assert_eq(val, 'x')
+      assert_eq(st.offset, 3)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "between open fails" {
+  let p = between(char_parser('('), char_parser('x'), char_parser(')'))
+  let s = @core.State::new("x)")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(!err.committed())
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+test "between middle fails commits" {
+  let p = between(char_parser('('), char_parser('x'), char_parser(')'))
+  let s = @core.State::new("(y)")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(err.committed())
+    @core.Success(_, _) => fail("expected failure")
+  }
+}

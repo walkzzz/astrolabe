@@ -114,3 +114,36 @@ pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
     }
   })
 }
+
+///| 仅当 `p` 失败时成功；不消耗输入。
+
+///|
+/// Succeed only when `p` fails; does not consume input.
+pub fn[T] not_followed_by(
+  p : @core.Parser[T],
+  label~ : String = "not_followed_by",
+) -> @core.Parser[Unit] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Failure(_) => @core.Success((), state)
+      @core.Success(_, _) =>
+        @core.Failure(@core.ParseError::at(pos=state.pos, expected=label))
+    }
+  })
+}
+
+///| 不动点组合子 — 支持递归文法。
+
+///| 传入函数 `f` 接收自身的引用，返回递归解析器。
+
+///| Fixpoint combinator for recursive grammars.
+
+///|
+/// `f` receives a reference to the resulting parser, enabling recursion.
+pub fn[T] fix(f : (@core.Parser[T]) -> @core.Parser[T]) -> @core.Parser[T] {
+  let cell : Array[@core.Parser[T]] = []
+  let self_parser = @core.Parser::of(fn(state) { (cell[0].run)(state) })
+  let result = f(self_parser)
+  cell.push(result)
+  result
+}

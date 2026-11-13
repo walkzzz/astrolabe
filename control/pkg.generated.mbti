@@ -12,7 +12,11 @@ pub fn[T] choice(Array[@core.Parser[T]]) -> @core.Parser[T]
 
 pub fn[T] commit(@core.Parser[T]) -> @core.Parser[T]
 
+pub fn[T] fix((@core.Parser[T]) -> @core.Parser[T]) -> @core.Parser[T]
+
 pub fn[T] label(@core.Parser[T], String) -> @core.Parser[T]
+
+pub fn[T] not_followed_by(@core.Parser[T], label? : String) -> @core.Parser[Unit]
 
 // Errors
 
