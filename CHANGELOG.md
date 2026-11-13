@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.18] - 2026-11-13
+
+### Changed
+- README.md 全面重构：emoji 装饰、双语中/英默认中文可切换、`<details>` 折叠、徽章 `flat-square` 风格
+- Tutorial (`docs/tutorial.md`) 双语化：中文在前，English 在后
+- 8 个新组合子的文档注释修正为标准双语格式（中文段 → `///|` → 英文段）
+- README 版本徽章更新至 0.1.17、测试数更新至 147
+
 ## [0.1.17] - 2026-11-13
 
 ### Added

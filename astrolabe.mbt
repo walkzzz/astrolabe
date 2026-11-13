@@ -227,6 +227,8 @@ pub fn char_class(pred : (Char) -> Bool, label_ : String) -> @core.Parser[Char] 
 ///| 消费满足谓词的连续字符，返回拼接字符串。
 
 ///|
+
+///|
 /// Consume consecutive characters satisfying `pred`, returning the matched string.
 #inline
 pub fn take_while(pred : (Char) -> Bool) -> @core.Parser[String] {
@@ -234,6 +236,8 @@ pub fn take_while(pred : (Char) -> Bool) -> @core.Parser[String] {
 }
 
 ///| 消费满足谓词的连续字符（至少一个）。
+
+///|
 
 ///|
 /// Consume consecutive characters satisfying `pred` (at least one).
@@ -399,12 +403,16 @@ pub fn[T, E] many_till(
 ///| 尝试 `p`，未承诺失败时返回 `default`。
 
 ///|
+
+///|
 /// Try `p`; on uncommitted failure, return `default`.
 pub fn[T] option(p : @core.Parser[T], default : T) -> @core.Parser[T] {
   @compose.option(p, default)
 }
 
 ///| 零次或多次运行 `p`，丢弃结果。
+
+///|
 
 ///|
 /// Run `p` zero or more times, discarding results.
@@ -416,6 +424,8 @@ pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] {
 ///| 一次或多次运行 `p`，丢弃结果。
 
 ///|
+
+///|
 /// Run `p` one or more times, discarding results.
 #inline
 pub fn[T] skip_many1(p : @core.Parser[T]) -> @core.Parser[Unit] {
@@ -423,6 +433,8 @@ pub fn[T] skip_many1(p : @core.Parser[T]) -> @core.Parser[Unit] {
 }
 
 ///| 匹配 `open` + `p` + `close`，只返回 `p` 的结果。
+
+///|
 
 ///|
 /// Match `open` + `p` + `close`, returning only `p`'s result.
@@ -484,6 +496,8 @@ pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
 ///| 仅当 `p` 失败时成功；不消耗输入。
 
 ///|
+
+///|
 /// Succeed only when `p` fails; does not consume input.
 pub fn[T] not_followed_by(
   p : @core.Parser[T],
@@ -493,6 +507,8 @@ pub fn[T] not_followed_by(
 }
 
 ///| 不动点组合子 — 支持递归文法。
+
+///|
 
 ///|
 /// Fixpoint combinator for recursive grammars.

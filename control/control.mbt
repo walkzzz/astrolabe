@@ -118,6 +118,8 @@ pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
 ///| 仅当 `p` 失败时成功；不消耗输入。
 
 ///|
+
+///|
 /// Succeed only when `p` fails; does not consume input.
 pub fn[T] not_followed_by(
   p : @core.Parser[T],
@@ -135,6 +137,8 @@ pub fn[T] not_followed_by(
 ///| 不动点组合子 — 支持递归文法。
 
 ///| 传入函数 `f` 接收自身的引用，返回递归解析器。
+
+///|
 
 ///| Fixpoint combinator for recursive grammars.
 

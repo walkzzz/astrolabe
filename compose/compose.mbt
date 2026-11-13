@@ -466,6 +466,8 @@ pub fn[A, B, C, D] seq4(
 ///| 尝试 `p`，未承诺失败时返回 `default`。
 
 ///|
+
+///|
 /// Try `p`; on uncommitted failure, return `default`.
 pub fn[T] option(p : @core.Parser[T], default : T) -> @core.Parser[T] {
   @core.Parser::of(fn(state) {
@@ -500,12 +502,16 @@ fn[T] skip_many_step(
 ///| 零次或多次运行 `p`，丢弃结果。总是成功。
 
 ///|
+
+///|
 /// Run `p` zero or more times, discarding results. Always succeeds.
 pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] {
   @core.Parser::of(fn(state) { skip_many_step(p, state) })
 }
 
 ///| 一次或多次运行 `p`，丢弃结果。首次失败为未承诺。
+
+///|
 
 ///|
 /// Run `p` one or more times, discarding results. First failure is uncommitted.
@@ -519,6 +525,8 @@ pub fn[T] skip_many1(p : @core.Parser[T]) -> @core.Parser[Unit] {
 }
 
 ///| 匹配 `open` + `p` + `close`，只返回 `p` 的结果。
+
+///|
 
 ///|
 /// Match `open` followed by `p` followed by `close`, returning only `p`'s result.
