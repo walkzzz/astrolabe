@@ -49,7 +49,7 @@ fn stringify_string(s : String) -> String {
 
 ///|
 /// Convert a `JValue` to its JSON string representation.
-pub fn JValue::stringify(self : JValue) -> String {
+pub fn JValue::stringify(self : JValue) -> String noraise {
   match self {
     JNull => "null"
     JBool(b) => if b { "true" } else { "false" }
@@ -356,7 +356,7 @@ fn parse_string_body(state : @core.State) -> @core.ParseResult[String] {
 
 ///|
 /// Parse any JSON value.
-pub fn value() -> @core.Parser[JValue] {
+pub fn value() -> @core.Parser[JValue] noraise {
   @control.choice([null_(), bool_(), number(), string_(), array_(), object_()])
 }
 
@@ -549,7 +549,7 @@ fn pair_() -> @core.Parser[(String, JValue)] {
 ///|
 /// Parse a complete JSON string into a `JValue`.
 #warnings("-result_error_return")
-pub fn parse(input : String) -> Result[JValue, @core.ParseError] {
+pub fn parse(input : String) -> Result[JValue, @core.ParseError] noraise {
   let p = @compose.bind(ws(), fn(_) {
     @compose.bind(value(), fn(v) {
       @compose.bind(ws(), fn(_) {

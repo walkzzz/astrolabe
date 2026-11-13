@@ -74,7 +74,7 @@ pub fn[T, U] bind(
 ///|
 /// A parser that always succeeds without consuming input, yielding `value`.
 #alias(return_, deprecated="Use pure instead")
-pub fn[T] pure(value : T) -> @core.Parser[T] {
+pub fn[T] pure(value : T) -> @core.Parser[T] noraise {
   @core.Parser::of(fn(state) { @core.Success(value, state) })
 }
 
@@ -93,7 +93,7 @@ pub fn[T] pure(value : T) -> @core.Parser[T] {
 pub fn[A, B] seq2(
   p1 : @core.Parser[A],
   p2 : @core.Parser[B],
-) -> @core.Parser[(A, B)] {
+) -> @core.Parser[(A, B)] noraise {
   @core.Parser::of(fn(state) {
     match (p1.run)(state) {
       @core.Failure(err) => @core.Failure(err)
@@ -122,7 +122,7 @@ pub fn[A, B, C] seq3(
   p1 : @core.Parser[A],
   p2 : @core.Parser[B],
   p3 : @core.Parser[C],
-) -> @core.Parser[(A, B, C)] {
+) -> @core.Parser[(A, B, C)] noraise {
   @core.Parser::of(fn(state) {
     match (p1.run)(state) {
       @core.Failure(err) => @core.Failure(err)
@@ -442,7 +442,7 @@ pub fn[A, B, C, D] seq4(
   p2 : @core.Parser[B],
   p3 : @core.Parser[C],
   p4 : @core.Parser[D],
-) -> @core.Parser[(A, B, C, D)] {
+) -> @core.Parser[(A, B, C, D)] noraise {
   @core.Parser::of(fn(state) {
     match (p1.run)(state) {
       @core.Failure(err) => @core.Failure(err)
@@ -469,7 +469,7 @@ pub fn[A, B, C, D] seq4(
 
 ///|
 /// Try `p`; on uncommitted failure, return `default`.
-pub fn[T] option(p : @core.Parser[T], default : T) -> @core.Parser[T] {
+pub fn[T] option(p : @core.Parser[T], default : T) -> @core.Parser[T] noraise {
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
       @core.Success(value, st) => @core.Success(value, st)
@@ -505,7 +505,7 @@ fn[T] skip_many_step(
 
 ///|
 /// Run `p` zero or more times, discarding results. Always succeeds.
-pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] {
+pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] noraise {
   @core.Parser::of(fn(state) { skip_many_step(p, state) })
 }
 
@@ -515,7 +515,7 @@ pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] {
 
 ///|
 /// Run `p` one or more times, discarding results. First failure is uncommitted.
-pub fn[T] skip_many1(p : @core.Parser[T]) -> @core.Parser[Unit] {
+pub fn[T] skip_many1(p : @core.Parser[T]) -> @core.Parser[Unit] noraise {
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
       @core.Failure(err) => @core.Failure(err)
@@ -534,7 +534,7 @@ pub fn[O, T, C] between(
   open : @core.Parser[O],
   p : @core.Parser[T],
   close : @core.Parser[C],
-) -> @core.Parser[T] {
+) -> @core.Parser[T] noraise {
   @core.Parser::of(fn(state) {
     match (open.run)(state) {
       @core.Failure(err) => @core.Failure(err)

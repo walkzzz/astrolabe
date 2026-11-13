@@ -16,7 +16,7 @@
 
 ///|
 /// When `p` fails, sets `committed = true` so `alt` will not try the next alternative.
-pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] {
+pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] noraise {
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
       @core.Success(value, st) => @core.Success(value, st)
@@ -45,7 +45,10 @@ pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] {
 
 ///|
 /// - If `p1` fails with `committed = false`, try `p2` on the original input.
-pub fn[T] alt(p1 : @core.Parser[T], p2 : @core.Parser[T]) -> @core.Parser[T] {
+pub fn[T] alt(
+  p1 : @core.Parser[T],
+  p2 : @core.Parser[T],
+) -> @core.Parser[T] noraise {
   @core.Parser::of(fn(state) {
     match (p1.run)(state) {
       @core.Success(value, st) => @core.Success(value, st)
@@ -75,7 +78,7 @@ pub fn[T] alt(p1 : @core.Parser[T], p2 : @core.Parser[T]) -> @core.Parser[T] {
 
 ///|
 /// If `parsers` is empty, returns a parser that always fails.
-pub fn[T] choice(parsers : Array[@core.Parser[T]]) -> @core.Parser[T] {
+pub fn[T] choice(parsers : Array[@core.Parser[T]]) -> @core.Parser[T] noraise {
   if parsers.length() == 0 {
     @core.Parser::of(fn(state) {
       @core.Failure(@core.ParseError::at(pos=state.pos, expected="any choice"))
@@ -103,7 +106,7 @@ pub fn[T] choice(parsers : Array[@core.Parser[T]]) -> @core.Parser[T] {
 
 ///|
 /// The `committed` flag is preserved — labeling does not affect backtracking.
-pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
+pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] noraise {
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
       @core.Success(value, st) => @core.Success(value, st)
@@ -124,7 +127,7 @@ pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
 pub fn[T] not_followed_by(
   p : @core.Parser[T],
   label~ : String = "not_followed_by",
-) -> @core.Parser[Unit] {
+) -> @core.Parser[Unit] noraise {
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
       @core.Failure(_) => @core.Success((), state)
@@ -162,7 +165,10 @@ pub fn[T] fix(f : (@core.Parser[T]) -> @core.Parser[T]) -> @core.Parser[T] {
 
 ///|
 /// Does not change `expected` or `committed`; only appends `ctx` to `contexts`.
-pub fn[T] with_context(p : @core.Parser[T], ctx : String) -> @core.Parser[T] {
+pub fn[T] with_context(
+  p : @core.Parser[T],
+  ctx : String,
+) -> @core.Parser[T] noraise {
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
       @core.Success(value, st) => @core.Success(value, st)

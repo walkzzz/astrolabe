@@ -43,7 +43,7 @@ pub extend Pos with @debug.Debug::{to_repr}
 
 ///|
 /// Create the initial position (line 1, column 1, offset 0).
-pub fn Pos::initial() -> Pos {
+pub fn Pos::initial() -> Pos noraise {
   { line: 1, column: 1, offset: 0, }
 }
 
@@ -67,7 +67,7 @@ pub fn Pos::initial() -> Pos {
 
 ///|
 /// Returns a **new** Pos; the original is not mutated.
-pub fn Pos::advance(self : Pos, ch : Char) -> Pos {
+pub fn Pos::advance(self : Pos, ch : Char) -> Pos noraise {
   if ch == '\n' {
     { line: self.line + 1, column: 1, offset: self.offset + 1, }
   } else {
@@ -115,7 +115,7 @@ pub extend State with @debug.Debug::{to_repr}
 
 ///|
 /// Create a fresh `State` positioned at the start of `input`.
-pub fn State::new(input : String) -> State {
+pub fn State::new(input : String) -> State noraise {
   { input, offset: 0, pos: Pos::initial(), }
 }
 
@@ -125,7 +125,7 @@ pub fn State::new(input : String) -> State {
 
 ///|
 /// Number of characters remaining from the current offset to end-of-input.
-pub fn State::remaining(self : State) -> Int32 {
+pub fn State::remaining(self : State) -> Int32 noraise {
   self.input.length() - self.offset
 }
 
@@ -135,7 +135,7 @@ pub fn State::remaining(self : State) -> Int32 {
 
 ///|
 /// True when the cursor has reached or passed the end of input.
-pub fn State::is_eof(self : State) -> Bool {
+pub fn State::is_eof(self : State) -> Bool noraise {
   self.offset >= self.input.length()
 }
 
@@ -151,7 +151,7 @@ pub fn State::is_eof(self : State) -> Bool {
 
 ///|
 /// Returns `Some(ch)` if not at EOF, `None` otherwise.
-pub fn State::peek(self : State) -> Char? {
+pub fn State::peek(self : State) -> Char? noraise {
   if self.is_eof() {
     None
   } else {
@@ -171,7 +171,7 @@ pub fn State::peek(self : State) -> Char? {
 
 ///|
 /// No-op when already at EOF.
-pub fn State::advance_one(self : State) -> Unit {
+pub fn State::advance_one(self : State) -> Unit noraise {
   if !self.is_eof() {
     let ch = self.input.get_char(self.offset).unwrap()
     self.pos = self.pos.advance(ch)
@@ -195,7 +195,7 @@ pub fn State::advance_one(self : State) -> Unit {
 
 ///|
 /// Caller must ensure `n <= remaining()`.
-pub fn State::advance_by(self : State, n : Int32) -> Unit {
+pub fn State::advance_by(self : State, n : Int32) -> Unit noraise {
   for _ in 0..<n {
     self.advance_one()
   }
@@ -213,7 +213,7 @@ pub fn State::advance_by(self : State, n : Int32) -> Unit {
 
 ///|
 /// Does not modify the cursor. Used internally to read matched input.
-pub fn State::slice(self : State, start : Int32, end : Int32) -> String {
+pub fn State::slice(self : State, start : Int32, end : Int32) -> String noraise {
   self.input[start:end].to_owned()
 }
 
@@ -270,7 +270,7 @@ pub extend ParseError with @debug.Debug::{to_repr}
 
 ///|
 /// Convenience factory for the common case: single expected token, no context, uncommitted.
-pub fn ParseError::at(pos~ : Pos, expected~ : String) -> ParseError {
+pub fn ParseError::at(pos~ : Pos, expected~ : String) -> ParseError noraise {
   ParseError(pos, [expected], false, [])
 }
 
@@ -280,7 +280,7 @@ pub fn ParseError::at(pos~ : Pos, expected~ : String) -> ParseError {
 
 ///|
 /// Return the position where the error occurred.
-pub fn ParseError::pos(self : ParseError) -> Pos {
+pub fn ParseError::pos(self : ParseError) -> Pos noraise {
   match self {
     ParseError(pos, _, _, _) => pos
   }
@@ -292,7 +292,7 @@ pub fn ParseError::pos(self : ParseError) -> Pos {
 
 ///|
 /// Return the list of expected tokens.
-pub fn ParseError::expected(self : ParseError) -> Array[String] {
+pub fn ParseError::expected(self : ParseError) -> Array[String] noraise {
   match self {
     ParseError(_, expected, _, _) => expected
   }
@@ -304,7 +304,7 @@ pub fn ParseError::expected(self : ParseError) -> Array[String] {
 
 ///|
 /// Return the commitment status.
-pub fn ParseError::committed(self : ParseError) -> Bool {
+pub fn ParseError::committed(self : ParseError) -> Bool noraise {
   match self {
     ParseError(_, _, committed, _) => committed
   }
@@ -316,7 +316,7 @@ pub fn ParseError::committed(self : ParseError) -> Bool {
 
 ///|
 /// Return the context chain.
-pub fn ParseError::contexts(self : ParseError) -> Array[String] {
+pub fn ParseError::contexts(self : ParseError) -> Array[String] noraise {
   match self {
     ParseError(_, _, _, contexts) => contexts
   }
@@ -328,7 +328,7 @@ pub fn ParseError::contexts(self : ParseError) -> Array[String] {
 
 ///|
 /// Return the context label (joined with " > ").
-pub fn ParseError::context(self : ParseError) -> String {
+pub fn ParseError::context(self : ParseError) -> String noraise {
   match self {
     ParseError(_, _, _, contexts) => contexts.join(" > ")
   }
@@ -341,7 +341,7 @@ pub fn ParseError::context(self : ParseError) -> String {
 ///|
 /// Return a copy with `committed = true`, used for sequence-commit semantics.
 #inline
-pub fn ParseError::commit(self : ParseError) -> ParseError {
+pub fn ParseError::commit(self : ParseError) -> ParseError noraise {
   match self {
     ParseError(pos, expected, _, contexts) =>
       ParseError(pos, expected, true, contexts)
@@ -354,7 +354,10 @@ pub fn ParseError::commit(self : ParseError) -> ParseError {
 
 ///|
 /// Return a copy with `ctx` appended to the context chain.
-pub fn ParseError::with_context(self : ParseError, ctx : String) -> ParseError {
+pub fn ParseError::with_context(
+  self : ParseError,
+  ctx : String,
+) -> ParseError noraise {
   match self {
     ParseError(pos, expected, committed, contexts) => {
       let new_contexts = contexts.copy()
@@ -392,7 +395,7 @@ pub fn ParseError::with_context(self : ParseError, ctx : String) -> ParseError {
 
 ///|
 /// The `context` line is omitted when empty.
-pub fn ParseError::format(self : ParseError) -> String {
+pub fn ParseError::format(self : ParseError) -> String noraise {
   match self {
     ParseError(pos, expected, _, contexts) => {
       let loc = "line \{pos.line}, column \{pos.column} (offset \{pos.offset})"
@@ -438,7 +441,7 @@ pub fn ParseError::format(self : ParseError) -> String {
 pub fn ParseError::format_with_input(
   self : ParseError,
   input : String,
-) -> String {
+) -> String noraise {
   match self {
     ParseError(pos, _, _, _) => {
       let base = self.format()
@@ -516,7 +519,7 @@ pub(all) struct Parser[T] {
 
 ///|
 /// Wrap a raw function into a `Parser[T]` — the universal extension point.
-pub fn[T] Parser::of(f : (State) -> ParseResult[T]) -> Parser[T] {
+pub fn[T] Parser::of(f : (State) -> ParseResult[T]) -> Parser[T] noraise {
   { run: f, }
 }
 
@@ -538,7 +541,7 @@ pub fn[T] Parser::of(f : (State) -> ParseResult[T]) -> Parser[T] {
 pub fn[T] Parser::parse(
   self : Parser[T],
   input : String,
-) -> Result[T, ParseError] {
+) -> Result[T, ParseError] noraise {
   let state = State::new(input)
   match (self.run)(state) {
     Success(value, _) => Ok(value)
@@ -564,7 +567,7 @@ pub fn[T] Parser::parse(
 pub fn[T] Parser::parse_full(
   self : Parser[T],
   input : String,
-) -> Result[T, ParseError] {
+) -> Result[T, ParseError] noraise {
   let state = State::new(input)
   match (self.run)(state) {
     Success(value, st) =>

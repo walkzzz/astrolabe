@@ -158,7 +158,7 @@ pub extend Uri with @debug.Debug::{to_repr}
 
 ///|
 /// Format the request line as a string.
-pub fn RequestLine::to_string(self : RequestLine) -> String {
+pub fn RequestLine::to_string(self : RequestLine) -> String noraise {
   "\{self.req_method} \{self.uri} \{self.version.to_string()}"
 }
 
@@ -168,7 +168,7 @@ pub fn RequestLine::to_string(self : RequestLine) -> String {
 
 ///|
 /// Format the header as a string.
-pub fn Header::to_string(self : Header) -> String {
+pub fn Header::to_string(self : Header) -> String noraise {
   "\{self.name}: \{self.value}"
 }
 
@@ -178,7 +178,7 @@ pub fn Header::to_string(self : Header) -> String {
 
 ///|
 /// Format the complete request as a string.
-pub fn Request::to_string(self : Request) -> String {
+pub fn Request::to_string(self : Request) -> String noraise {
   let line = "\{self.req_method} \{self.uri} \{self.version.to_string()}"
   let headers = self.headers.map(fn(h) { h.to_string() }).join("\r\n")
   if headers == "" {
@@ -194,7 +194,7 @@ pub fn Request::to_string(self : Request) -> String {
 
 ///|
 /// Format the URI as a complete string.
-pub fn Uri::to_string(self : Uri) -> String {
+pub fn Uri::to_string(self : Uri) -> String noraise {
   let mut s = "\{self.scheme}://\{self.host}"
   match self.port {
     Some(p) => s = s + ":\{p}"
@@ -347,7 +347,7 @@ fn http_version() -> @core.Parser[Version] {
 
 ///|
 /// Parse an HTTP request line: `METHOD /path HTTP/1.1\r\n`
-pub fn parse_request_line() -> @core.Parser[RequestLine] {
+pub fn parse_request_line() -> @core.Parser[RequestLine] noraise {
   @compose.bind(http_method(), fn(m) {
     @compose.bind(@basic.char(' '), fn(_) {
       @compose.bind(request_target(), fn(uri) {
@@ -367,7 +367,7 @@ pub fn parse_request_line() -> @core.Parser[RequestLine] {
 
 ///|
 /// Parse a single header line: `Key: Value\r\n`
-pub fn parse_header() -> @core.Parser[Header] {
+pub fn parse_header() -> @core.Parser[Header] noraise {
   @compose.bind(
     take_while1(fn(c) { c != ':' && c != '\r' && c != '\n' }, "header name"),
     fn(name) {
@@ -391,7 +391,7 @@ pub fn parse_header() -> @core.Parser[Header] {
 
 ///|
 /// Parse all headers until the empty line.
-pub fn parse_headers() -> @core.Parser[Array[Header]] {
+pub fn parse_headers() -> @core.Parser[Array[Header]] noraise {
   parse_headers_step([])
 }
 
@@ -418,7 +418,7 @@ fn parse_headers_step(acc : Array[Header]) -> @core.Parser[Array[Header]] {
 
 ///|
 /// Parse a complete HTTP request: request line + headers + empty line.
-pub fn parse_request() -> @core.Parser[Request] {
+pub fn parse_request() -> @core.Parser[Request] noraise {
   @compose.bind(parse_request_line(), fn(rl) {
     @compose.bind(parse_headers(), fn(headers) {
       @core.Parser::of(fn(state) {
@@ -535,7 +535,7 @@ fn uri_fragment() -> @core.Parser[String?] {
 
 ///|
 /// Parse a URI into its components.
-pub fn parse_uri() -> @core.Parser[Uri] {
+pub fn parse_uri() -> @core.Parser[Uri] noraise {
   @compose.bind(uri_scheme(), fn(scheme) {
     @compose.bind(@basic.string("://"), fn(_) {
       @compose.bind(uri_host(), fn(host) {
@@ -560,7 +560,9 @@ pub fn parse_uri() -> @core.Parser[Uri] {
 ///|
 /// Convenience: parse a URI string into Result.
 #warnings("-result_error_return")
-pub fn parse_uri_string(input : String) -> Result[Uri, @core.ParseError] {
+pub fn parse_uri_string(
+  input : String,
+) -> Result[Uri, @core.ParseError] noraise {
   @core.Parser::parse(parse_uri(), input)
 }
 
@@ -573,6 +575,6 @@ pub fn parse_uri_string(input : String) -> Result[Uri, @core.ParseError] {
 #warnings("-result_error_return")
 pub fn parse_request_string(
   input : String,
-) -> Result[Request, @core.ParseError] {
+) -> Result[Request, @core.ParseError] noraise {
   @core.Parser::parse_full(parse_request(), input)
 }

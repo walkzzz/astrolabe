@@ -14,7 +14,7 @@
 
 ///|
 /// Fails with an uncommitted error otherwise.
-pub fn char(expected : Char) -> @core.Parser[Char] {
+pub fn char(expected : Char) -> @core.Parser[Char] noraise {
   @core.Parser::of(fn(state) {
     match state.peek() {
       Some(ch) =>
@@ -50,7 +50,7 @@ pub fn char(expected : Char) -> @core.Parser[Char] {
 
 ///|
 /// Fails with an uncommitted error otherwise.
-pub fn string(expected : String) -> @core.Parser[String] {
+pub fn string(expected : String) -> @core.Parser[String] noraise {
   @core.Parser::of(fn(state) {
     let len = expected.length()
     if state.remaining() < len {
@@ -81,7 +81,7 @@ pub fn string(expected : String) -> @core.Parser[String] {
 
 ///|
 /// Match any single character. Fails only at EOF.
-pub fn any_char() -> @core.Parser[Char] {
+pub fn any_char() -> @core.Parser[Char] noraise {
   @core.Parser::of(fn(state) {
     match state.peek() {
       Some(ch) => {
@@ -110,7 +110,7 @@ pub fn any_char() -> @core.Parser[Char] {
 
 ///|
 /// Fails with an uncommitted error if fewer than `n` remain.
-pub fn take(n : Int32) -> @core.Parser[String] {
+pub fn take(n : Int32) -> @core.Parser[String] noraise {
   @core.Parser::of(fn(state) {
     if state.remaining() < n {
       @core.Failure(
@@ -168,7 +168,7 @@ pub fn satisfy(
 
 ///|
 /// Matches zero characters and succeeds when the cursor is at EOF.
-pub fn end_of_input() -> @core.Parser[Unit] {
+pub fn end_of_input() -> @core.Parser[Unit] noraise {
   @core.Parser::of(fn(state) {
     if state.is_eof() {
       @core.Success((), state)
@@ -196,7 +196,7 @@ pub fn end_of_input() -> @core.Parser[Unit] {
 
 ///|
 /// value but does not advance the cursor.
-pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] {
+pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] noraise {
   @core.Parser::of(fn(state) {
     let saved_offset = state.offset
     let saved_pos : @core.Pos = {
@@ -227,7 +227,7 @@ pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] {
 
 ///|
 /// Useful when you need to advance past a delimiter.
-pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
+pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] noraise {
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
       @core.Success(_, st) => @core.Success((), st)
@@ -248,7 +248,7 @@ pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
 
 ///|
 /// Fails if the next character is outside the range.
-pub fn char_range(lo : Char, hi : Char) -> @core.Parser[Char] {
+pub fn char_range(lo : Char, hi : Char) -> @core.Parser[Char] noraise {
   let label_ = "char in [" + lo.to_string() + "-" + hi.to_string() + "]"
   @core.Parser::of(fn(state) {
     match state.peek() {

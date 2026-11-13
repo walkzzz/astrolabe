@@ -93,7 +93,7 @@ pub fn[T] parse_full_raise(
 ///|
 /// Format a `ParseError` as a human-readable string.
 #inline
-pub fn format_error(err : @core.ParseError) -> String {
+pub fn format_error(err : @core.ParseError) -> String noraise {
   err.format()
 }
 
@@ -106,7 +106,7 @@ pub fn format_error(err : @core.ParseError) -> String {
 pub fn format_error_with_input(
   err : @core.ParseError,
   input : String,
-) -> String {
+) -> String noraise {
   err.format_with_input(input)
 }
 
@@ -121,7 +121,7 @@ pub fn format_error_with_input(
 ///|
 /// Match a single specific character.
 #inline
-pub fn char(expected : Char) -> @core.Parser[Char] {
+pub fn char(expected : Char) -> @core.Parser[Char] noraise {
   @basic.char(expected)
 }
 
@@ -132,7 +132,7 @@ pub fn char(expected : Char) -> @core.Parser[Char] {
 ///|
 /// Match an exact string literal.
 #inline
-pub fn string(expected : String) -> @core.Parser[String] {
+pub fn string(expected : String) -> @core.Parser[String] noraise {
   @basic.string(expected)
 }
 
@@ -143,7 +143,7 @@ pub fn string(expected : String) -> @core.Parser[String] {
 ///|
 /// Match any single character.
 #inline
-pub fn any_char() -> @core.Parser[Char] {
+pub fn any_char() -> @core.Parser[Char] noraise {
   @basic.any_char()
 }
 
@@ -154,7 +154,7 @@ pub fn any_char() -> @core.Parser[Char] {
 ///|
 /// Consume exactly `n` characters from the input.
 #inline
-pub fn take(n : Int32) -> @core.Parser[String] {
+pub fn take(n : Int32) -> @core.Parser[String] noraise {
   @basic.take(n)
 }
 
@@ -178,7 +178,7 @@ pub fn satisfy(
 ///|
 /// Succeed only at the end of input.
 #inline
-pub fn end_of_input() -> @core.Parser[Unit] {
+pub fn end_of_input() -> @core.Parser[Unit] noraise {
   @basic.end_of_input()
 }
 
@@ -188,7 +188,7 @@ pub fn end_of_input() -> @core.Parser[Unit] {
 
 ///|
 /// Look ahead without consuming input.
-pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] {
+pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] noraise {
   @basic.peek(p)
 }
 
@@ -198,7 +198,7 @@ pub fn[T] peek(p : @core.Parser[T]) -> @core.Parser[T] {
 
 ///|
 /// Run `p` and discard its result, but consume the input.
-pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
+pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] noraise {
   @basic.skip(p)
 }
 
@@ -209,7 +209,7 @@ pub fn[T] skip(p : @core.Parser[T]) -> @core.Parser[Unit] {
 ///|
 /// Parse a single character in the inclusive range [lo, hi].
 #inline
-pub fn char_range(lo : Char, hi : Char) -> @core.Parser[Char] {
+pub fn char_range(lo : Char, hi : Char) -> @core.Parser[Char] noraise {
   @basic.char_range(lo, hi)
 }
 
@@ -282,7 +282,7 @@ pub fn[T, U] bind(
 ///|
 /// A parser that always succeeds without consuming input.
 #alias(return_, deprecated="Use pure instead")
-pub fn[T] pure(value : T) -> @core.Parser[T] {
+pub fn[T] pure(value : T) -> @core.Parser[T] noraise {
   @compose.pure(value)
 }
 
@@ -295,7 +295,7 @@ pub fn[T] pure(value : T) -> @core.Parser[T] {
 pub fn[A, B] seq2(
   p1 : @core.Parser[A],
   p2 : @core.Parser[B],
-) -> @core.Parser[(A, B)] {
+) -> @core.Parser[(A, B)] noraise {
   @compose.seq2(p1, p2)
 }
 
@@ -309,7 +309,7 @@ pub fn[A, B, C] seq3(
   p1 : @core.Parser[A],
   p2 : @core.Parser[B],
   p3 : @core.Parser[C],
-) -> @core.Parser[(A, B, C)] {
+) -> @core.Parser[(A, B, C)] noraise {
   @compose.seq3(p1, p2, p3)
 }
 
@@ -324,7 +324,7 @@ pub fn[A, B, C, D] seq4(
   p2 : @core.Parser[B],
   p3 : @core.Parser[C],
   p4 : @core.Parser[D],
-) -> @core.Parser[(A, B, C, D)] {
+) -> @core.Parser[(A, B, C, D)] noraise {
   @compose.seq4(p1, p2, p3, p4)
 }
 
@@ -406,7 +406,7 @@ pub fn[T, E] many_till(
 
 ///|
 /// Try `p`; on uncommitted failure, return `default`.
-pub fn[T] option(p : @core.Parser[T], default : T) -> @core.Parser[T] {
+pub fn[T] option(p : @core.Parser[T], default : T) -> @core.Parser[T] noraise {
   @compose.option(p, default)
 }
 
@@ -417,7 +417,7 @@ pub fn[T] option(p : @core.Parser[T], default : T) -> @core.Parser[T] {
 ///|
 /// Run `p` zero or more times, discarding results.
 #inline
-pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] {
+pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] noraise {
   @compose.skip_many(p)
 }
 
@@ -428,7 +428,7 @@ pub fn[T] skip_many(p : @core.Parser[T]) -> @core.Parser[Unit] {
 ///|
 /// Run `p` one or more times, discarding results.
 #inline
-pub fn[T] skip_many1(p : @core.Parser[T]) -> @core.Parser[Unit] {
+pub fn[T] skip_many1(p : @core.Parser[T]) -> @core.Parser[Unit] noraise {
   @compose.skip_many1(p)
 }
 
@@ -442,7 +442,7 @@ pub fn[O, T, C] between(
   open : @core.Parser[O],
   p : @core.Parser[T],
   close : @core.Parser[C],
-) -> @core.Parser[T] {
+) -> @core.Parser[T] noraise {
   @compose.between(open, p, close)
 }
 
@@ -457,7 +457,7 @@ pub fn[O, T, C] between(
 ///|
 /// Mark a parser's failure as committed.
 #inline
-pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] {
+pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] noraise {
   @control.commit(p)
 }
 
@@ -467,7 +467,10 @@ pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] {
 
 ///|
 /// Ordered choice: try `p1`, fall back to `p2` on uncommitted failure.
-pub fn[T] alt(p1 : @core.Parser[T], p2 : @core.Parser[T]) -> @core.Parser[T] {
+pub fn[T] alt(
+  p1 : @core.Parser[T],
+  p2 : @core.Parser[T],
+) -> @core.Parser[T] noraise {
   @control.alt(p1, p2)
 }
 
@@ -478,7 +481,7 @@ pub fn[T] alt(p1 : @core.Parser[T], p2 : @core.Parser[T]) -> @core.Parser[T] {
 ///|
 /// N-way ordered choice over an array of parsers.
 #inline
-pub fn[T] choice(parsers : Array[@core.Parser[T]]) -> @core.Parser[T] {
+pub fn[T] choice(parsers : Array[@core.Parser[T]]) -> @core.Parser[T] noraise {
   @control.choice(parsers)
 }
 
@@ -489,7 +492,7 @@ pub fn[T] choice(parsers : Array[@core.Parser[T]]) -> @core.Parser[T] {
 ///|
 /// Replace a parser's error message with a custom label.
 #inline
-pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
+pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] noraise {
   @control.label(p, name)
 }
 
@@ -502,7 +505,7 @@ pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
 pub fn[T] not_followed_by(
   p : @core.Parser[T],
   label~ : String = "not_followed_by",
-) -> @core.Parser[Unit] {
+) -> @core.Parser[Unit] noraise {
   @control.not_followed_by(p, label~)
 }
 
@@ -522,7 +525,10 @@ pub fn[T] fix(f : (@core.Parser[T]) -> @core.Parser[T]) -> @core.Parser[T] {
 
 ///|
 /// Append a context label to the parser's error chain.
-pub fn[T] with_context(p : @core.Parser[T], ctx : String) -> @core.Parser[T] {
+pub fn[T] with_context(
+  p : @core.Parser[T],
+  ctx : String,
+) -> @core.Parser[T] noraise {
   @control.with_context(p, ctx)
 }
 
