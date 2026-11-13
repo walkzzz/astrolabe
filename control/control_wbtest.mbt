@@ -211,3 +211,53 @@ test "recover from uncommitted failure" {
     @core.Failure(_) => fail("expected success via recovery")
   }
 }
+
+///|
+test "reject always fails" {
+  let p : @core.Parser[Char] = reject("nope")
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(err.expected().contains("nope"))
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+test "succeed always succeeds" {
+  let p = succeed(42)
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Success(v, st) => {
+      assert_eq(v, 42)
+      assert_eq(st.offset, 0)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "attempt downgrades committed to uncommitted" {
+  let committed_fail : @core.Parser[Char] = @core.Parser::of(fn(state) {
+    @core.Failure(@core.ParseError(state.pos, ["'a'"], true, []))
+  })
+  let p = attempt(committed_fail)
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(!err.committed())
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+test "attempt resets state on failure" {
+  let consuming_fail : @core.Parser[Char] = @core.Parser::of(fn(state) {
+    state.advance_one()
+    @core.Failure(@core.ParseError(state.pos, ["'x'"], true, []))
+  })
+  let p = attempt(consuming_fail)
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(_) => assert_eq(s.offset, 0)
+    @core.Success(_, _) => fail("expected failure")
+  }
+}

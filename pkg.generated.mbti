@@ -10,9 +10,15 @@ pub fn[T] alt(@core.Parser[T], @core.Parser[T]) -> @core.Parser[T]
 
 pub fn any_char() -> @core.Parser[Char]
 
+pub fn[T] attempt(@core.Parser[T]) -> @core.Parser[T]
+
 pub fn[O, T, C] between(@core.Parser[O], @core.Parser[T], @core.Parser[C]) -> @core.Parser[T]
 
 pub fn[T, U] bind(@core.Parser[T], (T) -> @core.Parser[U]) -> @core.Parser[U]
+
+pub fn[T] chainl1(@core.Parser[T], @core.Parser[(T, T) -> T]) -> @core.Parser[T]
+
+pub fn[T] chainr1(@core.Parser[T], @core.Parser[(T, T) -> T]) -> @core.Parser[T]
 
 pub fn char(Char) -> @core.Parser[Char]
 
@@ -26,7 +32,11 @@ pub fn[T] commit(@core.Parser[T]) -> @core.Parser[T]
 
 pub fn[T] count(Int32, @core.Parser[T]) -> @core.Parser[Array[T]]
 
+pub fn[T] count_min_max(min~ : Int32, max~ : Int32, @core.Parser[T]) -> @core.Parser[Array[T]]
+
 pub fn end_of_input() -> @core.Parser[Unit]
+
+pub fn[T] filter(@core.Parser[T], (T) -> Bool, label? : String) -> @core.Parser[T]
 
 pub fn[T] fix((@core.Parser[T]) -> @core.Parser[T]) -> @core.Parser[T]
 
@@ -65,11 +75,17 @@ pub fn[T] pure(T) -> @core.Parser[T]
 
 pub fn[T] recover(@core.Parser[T], (@core.ParseError) -> @core.Parser[T]) -> @core.Parser[T]
 
+pub fn[T] reject(String) -> @core.Parser[T]
+
 pub fn satisfy((Char) -> Bool, label? : String) -> @core.Parser[Char]
 
 pub fn[T, S] sep_by(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
 
 pub fn[T, S] sep_by1(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
+
+pub fn[T, S] sep_end_by(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
+
+pub fn[T, S] sep_end_by1(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
 
 pub fn[A, B] seq2(@core.Parser[A], @core.Parser[B]) -> @core.Parser[(A, B)]
 
@@ -85,13 +101,19 @@ pub fn[T] skip_many1(@core.Parser[T]) -> @core.Parser[Unit]
 
 pub fn string(String) -> @core.Parser[String]
 
+pub fn[T] succeed(T) -> @core.Parser[T]
+
 pub fn take(Int32) -> @core.Parser[String]
 
 pub fn take_while((Char) -> Bool) -> @core.Parser[String]
 
 pub fn take_while1((Char) -> Bool, label? : String) -> @core.Parser[String]
 
+pub fn[T, U] validate(@core.Parser[T], (T) -> Result[U, String], label? : String) -> @core.Parser[U]
+
 pub fn[T] with_context(@core.Parser[T], String) -> @core.Parser[T]
+
+pub fn[T] with_hint(@core.Parser[T], hint~ : @core.ParseHint) -> @core.Parser[T]
 
 // Errors
 

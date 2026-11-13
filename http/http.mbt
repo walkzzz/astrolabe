@@ -1,9 +1,17 @@
 ///| HTTP 方法枚举。
 
-///|
+///| 标记为 `#non_exhaustive` 以允许未来添加新变体而不破坏下游匹配。
+
+///| 若需更灵活的扩展性（如 WebDAV 的 LOCK/UNLOCK），可改用 `extenum Method`。
 
 ///|
-/// HTTP method as an enum.
+
+///| HTTP method as an enum.
+
+///| Marked `#non_exhaustive` to allow adding variants without breaking downstream matches.
+
+///|
+/// For more flexible extensibility (e.g. WebDAV LOCK/UNLOCK), use `extenum Method` instead.
 #derive(Debug, Eq)
 #non_exhaustive
 pub(all) enum Method {
@@ -281,28 +289,29 @@ fn digits1() -> @core.Parser[String] {
 
 ///|
 /// Parse an HTTP method: uppercase letters until space.
-fn http_method() -> @core.Parser[Method] {
-  @compose.bind(take_while1(fn(c) { c >= 'A' && c <= 'Z' }, "HTTP method"), fn(
-    tok,
-  ) {
-    match tok {
-      "GET" => @compose.pure(GET)
-      "POST" => @compose.pure(POST)
-      "PUT" => @compose.pure(PUT)
-      "DELETE" => @compose.pure(DELETE)
-      "HEAD" => @compose.pure(HEAD)
-      "OPTIONS" => @compose.pure(OPTIONS)
-      "PATCH" => @compose.pure(PATCH)
-      "CONNECT" => @compose.pure(CONNECT)
-      "TRACE" => @compose.pure(TRACE)
-      _ =>
-        @core.Parser::of(fn(state) {
-          @core.Failure(
-            @core.ParseError::at(pos=state.pos, expected="HTTP method"),
-          )
-        })
-    }
-  })
+fn http_method() -> @core.Parser[Method] noraise {
+  @compose.bind(
+    @basic.take_while1(fn(c) { c >= 'A' && c <= 'Z' }, label="HTTP method"),
+    fn(tok) {
+      match tok {
+        "GET" => @compose.pure(GET)
+        "POST" => @compose.pure(POST)
+        "PUT" => @compose.pure(PUT)
+        "DELETE" => @compose.pure(DELETE)
+        "HEAD" => @compose.pure(HEAD)
+        "OPTIONS" => @compose.pure(OPTIONS)
+        "PATCH" => @compose.pure(PATCH)
+        "CONNECT" => @compose.pure(CONNECT)
+        "TRACE" => @compose.pure(TRACE)
+        _ =>
+          @core.Parser::of(fn(state) {
+            @core.Failure(
+              @core.ParseError::at(pos=state.pos, expected="HTTP method"),
+            )
+          })
+      }
+    },
+  )
 }
 
 ///| 解析请求目标（URI 路径）：非空格、非换行字符。

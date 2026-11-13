@@ -156,3 +156,67 @@ test "public API: recover continues past committed failure" {
     Err(_) => fail("expected Ok via recovery")
   }
 }
+
+///|
+test "public API: reject always fails" {
+  let p : @core.Parser[Char] = @astrolabe.reject("nope")
+  match @astrolabe.parse(p, "abc") {
+    Err(err) => assert_true(err.expected().contains("nope"))
+    Ok(_) => fail("expected Err")
+  }
+}
+
+///|
+test "public API: succeed without consuming" {
+  let p = @astrolabe.succeed(99)
+  match @astrolabe.parse(p, "abc") {
+    Ok(v) => assert_eq(v, 99)
+    Err(_) => fail("expected Ok")
+  }
+}
+
+///|
+test "public API: attempt backtracks committed failure" {
+  let p = @astrolabe.alt(
+    @astrolabe.attempt(@astrolabe.commit(@astrolabe.char('x'))),
+    @astrolabe.char('a'),
+  )
+  match @astrolabe.parse(p, "abc") {
+    Ok(ch) => assert_eq(ch, 'a')
+    Err(_) => fail("expected Ok via attempt + alt")
+  }
+}
+
+///|
+test "public API: with_hint attaches metadata" {
+  let p = @astrolabe.with_hint(
+    @astrolabe.char('a'),
+    hint=@core.ParseHint::heavy(),
+  )
+  match @astrolabe.parse(p, "abc") {
+    Ok(ch) => assert_eq(ch, 'a')
+    Err(_) => fail("expected Ok")
+  }
+}
+
+///|
+test "public API: filter rejects non-matching" {
+  let p = @astrolabe.filter(
+    @astrolabe.any_char(),
+    fn(c) { c >= 'a' && c <= 'z' },
+    label="lowercase",
+  )
+  match @astrolabe.parse(p, "A") {
+    Err(err) => assert_true(err.expected().contains("lowercase"))
+    Ok(_) => fail("expected Err")
+  }
+}
+
+///|
+test "public API: sep_end_by with trailing separator" {
+  let p = @astrolabe.sep_end_by(@astrolabe.char('a'), @astrolabe.char(','))
+  match @astrolabe.parse(p, "a,a,") {
+    Ok(arr) => assert_eq(arr.length(), 2)
+    Err(_) => fail("expected Ok")
+  }
+}

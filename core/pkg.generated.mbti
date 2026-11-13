@@ -27,6 +27,12 @@ pub fn ParseError::to_repr(Self) -> @debug.Repr
 pub fn ParseError::with_context(Self, String) -> Self
 
 // Types and methods
+pub extenum ParseHint {
+}
+pub fn ParseHint::heavy() -> Self
+pub fn ParseHint::light() -> Self
+pub fn ParseHint::recovery() -> Self
+
 pub(all) enum ParseResult[T] {
   Success(T, State)
   Failure(ParseError)
@@ -67,6 +73,13 @@ pub fn State::peek(Self) -> Char?
 pub fn State::remaining(Self) -> Int32
 pub fn State::slice(Self, Int32, Int32) -> String
 pub fn State::to_repr(Self) -> @debug.Repr
+
+// Extensible enum extensions
+pub extenum ParseHint += {
+  Heavy
+  Light
+  Recovery
+}
 
 // Type aliases
 

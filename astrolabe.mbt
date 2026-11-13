@@ -558,6 +558,147 @@ pub fn[T] map_error(
 pub fn[T] recover(
   p : @core.Parser[T],
   fallback : (@core.ParseError) -> @core.Parser[T],
-) -> @core.Parser[T] {
+) -> @core.Parser[T] noraise {
   @control.recover(p, fallback)
+}
+
+///| 总是失败的解析器 — 在当前位置产生未承诺的错误。
+
+///|
+
+///|
+/// A parser that always fails with an uncommitted error.
+pub fn[T] reject(msg : String) -> @core.Parser[T] noraise {
+  @control.reject(msg)
+}
+
+///| 总是成功的解析器 — 不消耗输入，返回 `value`。
+
+///|
+
+///|
+/// A parser that always succeeds without consuming input.
+pub fn[T] succeed(value : T) -> @core.Parser[T] noraise {
+  @control.succeed(value)
+}
+
+///| 回溯包装 — 即使已承诺失败也回退到原始状态。
+
+///|
+
+///|
+/// Backtracking wrapper — resets state even on committed failure.
+pub fn[T] attempt(p : @core.Parser[T]) -> @core.Parser[T] noraise {
+  @control.attempt(p)
+}
+
+///| 为解析器附加语义提示（元数据，不影响解析行为）。
+
+///| 用户可通过 `extenum @core.ParseHint += { ... }` 定义自定义提示。
+
+///|
+
+///| Attach a semantic hint to a parser (metadata, does not affect parsing).
+
+///|
+/// Users can define custom hints via `extenum @core.ParseHint += { ... }`.
+pub fn[T] with_hint(
+  p : @core.Parser[T],
+  hint~ : @core.ParseHint,
+) -> @core.Parser[T] noraise {
+  @control.with_hint(p, hint~)
+}
+
+///| 过滤解析结果 — 若 `pred` 返回 `false` 则失败。
+
+///|
+
+///|
+/// Filter a parser's result — fails if `pred` returns `false`.
+pub fn[T] filter(
+  p : @core.Parser[T],
+  pred : (T) -> Bool,
+  label~ : String = "filter",
+) -> @core.Parser[T] noraise {
+  @compose.filter(p, pred, label~)
+}
+
+///| 验证解析结果 — 若 `f` 返回 `Err` 则失败。
+
+///|
+
+///|
+/// Validate a parser's result — fails if `f` returns `Err`.
+pub fn[T, U] validate(
+  p : @core.Parser[T],
+  f : (T) -> Result[U, String],
+  label~ : String = "validate",
+) -> @core.Parser[U] noraise {
+  @compose.validate(p, f, label~)
+}
+
+///| 左结合链式解析。
+
+///|
+
+///|
+/// Left-associative chain parsing.
+pub fn[T] chainl1(
+  p : @core.Parser[T],
+  op : @core.Parser[(T, T) -> T],
+) -> @core.Parser[T] noraise {
+  @compose.chainl1(p, op)
+}
+
+///| 右结合链式解析。
+
+///|
+
+///|
+/// Right-associative chain parsing.
+pub fn[T] chainr1(
+  p : @core.Parser[T],
+  op : @core.Parser[(T, T) -> T],
+) -> @core.Parser[T] noraise {
+  @compose.chainr1(p, op)
+}
+
+///| 有界重复 — 解析 `p` 至少 `min` 次、至多 `max` 次。
+
+///|
+
+///|
+/// Bounded repetition — parse `p` between `min` and `max` times.
+pub fn[T] count_min_max(
+  min~ : Int32,
+  max~ : Int32,
+  p : @core.Parser[T],
+) -> @core.Parser[Array[T]] noraise {
+  @compose.count_min_max(min~, max~, p)
+}
+
+///| 分隔解析（允许尾部分隔符）。
+
+///|
+
+///|
+/// Separated parse with optional trailing separator.
+pub fn[T, S] sep_end_by(
+  p : @core.Parser[T],
+  sep : @core.Parser[S],
+) -> @core.Parser[Array[T]] noraise {
+  @compose.sep_end_by(p, sep)
+}
+
+///| 分隔解析（允许尾部分隔符，至少一个）。
+
+///|
+
+///|
+/// Separated parse with optional trailing separator (at least one).
+pub fn[T, S] sep_end_by1(
+  p : @core.Parser[T],
+  sep : @core.Parser[S],
+) -> @core.Parser[Array[T]] noraise {
+  @compose.sep_end_by1(p, sep)
 }

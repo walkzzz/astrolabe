@@ -10,7 +10,15 @@ pub fn[O, T, C] between(@core.Parser[O], @core.Parser[T], @core.Parser[C]) -> @c
 
 pub fn[T, U] bind(@core.Parser[T], (T) -> @core.Parser[U]) -> @core.Parser[U]
 
+pub fn[T] chainl1(@core.Parser[T], @core.Parser[(T, T) -> T]) -> @core.Parser[T]
+
+pub fn[T] chainr1(@core.Parser[T], @core.Parser[(T, T) -> T]) -> @core.Parser[T]
+
 pub fn[T] count(Int32, @core.Parser[T]) -> @core.Parser[Array[T]]
+
+pub fn[T] count_min_max(min~ : Int32, max~ : Int32, @core.Parser[T]) -> @core.Parser[Array[T]]
+
+pub fn[T] filter(@core.Parser[T], (T) -> Bool, label? : String) -> @core.Parser[T]
 
 pub fn[T] many(@core.Parser[T]) -> @core.Parser[Array[T]]
 
@@ -29,6 +37,10 @@ pub fn[T, S] sep_by(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
 
 pub fn[T, S] sep_by1(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
 
+pub fn[T, S] sep_end_by(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
+
+pub fn[T, S] sep_end_by1(@core.Parser[T], @core.Parser[S]) -> @core.Parser[Array[T]]
+
 pub fn[A, B] seq2(@core.Parser[A], @core.Parser[B]) -> @core.Parser[(A, B)]
 
 pub fn[A, B, C] seq3(@core.Parser[A], @core.Parser[B], @core.Parser[C]) -> @core.Parser[(A, B, C)]
@@ -38,6 +50,8 @@ pub fn[A, B, C, D] seq4(@core.Parser[A], @core.Parser[B], @core.Parser[C], @core
 pub fn[T] skip_many(@core.Parser[T]) -> @core.Parser[Unit]
 
 pub fn[T] skip_many1(@core.Parser[T]) -> @core.Parser[Unit]
+
+pub fn[T, U] validate(@core.Parser[T], (T) -> Result[U, String], label? : String) -> @core.Parser[U]
 
 // Errors
 

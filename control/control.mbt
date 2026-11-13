@@ -216,11 +216,98 @@ pub fn[T] map_error(
 pub fn[T] recover(
   p : @core.Parser[T],
   fallback : (@core.ParseError) -> @core.Parser[T],
-) -> @core.Parser[T] {
+) -> @core.Parser[T] noraise {
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
       @core.Success(value, st) => @core.Success(value, st)
       @core.Failure(err) => (fallback(err).run)(state)
     }
   })
+}
+
+///| 总是失败的解析器 — 在当前位置产生未承诺的错误。
+
+///| 命名为 `reject` 以避免与测试框架的 `fail` 冲突。
+
+///|
+
+///| A parser that always fails with an uncommitted error.
+
+///|
+/// Named `reject` to avoid conflict with the test framework's `fail`.
+pub fn[T] reject(msg : String) -> @core.Parser[T] noraise {
+  @core.Parser::of(fn(state) {
+    @core.Failure(@core.ParseError::at(pos=state.pos, expected=msg))
+  })
+}
+
+///| 总是成功的解析器 — 不消耗输入，返回 `value`。
+
+///| 等价于 `pure(value)`，提供更直观的命名。
+
+///|
+
+///| A parser that always succeeds without consuming input.
+
+///|
+/// Equivalent to `pure(value)` with a more intuitive name.
+pub fn[T] succeed(value : T) -> @core.Parser[T] noraise {
+  @core.Parser::of(fn(state) { @core.Success(value, state) })
+}
+
+///| 回溯包装 — 即使 `p` 已承诺失败，也回退到原始状态。
+
+///| 与 `recover` 不同：`attempt` 不调用恢复函数，而是将承诺失败
+
+///| 降级为未承诺失败，使 `alt` 可以尝试下一个备选。
+
+///|
+
+///| Backtracking wrapper — even on committed failure, reset to original state.
+
+///| Unlike `recover`: `attempt` downgrades committed to uncommitted,
+
+///|
+/// allowing `alt` to try the next alternative.
+pub fn[T] attempt(p : @core.Parser[T]) -> @core.Parser[T] noraise {
+  @core.Parser::of(fn(state) {
+    let saved_offset = state.offset
+    let saved_pos : @core.Pos = {
+      line: state.pos.line,
+      column: state.pos.column,
+      offset: state.pos.offset,
+    }
+    match (p.run)(state) {
+      @core.Success(value, st) => @core.Success(value, st)
+      @core.Failure(err) => {
+        state.offset = saved_offset
+        state.pos = saved_pos
+        @core.Failure(
+          @core.ParseError(err.pos(), err.expected(), false, err.contexts()),
+        )
+      }
+    }
+  })
+}
+
+///| 为解析器附加语义提示 — 用于诊断、优化或扩展。
+
+///| 提示不影响解析行为，仅作为元数据。
+
+///| 用户可通过 `extenum ParseHint += { ... }` 定义自定义提示。
+
+///|
+
+///| Attach a semantic hint to a parser — for diagnostics, optimization, or extension.
+
+///| Hints do not affect parsing behavior; they are metadata only.
+
+///|
+/// Users can define custom hints via `extenum ParseHint += { ... }`.
+pub fn[T] with_hint(
+  p : @core.Parser[T],
+  hint~ : @core.ParseHint,
+) -> @core.Parser[T] noraise {
+  ignore(hint)
+  p
 }

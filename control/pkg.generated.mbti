@@ -8,6 +8,8 @@ import {
 // Values
 pub fn[T] alt(@core.Parser[T], @core.Parser[T]) -> @core.Parser[T]
 
+pub fn[T] attempt(@core.Parser[T]) -> @core.Parser[T]
+
 pub fn[T] choice(Array[@core.Parser[T]]) -> @core.Parser[T]
 
 pub fn[T] commit(@core.Parser[T]) -> @core.Parser[T]
@@ -22,7 +24,13 @@ pub fn[T] not_followed_by(@core.Parser[T], label? : String) -> @core.Parser[Unit
 
 pub fn[T] recover(@core.Parser[T], (@core.ParseError) -> @core.Parser[T]) -> @core.Parser[T]
 
+pub fn[T] reject(String) -> @core.Parser[T]
+
+pub fn[T] succeed(T) -> @core.Parser[T]
+
 pub fn[T] with_context(@core.Parser[T], String) -> @core.Parser[T]
+
+pub fn[T] with_hint(@core.Parser[T], hint~ : @core.ParseHint) -> @core.Parser[T]
 
 // Errors
 
