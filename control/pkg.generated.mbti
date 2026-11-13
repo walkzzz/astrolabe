@@ -16,7 +16,13 @@ pub fn[T] fix((@core.Parser[T]) -> @core.Parser[T]) -> @core.Parser[T]
 
 pub fn[T] label(@core.Parser[T], String) -> @core.Parser[T]
 
+pub fn[T] map_error(@core.Parser[T], (@core.ParseError) -> @core.ParseError) -> @core.Parser[T]
+
 pub fn[T] not_followed_by(@core.Parser[T], label? : String) -> @core.Parser[Unit]
+
+pub fn[T] recover(@core.Parser[T], (@core.ParseError) -> @core.Parser[T]) -> @core.Parser[T]
+
+pub fn[T] with_context(@core.Parser[T], String) -> @core.Parser[T]
 
 // Errors
 

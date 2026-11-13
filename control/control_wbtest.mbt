@@ -128,3 +128,86 @@ fn[A, B] wb_seq2(
     }
   })
 }
+
+///|
+test "with_context adds context to error" {
+  let p = with_context(char('x'), "parsing field")
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => {
+      assert_true(err.contexts().length() == 1)
+      assert_true(err.contexts()[0] == "parsing field")
+      assert_true(err.context() == "parsing field")
+    }
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+test "with_context chains multiple contexts" {
+  let p = with_context(with_context(char('x'), "inner"), "outer")
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => {
+      assert_true(err.contexts().length() == 2)
+      assert_true(err.contexts()[0] == "inner")
+      assert_true(err.contexts()[1] == "outer")
+      assert_true(err.context() == "inner > outer")
+    }
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+test "with_context preserves success" {
+  let p = with_context(char('a'), "should not appear")
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Success(ch, st) => {
+      assert_eq(ch, 'a')
+      assert_eq(st.offset, 1)
+    }
+    @core.Failure(_) => fail("expected success")
+  }
+}
+
+///|
+test "map_error transforms error" {
+  let p = map_error(char('x'), fn(err) {
+    @core.ParseError(err.pos(), ["custom"], err.committed(), err.contexts())
+  })
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_true(err.expected()[0] == "custom")
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+test "recover from committed failure" {
+  let committed_a : @core.Parser[Char] = @core.Parser::of(fn(state) {
+    @core.Failure(@core.ParseError(state.pos, ["'a'"], true, []))
+  })
+  let p = recover(committed_a, fn(_) { char('a') })
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Success(ch, st) => {
+      assert_eq(ch, 'a')
+      assert_eq(st.offset, 1)
+    }
+    @core.Failure(_) => fail("expected success via recovery")
+  }
+}
+
+///|
+test "recover from uncommitted failure" {
+  let p = recover(char('x'), fn(_) { char('a') })
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Success(ch, st) => {
+      assert_eq(ch, 'a')
+      assert_eq(st.offset, 1)
+    }
+    @core.Failure(_) => fail("expected success via recovery")
+  }
+}

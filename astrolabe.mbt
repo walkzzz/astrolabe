@@ -515,3 +515,43 @@ pub fn[T] not_followed_by(
 pub fn[T] fix(f : (@core.Parser[T]) -> @core.Parser[T]) -> @core.Parser[T] {
   @control.fix(f)
 }
+
+///| 为解析器的错误追加上下文标签，形成错误链。
+
+///|
+
+///|
+/// Append a context label to the parser's error chain.
+pub fn[T] with_context(p : @core.Parser[T], ctx : String) -> @core.Parser[T] {
+  @control.with_context(p, ctx)
+}
+
+///| 用函数 `f` 变换解析器的错误。
+
+///|
+
+///|
+/// Transform the parser's error with function `f`.
+pub fn[T] map_error(
+  p : @core.Parser[T],
+  f : (@core.ParseError) -> @core.ParseError,
+) -> @core.Parser[T] {
+  @control.map_error(p, f)
+}
+
+///| 错误恢复 — 当 `p` 失败时用 `fallback` 重新尝试。
+
+///| 与 `alt` 不同：即使已承诺失败也会尝试恢复。
+
+///|
+
+///| Error recovery — when `p` fails, try `fallback`.
+
+///|
+/// Unlike `alt`: attempts recovery even on committed failure.
+pub fn[T] recover(
+  p : @core.Parser[T],
+  fallback : (@core.ParseError) -> @core.Parser[T],
+) -> @core.Parser[T] {
+  @control.recover(p, fallback)
+}

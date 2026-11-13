@@ -82,9 +82,9 @@ test "many stops on committed error" {
           state.advance_one()
           @core.Success(ch, state)
         } else {
-          @core.Failure(@core.ParseError(state.pos, ["'a'"], true, ""))
+          @core.Failure(@core.ParseError(state.pos, ["'a'"], true, []))
         }
-      None => @core.Failure(@core.ParseError(state.pos, ["'a'"], true, ""))
+      None => @core.Failure(@core.ParseError(state.pos, ["'a'"], true, []))
     }
   })
   let p = many(committed_a)
@@ -258,7 +258,7 @@ test "option fallback default" {
 ///|
 test "option committed failure propagates" {
   let committed_x : @core.Parser[Char] = @core.Parser::of(fn(state) {
-    @core.Failure(@core.ParseError(state.pos, ["'x'"], true, ""))
+    @core.Failure(@core.ParseError(state.pos, ["'x'"], true, []))
   })
   let p = option(committed_x, 'z')
   let s = @core.State::new("abc")

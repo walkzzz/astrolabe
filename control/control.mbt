@@ -109,7 +109,7 @@ pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
       @core.Success(value, st) => @core.Success(value, st)
       @core.Failure(err) =>
         @core.Failure(
-          @core.ParseError(err.pos(), [name], err.committed(), err.context()),
+          @core.ParseError(err.pos(), [name], err.committed(), err.contexts()),
         )
     }
   })
@@ -150,4 +150,71 @@ pub fn[T] fix(f : (@core.Parser[T]) -> @core.Parser[T]) -> @core.Parser[T] {
   let result = f(self_parser)
   cell.push(result)
   result
+}
+
+///| 为解析器的错误追加上下文标签，形成错误链。
+
+///| 不改变 `expected` 和 `committed`，仅在 `contexts` 末尾追加 `ctx`。
+
+///|
+
+///| Append a context label to the parser's error chain.
+
+///|
+/// Does not change `expected` or `committed`; only appends `ctx` to `contexts`.
+pub fn[T] with_context(p : @core.Parser[T], ctx : String) -> @core.Parser[T] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Success(value, st) => @core.Success(value, st)
+      @core.Failure(err) => @core.Failure(err.with_context(ctx))
+    }
+  })
+}
+
+///| 用函数 `f` 变换解析器的错误。
+
+///| `committed` 标志保持不变 — `f` 可修改 `pos`/`expected`/`contexts`。
+
+///|
+
+///| Transform the parser's error with function `f`.
+
+///|
+/// The `committed` flag is preserved; `f` may modify `pos`/`expected`/`contexts`.
+pub fn[T] map_error(
+  p : @core.Parser[T],
+  f : (@core.ParseError) -> @core.ParseError,
+) -> @core.Parser[T] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Success(value, st) => @core.Success(value, st)
+      @core.Failure(err) => @core.Failure(f(err))
+    }
+  })
+}
+
+///| 错误恢复 — 当 `p` 失败时，用 `fallback` 在原始状态上重新尝试。
+
+///| 与 `alt` 不同：`recover` 在**已承诺**失败时也会尝试恢复。
+
+///| 适用于需要从不可回溯错误中恢复的场景（如错误恢复解析器）。
+
+///|
+
+///| Error recovery — when `p` fails, try `fallback` on the original state.
+
+///| Unlike `alt`: `recover` attempts recovery even on **committed** failure.
+
+///|
+/// Useful for error-recovery parsers that must continue past committed failures.
+pub fn[T] recover(
+  p : @core.Parser[T],
+  fallback : (@core.ParseError) -> @core.Parser[T],
+) -> @core.Parser[T] {
+  @core.Parser::of(fn(state) {
+    match (p.run)(state) {
+      @core.Success(value, st) => @core.Success(value, st)
+      @core.Failure(err) => (fallback(err).run)(state)
+    }
+  })
 }

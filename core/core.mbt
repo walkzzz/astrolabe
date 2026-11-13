@@ -249,7 +249,7 @@ pub fn State::slice(self : State, start : Int32, end : Int32) -> String {
 /// - `committed = true` — backtracking is suppressed in `alt`
 #derive(Debug, Eq)
 pub(all) suberror ParseError {
-  ParseError(Pos, Array[String], Bool, String)
+  ParseError(Pos, Array[String], Bool, Array[String])
 }
 
 ///|
@@ -271,7 +271,7 @@ pub extend ParseError with @debug.Debug::{to_repr}
 ///|
 /// Convenience factory for the common case: single expected token, no context, uncommitted.
 pub fn ParseError::at(pos~ : Pos, expected~ : String) -> ParseError {
-  ParseError(pos, [expected], false, "")
+  ParseError(pos, [expected], false, [])
 }
 
 ///| 返回错误的位置信息。
@@ -310,15 +310,27 @@ pub fn ParseError::committed(self : ParseError) -> Bool {
   }
 }
 
-///| 返回上下文标签。
+///| 返回上下文链。
 
 ///|
 
 ///|
-/// Return the context label.
+/// Return the context chain.
+pub fn ParseError::contexts(self : ParseError) -> Array[String] {
+  match self {
+    ParseError(_, _, _, contexts) => contexts
+  }
+}
+
+///| 返回上下文标签（已拼接）。
+
+///|
+
+///|
+/// Return the context label (joined with " > ").
 pub fn ParseError::context(self : ParseError) -> String {
   match self {
-    ParseError(_, _, _, context) => context
+    ParseError(_, _, _, contexts) => contexts.join(" > ")
   }
 }
 
@@ -331,8 +343,24 @@ pub fn ParseError::context(self : ParseError) -> String {
 #inline
 pub fn ParseError::commit(self : ParseError) -> ParseError {
   match self {
-    ParseError(pos, expected, _, context) =>
-      ParseError(pos, expected, true, context)
+    ParseError(pos, expected, _, contexts) =>
+      ParseError(pos, expected, true, contexts)
+  }
+}
+
+///| 返回追加了上下文标签的副本，用于错误链追踪。
+
+///|
+
+///|
+/// Return a copy with `ctx` appended to the context chain.
+pub fn ParseError::with_context(self : ParseError, ctx : String) -> ParseError {
+  match self {
+    ParseError(pos, expected, committed, contexts) => {
+      let new_contexts = contexts.copy()
+      new_contexts.push(ctx)
+      ParseError(pos, expected, committed, new_contexts)
+    }
   }
 }
 
@@ -366,10 +394,14 @@ pub fn ParseError::commit(self : ParseError) -> ParseError {
 /// The `context` line is omitted when empty.
 pub fn ParseError::format(self : ParseError) -> String {
   match self {
-    ParseError(pos, expected, _, context) => {
+    ParseError(pos, expected, _, contexts) => {
       let loc = "line \{pos.line}, column \{pos.column} (offset \{pos.offset})"
       let exp = expected.join(" or ")
-      let ctx = if context == "" { "" } else { "\n  \{context}" }
+      let ctx = if contexts.length() == 0 {
+        ""
+      } else {
+        "\n  in \{contexts.join(" > ")}"
+      }
       "\{loc}:\nexpected \{exp}\{ctx}"
     }
   }

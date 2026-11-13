@@ -10,12 +10,13 @@ import {
 // Errors
 #derive(Eq, @debug.Debug)
 pub(all) suberror ParseError {
-  ParseError(Pos, Array[String], Bool, String)
+  ParseError(Pos, Array[String], Bool, Array[String])
 }
 pub fn ParseError::at(pos~ : Pos, expected~ : String) -> Self
 pub fn ParseError::commit(Self) -> Self
 pub fn ParseError::committed(Self) -> Bool
 pub fn ParseError::context(Self) -> String
+pub fn ParseError::contexts(Self) -> Array[String]
 pub fn ParseError::equal(Self, Self) -> Bool
 pub fn ParseError::expected(Self) -> Array[String]
 pub fn ParseError::format(Self) -> String
@@ -23,6 +24,7 @@ pub fn ParseError::format_with_input(Self, String) -> String
 pub fn ParseError::not_equal(Self, Self) -> Bool
 pub fn ParseError::pos(Self) -> Pos
 pub fn ParseError::to_repr(Self) -> @debug.Repr
+pub fn ParseError::with_context(Self, String) -> Self
 
 // Types and methods
 pub(all) enum ParseResult[T] {

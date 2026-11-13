@@ -130,3 +130,29 @@ test "public API: fix recursive" {
     Err(_) => fail("expected Ok")
   }
 }
+
+///|
+test "public API: with_context chains contexts in format" {
+  let p = @astrolabe.with_context(
+    @astrolabe.with_context(@astrolabe.char('x'), "field"),
+    "record",
+  )
+  match @astrolabe.parse(p, "abc") {
+    Err(err) => {
+      let fmt = @astrolabe.format_error(err)
+      assert_true(fmt.contains("field > record"))
+    }
+    Ok(_) => fail("expected Err")
+  }
+}
+
+///|
+test "public API: recover continues past committed failure" {
+  let p = @astrolabe.recover(@astrolabe.commit(@astrolabe.char('x')), fn(_) {
+    @astrolabe.char('a')
+  })
+  match @astrolabe.parse(p, "abc") {
+    Ok(ch) => assert_eq(ch, 'a')
+    Err(_) => fail("expected Ok via recovery")
+  }
+}
