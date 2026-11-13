@@ -297,3 +297,70 @@ test "attempt resets state on failure" {
     @core.Success(_, _) => fail("expected failure")
   }
 }
+
+///|
+/// 测试 alt 两分支同位置失败时聚合期望标签
+/// Test alt aggregates expected labels when both branches fail at the same position
+test "alt aggregates same-position labels" {
+  let p = alt(char('a'), char('b'))
+  let s = @core.State::new("c")
+  match (p.run)(s) {
+    @core.Failure(err) => {
+      assert_eq(err.expected(), ["'a'", "'b'"])
+      assert_true(!err.committed())
+    }
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+/// 测试 alt 保留更远位置的错误
+/// Test alt keeps the furthest-position error
+test "alt keeps furthest error" {
+  let shallow_fail : @core.Parser[Char] = @core.Parser::of(fn(state) {
+    @core.Failure(@core.ParseError::at(pos=state.pos, expected="'a'"))
+  })
+  let deeper_fail : @core.Parser[Char] = @core.Parser::of(fn(state) {
+    state.advance_one()
+    @core.Failure(@core.ParseError::at(pos=state.pos, expected="'z'"))
+  })
+  let p = alt(shallow_fail, deeper_fail)
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => {
+      assert_eq(err.pos().offset, 1)
+      assert_true(err.expected().contains("'z'"))
+    }
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+/// 测试 choice 三分支全部同位置失败时聚合全部期望标签
+/// Test choice aggregates labels from all three branches failing at the same position
+test "choice aggregates three branches" {
+  let p = choice([char('a'), char('b'), char('c')])
+  let s = @core.State::new("d")
+  match (p.run)(s) {
+    @core.Failure(err) => assert_eq(err.expected(), ["'a'", "'b'", "'c'"])
+    @core.Success(_, _) => fail("expected failure")
+  }
+}
+
+///|
+/// 测试 alt 在第一分支承诺失败时不尝试第二分支（回归保护）
+/// Test alt does not try the second branch on committed failure (regression guard)
+test "alt committed failure no backtrack" {
+  let committed_x : @core.Parser[Char] = @core.Parser::of(fn(state) {
+    @core.Failure(@core.ParseError(state.pos, ["'x'"], true, []))
+  })
+  let p = alt(committed_x, char('a'))
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    @core.Failure(err) => {
+      assert_eq(err.expected(), ["'x'"])
+      assert_true(err.committed())
+    }
+    @core.Success(_, _) => fail("expected failure")
+  }
+}

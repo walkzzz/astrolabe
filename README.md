@@ -8,9 +8,9 @@
 
 _MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Angstrom](https://github.com/SimonCourteaux/angstrom)_
 
-[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.1.17-orange?style=flat-square)](https://mooncakes.io/package/walkzzz/astrolabe)
+[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.4.0-orange?style=flat-square)](https://mooncakes.io/package/walkzzz/astrolabe)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![tests](https://img.shields.io/badge/tests-147%20%C3%97%204%20backends-green?style=flat-square)]()
+[![tests](https://img.shields.io/badge/tests-185%20%C3%97%204%20backends-green?style=flat-square)]()
 [![formal](https://img.shields.io/badge/formal-Z3%20verified-brightgreen?style=flat-square)](docs/formal-spec.md)
 [![docs](https://img.shields.io/badge/docs-bilingual-blueviolet?style=flat-square)](docs/)
 
@@ -39,7 +39,7 @@ _MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Ang
 - 🎯 **精确错误报告** — 字符级位置 + 输入上下文片段
 - 📦 **JSON/HTTP 解析器** — 开箱即用的格式解析子包
 - 🔬 **Z3 形式化验证** — 核心 commit/alt 语义已机械化证明
-- ✅ **4 后端全通** — wasm / wasm-gc / js / native 均通过 147 项测试
+- ✅ **4 后端全通** — wasm / wasm-gc / js / native 均通过 185 项测试，`moon check --deny-warn --target all` 零警告
 - 🌐 **双语文档** — 所有公共 API 均有中英双语 `///` 注释
 
 ## 🚀 快速开始
@@ -136,18 +136,34 @@ let value : Char = try @astrolabe.parse_raise(p, "abc") catch {
 
 ## 📦 子包
 
-### JSON 解析器 `@astrolabe/json`
+### JSON 解析器（`examples/json` 包）
+
+JSON/HTTP 解析器以示例子包形式提供，包路径为 `walkzzz/astrolabe/examples/json`：
 
 ```moonbit
-let json = @astrolabe/json.parse("{\"name\": \"Alice\", \"age\": 30}")
+// moon.pkg
+import {
+  "walkzzz/astrolabe/examples/json" @json,
+}
+```
+
+```moonbit
+let json = @json.parse("{\"name\": \"Alice\", \"age\": 30}")
 // Ok(JObj([("name", JStr("Alice")), ("age", JNum(30.0))]))
 ```
 
-### HTTP 解析器 `@astrolabe/http`
+### HTTP 解析器（`examples/http` 包）
 
 ```moonbit
-let uri = @astrolabe/http.parse_uri_string("https://example.com:8080/path?q=1#sec")
-let req = @astrolabe/http.parse_request_string(
+// moon.pkg
+import {
+  "walkzzz/astrolabe/examples/http" @http,
+}
+```
+
+```moonbit
+let uri = @http.parse_uri_string("https://example.com:8080/path?q=1#sec")
+let req = @http.parse_request_string(
   "GET /index.html HTTP/1.1\r\nHost: example.com\r\n\r\n"
 )
 ```
@@ -257,35 +273,36 @@ moon bench --target native benchmarks/
 | JSON | `json_object_100` | ~2.1 ms |
 | HTTP | `http_request_5_headers` | ~109 μs |
 
+> 上表为历史实测示例数据；当前 25 项基准以 `moon bench --target native benchmarks/` 实时结果为准。
+
 ## 🔬 形式化验证
 
-核心 commit/alt 回溯语义已通过 Z3 SMT 求解器机械化验证，详见 [docs/formal-spec.md](docs/formal-spec.md)。
+核心 commit/alt 回溯语义的关键不变量，通过 MoonBit 的 proof 条件（编译期 SMT 求解自动验证）静态证明，详见 [docs/formal-spec.md](docs/formal-spec.md)。
 
 | 性质 | 含义 | 状态 |
 |:-----|:-----|:----:|
 | P1 | `commit` 总是将 `committed` 设为 `true` | ✅ |
 | P2a | `alt` 在未承诺失败时回溯 | ✅ |
 | P2b | `alt` 在已承诺失败时不回溯 | ✅ |
-| P3a | `map` 不改变承诺标志 | ✅ |
 | P3b | `bind` 序列承诺 | ✅ |
 | — | 偏移量前进保持非负 | ✅ |
 | — | 剩余字符数保持非负 | ✅ |
+| — | EOF 判定条件正确（`offset >= length`） | ✅ |
 
 ## 📂 项目结构
 
 ```
 astrolabe/
+├── astrolabe.mbt  根包门面 — pub using 扁平化导出全部公共 API
 ├── core/          Pos, State, ParseError, Parser[T]
-├── basic/         char, string, take, satisfy, take_while, ...
-├── compose/       map, bind, seq2-seq4, many, sep_by, option, between, ...
-├── control/       commit, alt, choice, label, not_followed_by, fix
-├── json/          JValue + JSON 解析器 + stringify
-├── http/          Method, Request, Uri + 解析器 + impl Show
-├── proof/         Z3 形式化验证 (7 goals proved)
+├── char/          char, string, take, satisfy, take_while, ...
+├── sequence/      map, bind, seq2-seq4, many, sep_by, option, between, ...
+├── branch/        commit, alt, choice, label, not_followed_by, fix
+├── proof/         形式化验证 — 7 个证明函数（SMT 支持的 proof 条件）
 ├── benchmarks/    25 个基准测试
-├── examples/      URI, CSV, 计算器
+├── examples/      uri, json, http, csv_header, calc 五个示例包
 ├── cmd/main/      CLI 演示
-└── docs/          API 参考、教程、迁移指南、形式化规范
+└── docs/          API 参考、教程、迁移指南、形式化规范、路线图
 ```
 
 ## 📚 文档
@@ -327,7 +344,7 @@ astrolabe/
 - 🎯 **Precise errors** — Character-level position + input context snippets
 - 📦 **JSON/HTTP parsers** — Ready-to-use format parsing subpackages
 - 🔬 **Z3 formal verification** — Core commit/alt semantics mechanically proved
-- ✅ **4 backends pass** — wasm / wasm-gc / js / native all pass 147 tests
+- ✅ **4 backends pass** — wasm / wasm-gc / js / native all pass 185 tests, `moon check --deny-warn --target all` with zero warnings
 - 🌐 **Bilingual docs** — All public APIs have Chinese+English `///` comments
 
 ## 🚀 Quick Start
@@ -420,18 +437,34 @@ let value : Char = try @astrolabe.parse_raise(p, "abc") catch {
 
 ## 📦 Subpackages
 
-### JSON Parser `@astrolabe/json`
+### JSON Parser (`examples/json` package)
+
+The JSON/HTTP parsers ship as example subpackages, located at `walkzzz/astrolabe/examples/json`:
 
 ```moonbit
-let json = @astrolabe/json.parse("{\"name\": \"Alice\", \"age\": 30}")
+// moon.pkg
+import {
+  "walkzzz/astrolabe/examples/json" @json,
+}
+```
+
+```moonbit
+let json = @json.parse("{\"name\": \"Alice\", \"age\": 30}")
 // Ok(JObj([("name", JStr("Alice")), ("age", JNum(30.0))]))
 ```
 
-### HTTP Parser `@astrolabe/http`
+### HTTP Parser (`examples/http` package)
 
 ```moonbit
-let uri = @astrolabe/http.parse_uri_string("https://example.com:8080/path?q=1#sec")
-let req = @astrolabe/http.parse_request_string(
+// moon.pkg
+import {
+  "walkzzz/astrolabe/examples/http" @http,
+}
+```
+
+```moonbit
+let uri = @http.parse_uri_string("https://example.com:8080/path?q=1#sec")
+let req = @http.parse_request_string(
   "GET /index.html HTTP/1.1\r\nHost: example.com\r\n\r\n"
 )
 ```
@@ -541,35 +574,36 @@ moon bench --target native benchmarks/
 | JSON | `json_object_100` | ~2.1 ms |
 | HTTP | `http_request_5_headers` | ~109 μs |
 
+> Figures above are historical sample measurements; run `moon bench --target native benchmarks/` for live numbers (25 benchmarks).
+
 ## 🔬 Formal Verification
 
-Core commit/alt backtracking semantics mechanically verified via Z3 SMT solver. See [docs/formal-spec.md](docs/formal-spec.md).
+Key invariants of the core commit/alt backtracking semantics are statically proved via MoonBit proof conditions (automatically verified by the SMT backend at compile time). See [docs/formal-spec.md](docs/formal-spec.md).
 
 | Property | Meaning | Status |
 |:---------|:--------|:------:|
 | P1 | `commit` always sets `committed = true` | ✅ |
 | P2a | `alt` backtracks on uncommitted failure | ✅ |
 | P2b | `alt` does not backtrack on committed failure | ✅ |
-| P3a | `map` preserves commitment flag | ✅ |
 | P3b | `bind` sequence commits | ✅ |
 | — | Offset advance stays non-negative | ✅ |
 | — | Remaining chars stay non-negative | ✅ |
+| — | EOF condition correct (`offset >= length`) | ✅ |
 
 ## 📂 Project Structure
 
 ```
 astrolabe/
+├── astrolabe.mbt  Root facade — flattens all public API via `pub using`
 ├── core/          Pos, State, ParseError, Parser[T]
-├── basic/         char, string, take, satisfy, take_while, ...
-├── compose/       map, bind, seq2-seq4, many, sep_by, option, between, ...
-├── control/       commit, alt, choice, label, not_followed_by, fix
-├── json/          JValue + JSON parser + stringify
-├── http/          Method, Request, Uri + parsers + impl Show
-├── proof/         Z3 formal verification (7 goals proved)
+├── char/          char, string, take, satisfy, take_while, ...
+├── sequence/      map, bind, seq2-seq4, many, sep_by, option, between, ...
+├── branch/        commit, alt, choice, label, not_followed_by, fix
+├── proof/         Formal verification — 7 proof functions (SMT-backed proof conditions)
 ├── benchmarks/    25 benchmarks
-├── examples/      URI, CSV, Calculator
+├── examples/      Five example packages: uri, json, http, csv_header, calc
 ├── cmd/main/      CLI demo
-└── docs/          API reference, tutorial, migration guide, formal spec
+└── docs/          API reference, tutorial, migration guide, formal spec, roadmap
 ```
 
 ## 📚 Documentation

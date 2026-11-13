@@ -25,7 +25,7 @@ pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] noraise {
   })
 }
 
-///| 有序选择 — 在未承诺失败时尝试 `p2`。
+///| 有序选择 — 在未承诺失败时尝试 `p2`，两分支都失败时聚合错误。
 
 ///|
 
@@ -35,6 +35,14 @@ pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] noraise {
 
 ///| - 若 `p1` 失败且 `committed = false`，在原始输入上尝试 `p2`
 
+///|   - `p2` 成功：返回其结果
+
+///|   - `p2` 失败：通过 `ParseError::merge` 聚合两分支错误 —
+
+///|     位置不同时保留更远者，同位置时合并期望标签
+
+///|     （例如两分支分别期望 `'a'`、`'b'`，最终报 "expected 'a' or 'b'"）
+
 ///|
 
 ///| Ordered choice: try `p1`, fall back to `p2` on uncommitted failure.
@@ -43,8 +51,12 @@ pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] noraise {
 
 ///| - If `p1` fails with `committed = true`, no backtrack.
 
-///|
-/// - If `p1` fails with `committed = false`, try `p2` on the original input.
+///| - If `p1` fails with `committed = false`, try `p2` on the original input;
+
+///|   when `p2` also fails, errors are aggregated via `ParseError::merge` —
+
+///|   the furthest position wins, and equal positions merge expected labels.
+
 pub fn[T] alt(
   p1 : @core.Parser[T],
   p2 : @core.Parser[T],
@@ -56,7 +68,10 @@ pub fn[T] alt(
         if err.committed() {
           @core.Failure(err)
         } else {
-          (p2.run)(state)
+          match (p2.run)(state) {
+            @core.Success(value, st) => @core.Success(value, st)
+            @core.Failure(err2) => @core.Failure(err.merge(err2))
+          }
         }
     }
   })

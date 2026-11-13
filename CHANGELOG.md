@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-11-13
+
+### Added
+- `ParseError::merge` — error aggregation with furthest-position-wins semantics; equal positions merge expected labels (deduplicated, order-preserving) and OR the committed flags
+- `alt`/`choice` error aggregation — when all branches fail, users see multi-candidate messages ("expected 'a' or 'b'") instead of only the last branch's error
+- 7 new tests covering aggregation behavior and alt/choice regression guards (185 total × 4 backends)
+- GitHub Actions CI (`.github/workflows/ci.yml`) — `moon check --deny-warn --target all` + `moon test --target all` + `moon bench --target native` gates
+- Project proposal `docs/proposal.md` and engineering assessment `docs/assessment.md` (measured data + competitor analysis)
+
+### Changed
+- README fully aligned with the actual package layout (core/char/sequence/branch + examples/*), test count updated to 185 × 4 backends, version badge unified
+- Formal-verification table and `docs/formal-spec.md` corrected to match `proof/proof.mbt` exactly (EOF correctness replaces the unproven map-flag property)
+- Roadmap progress snapshot and vNext competitive roadmap added; benchmark table annotated as historical sample data
+
+## [0.2.0] - 2026-11-13
+
+### Added
+- Formal verification package `proof/` — 7 proof functions via MoonBit proof conditions (SMT-backed): commit flag, alt backtrack semantics (P2a/P2b), sequence commit, offset/remaining invariants, EOF correctness
+- Benchmark suite `benchmarks/` — 25 benchmarks across basic/compose/control/json/http (`moon bench --target native`)
+- Five example packages under `examples/` — uri, json, http, csv_header, calc, with white-box tests
+- CLI demo `cmd/main` — interactive showcase for JSON/URI/HTTP parsers
+
 ## [0.1.18] - 2026-11-13
 
 ### Changed

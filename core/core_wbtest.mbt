@@ -115,3 +115,36 @@ test "ParseError::format_with_input" {
   assert_true(fmt.contains("HTTP method"))
   assert_true(fmt.contains("^"))
 }
+
+///|
+/// 测试 ParseError::merge 不同位置时保留更远的错误
+/// Test ParseError::merge keeps the further error on different positions
+test "ParseError::merge furthest wins" {
+  let e1 = ParseError::at(pos={ line: 1, column: 1, offset: 0, }, expected="near")
+  let e2 = ParseError::at(pos={ line: 1, column: 5, offset: 4, }, expected="far")
+  assert_eq(e1.merge(e2).pos().offset, 4)
+  assert_eq(e2.merge(e1).pos().offset, 4)
+}
+
+///|
+/// 测试 ParseError::merge 同位置时合并期望标签（去重保序）
+/// Test ParseError::merge merges labels at equal positions (dedup, order-preserving)
+test "ParseError::merge same position" {
+  let e1 = ParseError::at(pos={ line: 1, column: 1, offset: 0, }, expected="a")
+  let e2 = ParseError::at(pos={ line: 1, column: 1, offset: 0, }, expected="b")
+  let merged = e1.merge(e2)
+  assert_eq(merged.expected(), ["a", "b"])
+  assert_true(!merged.committed())
+}
+
+///|
+/// 测试 ParseError::merge 同位置去重相同标签且 committed 取逻辑或
+/// Test ParseError::merge dedups labels and ORs committed flags at equal positions
+test "ParseError::merge dedup and commit-or" {
+  let pos : Pos = { line: 1, column: 1, offset: 0, }
+  let e1 = ParseError::at(pos~, expected="a")
+  let e2 = ParseError(pos, ["a"], true, [])
+  let merged = e1.merge(e2)
+  assert_eq(merged.expected(), ["a"])
+  assert_true(merged.committed())
+}

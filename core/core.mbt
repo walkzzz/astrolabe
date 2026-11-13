@@ -462,6 +462,66 @@ pub fn ParseError::format_with_input(
   }
 }
 
+///| 合并两个解析错误 — "最远位置优先"，同位置合并期望标签。
+
+///| 合并规则：
+
+///| - 位置不同：保留 `offset` 更大（更远）的错误原样返回
+
+///| - 位置相同（offset 相等）：期望标签去重合并（保持出现顺序）、
+
+///|   `committed` 取逻辑或、上下文链保留第一个错误的
+
+///|
+
+///| 这是 Parsec/Attoparsec 系组合子库的经典错误聚合策略：
+
+///| `alt`/`choice` 在同位置多分支失败时，错误信息呈现
+
+///| "expected 'a' or 'b'" 形式的多候选期望，而不是只显示最后一个分支。
+
+///|
+
+///| Merge two parse errors — furthest position wins; equal positions
+
+///| merge expected labels.
+
+///|
+
+///| Merge rules:
+
+///| - Different positions: return the error with the larger (further) offset as-is
+
+///| - Equal positions: merge expected labels (deduplicated, order-preserving),
+
+///|   OR the committed flags, and keep the first error's context chain
+
+pub fn ParseError::merge(
+  self : ParseError,
+  other : ParseError,
+) -> ParseError noraise {
+  let self_offset = self.pos().offset
+  let other_offset = other.pos().offset
+  if self_offset > other_offset {
+    self
+  } else if other_offset > self_offset {
+    other
+  } else {
+    let merged : Array[String] = []
+    for label in self.expected() {
+      if !merged.contains(label) {
+        merged.push(label)
+      }
+    }
+    for label in other.expected() {
+      if !merged.contains(label) {
+        merged.push(label)
+      }
+    }
+    ParseError(self.pos(), merged, self.committed() || other.committed(), self.contexts())
+  }
+}
+
 ///| 解析结果 — 运行 `Parser[T]` 后的输出。
 
 ///|
