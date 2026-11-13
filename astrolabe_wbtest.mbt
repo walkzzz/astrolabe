@@ -15,7 +15,7 @@ test "Parser::parse_full via root" {
     Err(_) => fail("expected Ok")
   }
   match p.parse_full("ab") {
-    Err(err) => assert_true(err.expected.contains("end of input"))
+    Err(err) => assert_true(err.expected().contains("end of input"))
     Ok(_) => fail("expected Err")
   }
 }

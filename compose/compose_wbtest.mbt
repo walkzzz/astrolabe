@@ -68,7 +68,7 @@ test "many1 failure no match" {
   let p = many1(char_parser('a'))
   let s = @core.State::new("bbb")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(!err.committed)
+    @core.Failure(err) => assert_true(!err.committed())
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -82,26 +82,15 @@ test "many stops on committed error" {
           state.advance_one()
           @core.Success(ch, state)
         } else {
-          @core.Failure({
-            pos: state.pos,
-            expected: ["'a'"],
-            committed: true,
-            context: "",
-          })
+          @core.Failure(@core.ParseError(state.pos, ["'a'"], true, ""))
         }
-      None =>
-        @core.Failure({
-          pos: state.pos,
-          expected: ["'a'"],
-          committed: true,
-          context: "",
-        })
+      None => @core.Failure(@core.ParseError(state.pos, ["'a'"], true, ""))
     }
   })
   let p = many(committed_a)
   let s = @core.State::new("bbb")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.committed)
+    @core.Failure(err) => assert_true(err.committed())
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -163,7 +152,7 @@ test "sep_by1 failure no match" {
   let p = sep_by1(char_parser('a'), comma_parser())
   let s = @core.State::new("bbb")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(!err.committed)
+    @core.Failure(err) => assert_true(!err.committed())
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -186,7 +175,7 @@ test "count failure insufficient" {
   let p = count(5, char_parser('a'))
   let s = @core.State::new("aaa")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.committed)
+    @core.Failure(err) => assert_true(err.committed())
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -235,7 +224,7 @@ test "many_till p fails before end" {
   let p = many_till(char_parser('a'), char_parser('}'))
   let s = @core.State::new("aab}")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("'a'"))
+    @core.Failure(err) => assert_true(err.expected().contains("'a'"))
     @core.Success(_, _) => fail("expected failure")
   }
 }

@@ -248,11 +248,8 @@ pub fn State::slice(self : State, start : Int32, end : Int32) -> String {
 ///|
 /// - `committed = true` — backtracking is suppressed in `alt`
 #derive(Debug, Eq)
-pub(all) struct ParseError {
-  pos : Pos
-  expected : Array[String]
-  committed : Bool
-  context : String
+pub(all) suberror ParseError {
+  ParseError(Pos, Array[String], Bool, String)
 }
 
 ///|
@@ -274,7 +271,55 @@ pub extend ParseError with @debug.Debug::{to_repr}
 ///|
 /// Convenience factory for the common case: single expected token, no context, uncommitted.
 pub fn ParseError::at(pos~ : Pos, expected~ : String) -> ParseError {
-  { pos, expected: [expected], committed: false, context: "", }
+  ParseError(pos, [expected], false, "")
+}
+
+///| 返回错误的位置信息。
+
+///|
+
+///|
+/// Return the position where the error occurred.
+pub fn ParseError::pos(self : ParseError) -> Pos {
+  match self {
+    ParseError(pos, _, _, _) => pos
+  }
+}
+
+///| 返回期望的词元列表。
+
+///|
+
+///|
+/// Return the list of expected tokens.
+pub fn ParseError::expected(self : ParseError) -> Array[String] {
+  match self {
+    ParseError(_, expected, _, _) => expected
+  }
+}
+
+///| 返回承诺状态。
+
+///|
+
+///|
+/// Return the commitment status.
+pub fn ParseError::committed(self : ParseError) -> Bool {
+  match self {
+    ParseError(_, _, committed, _) => committed
+  }
+}
+
+///| 返回上下文标签。
+
+///|
+
+///|
+/// Return the context label.
+pub fn ParseError::context(self : ParseError) -> String {
+  match self {
+    ParseError(_, _, _, context) => context
+  }
 }
 
 ///| 返回 `committed = true` 的副本，用于序列承诺语义。
@@ -285,11 +330,9 @@ pub fn ParseError::at(pos~ : Pos, expected~ : String) -> ParseError {
 /// Return a copy with `committed = true`, used for sequence-commit semantics.
 #inline
 pub fn ParseError::commit(self : ParseError) -> ParseError {
-  {
-    pos: self.pos,
-    expected: self.expected,
-    committed: true,
-    context: self.context,
+  match self {
+    ParseError(pos, expected, _, context) =>
+      ParseError(pos, expected, true, context)
   }
 }
 
@@ -322,10 +365,14 @@ pub fn ParseError::commit(self : ParseError) -> ParseError {
 ///|
 /// The `context` line is omitted when empty.
 pub fn ParseError::format(self : ParseError) -> String {
-  let loc = "line \{self.pos.line}, column \{self.pos.column} (offset \{self.pos.offset})"
-  let exp = self.expected.join(" or ")
-  let ctx = if self.context == "" { "" } else { "\n  \{self.context}" }
-  "\{loc}:\nexpected \{exp}\{ctx}"
+  match self {
+    ParseError(pos, expected, _, context) => {
+      let loc = "line \{pos.line}, column \{pos.column} (offset \{pos.offset})"
+      let exp = expected.join(" or ")
+      let ctx = if context == "" { "" } else { "\n  \{context}" }
+      "\{loc}:\nexpected \{exp}\{ctx}"
+    }
+  }
 }
 
 ///| 将错误格式化，并附加从 `input` 提取的上下文片段。
@@ -360,20 +407,24 @@ pub fn ParseError::format_with_input(
   self : ParseError,
   input : String,
 ) -> String {
-  let base = self.format()
-  let offset = self.pos.offset
-  let ctx_start = if offset > 20 { offset - 20 } else { 0 }
-  let ctx_end = if offset + 20 < input.length() {
-    offset + 20
-  } else {
-    input.length()
+  match self {
+    ParseError(pos, _, _, _) => {
+      let base = self.format()
+      let offset = pos.offset
+      let ctx_start = if offset > 20 { offset - 20 } else { 0 }
+      let ctx_end = if offset + 20 < input.length() {
+        offset + 20
+      } else {
+        input.length()
+      }
+      let snippet = input[ctx_start:ctx_end].to_owned()
+      let prefix = if ctx_start > 0 { "..." } else { "" }
+      let suffix = if ctx_end < input.length() { "..." } else { "" }
+      let caret_offset = offset - ctx_start + prefix.length()
+      let caret = " ".repeat(caret_offset) + "^"
+      "\{base}\n  \{prefix}\{snippet}\{suffix}\n  \{caret}"
+    }
   }
-  let snippet = input[ctx_start:ctx_end].to_owned()
-  let prefix = if ctx_start > 0 { "..." } else { "" }
-  let suffix = if ctx_end < input.length() { "..." } else { "" }
-  let caret_offset = offset - ctx_start + prefix.length()
-  let caret = " ".repeat(caret_offset) + "^"
-  "\{base}\n  \{prefix}\{snippet}\{suffix}\n  \{caret}"
 }
 
 ///| 解析结果 — 运行 `Parser[T]` 后的输出。
@@ -410,6 +461,8 @@ pub(all) enum ParseResult[T] {
 ///|
 
 ///| 使用 `Parser::parse` 进行简单解析，或 `Parser::parse_full` 要求全部输入被消耗。
+
+///| 使用 `Parser::parse_raise` / `Parser::parse_full_raise` 以 `raise` 方式抛出错误。
 
 ///|
 
@@ -449,6 +502,7 @@ pub fn[T] Parser::of(f : (State) -> ParseResult[T]) -> Parser[T] {
 
 ///|
 /// Use `parse_full` when you need to ensure the entire input is consumed.
+#warnings("-result_error_return")
 pub fn[T] Parser::parse(
   self : Parser[T],
   input : String,
@@ -474,6 +528,7 @@ pub fn[T] Parser::parse(
 
 ///|
 /// If the parser succeeds without reaching EOF, returns an `Err`.
+#warnings("-result_error_return")
 pub fn[T] Parser::parse_full(
   self : Parser[T],
   input : String,
@@ -487,5 +542,53 @@ pub fn[T] Parser::parse_full(
         Err(ParseError::at(pos=st.pos, expected="end of input"))
       }
     Failure(err) => Err(err)
+  }
+}
+
+///| 解析 `input`，允许尾部未消耗的输入，失败时 `raise ParseError`。
+
+///|
+
+///| 与 `parse` 类似，但将 `Err` 转为 `raise` 抛出，
+
+///| 适合在 `try...catch` 上下文中使用。
+
+///|
+
+///| Parse `input` and raise `ParseError` on failure, allowing trailing input.
+
+///|
+/// Like `parse`, but converts `Err` to `raise` for use in `try...catch`.
+pub fn[T] Parser::parse_raise(
+  self : Parser[T],
+  input : String,
+) -> T raise ParseError {
+  match self.parse(input) {
+    Ok(value) => value
+    Err(err) => raise err
+  }
+}
+
+///| 解析 `input`，要求全部输入被消耗，失败时 `raise ParseError`。
+
+///|
+
+///| 与 `parse_full` 类似，但将 `Err` 转为 `raise` 抛出，
+
+///| 适合在 `try...catch` 上下文中使用。
+
+///|
+
+///| Parse `input` and raise `ParseError` on failure, requiring full consumption.
+
+///|
+/// Like `parse_full`, but converts `Err` to `raise` for use in `try...catch`.
+pub fn[T] Parser::parse_full_raise(
+  self : Parser[T],
+  input : String,
+) -> T raise ParseError {
+  match self.parse_full(input) {
+    Ok(value) => value
+    Err(err) => raise err
   }
 }

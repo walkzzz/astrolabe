@@ -38,6 +38,7 @@
 
 ///|
 /// Parse `input` with `p`, allowing trailing unconsumed input.
+#warnings("-result_error_return")
 pub fn[T] parse(
   p : @core.Parser[T],
   input : String,
@@ -51,11 +52,38 @@ pub fn[T] parse(
 
 ///|
 /// Parse `input` with `p`, requiring entire input consumed.
+#warnings("-result_error_return")
 pub fn[T] parse_full(
   p : @core.Parser[T],
   input : String,
 ) -> Result[T, @core.ParseError] {
   p.parse_full(input)
+}
+
+///| 用 `p` 解析 `input`，允许尾部未消耗的输入，失败时 `raise ParseError`。
+
+///|
+
+///|
+/// Parse `input` with `p`, raising `ParseError` on failure, allowing trailing input.
+pub fn[T] parse_raise(
+  p : @core.Parser[T],
+  input : String,
+) -> T raise @core.ParseError {
+  p.parse_raise(input)
+}
+
+///| 用 `p` 解析 `input`，要求全部输入被消耗，失败时 `raise ParseError`。
+
+///|
+
+///|
+/// Parse `input` with `p`, raising `ParseError` on failure, requiring full consumption.
+pub fn[T] parse_full_raise(
+  p : @core.Parser[T],
+  input : String,
+) -> T raise @core.ParseError {
+  p.parse_full_raise(input)
 }
 
 ///| 将 `ParseError` 格式化为人类可读字符串。

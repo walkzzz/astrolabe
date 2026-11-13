@@ -19,6 +19,7 @@ fn csv_field() -> @core.Parser[String] {
 }
 
 ///|
+#warnings("-result_error_return")
 fn parse_csv_header(input : String) -> Result[Array[String], @core.ParseError] {
   let csv_header = @astro.sep_by1(csv_field(), @astro.char(','))
   @astro.parse_full(csv_header, input)

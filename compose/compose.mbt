@@ -152,7 +152,7 @@ fn[T] many_step(
       many_step(p, st, acc)
     }
     @core.Failure(err) =>
-      if err.committed {
+      if err.committed() {
         @core.Failure(err)
       } else {
         @core.Success(acc, state)
@@ -193,7 +193,7 @@ fn[T] many1_step(
       many1_step(p, st, acc)
     }
     @core.Failure(err) =>
-      if err.committed {
+      if err.committed() {
         @core.Failure(err)
       } else {
         @core.Success(acc, state)
@@ -237,7 +237,7 @@ fn[T, S] sep_by_step(
     @core.Success(_, st_sep) =>
       match (p.run)(st_sep) {
         @core.Failure(err) =>
-          if err.committed {
+          if err.committed() {
             @core.Failure(err)
           } else {
             @core.Success(acc, state)
@@ -273,7 +273,7 @@ pub fn[T, S] sep_by(
   @core.Parser::of(fn(state) {
     match (p.run)(state) {
       @core.Failure(err) =>
-        if err.committed {
+        if err.committed() {
           @core.Failure(err)
         } else {
           @core.Success([], state)

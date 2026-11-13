@@ -41,7 +41,7 @@ test "public API: ParseError format" {
 test "public API: parse_full rejects trailing" {
   let p = @astrolabe.char('a')
   match @astrolabe.parse_full(p, "ab") {
-    Err(err) => assert_true(err.expected.contains("end of input"))
+    Err(err) => assert_true(err.expected().contains("end of input"))
     Ok(_) => fail("expected Err")
   }
 }

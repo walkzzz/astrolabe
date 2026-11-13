@@ -6,7 +6,7 @@
 
 MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Angstrom](https://github.com/SimonCourteaux/angstrom)
 
-[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.1.15-orange)](https://mooncakes.io/package/walkzzz/astrolabe)
+[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.1.16-orange)](https://mooncakes.io/package/walkzzz/astrolabe)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![tests](https://img.shields.io/badge/tests-122%20%C3%97%204%20backends-green)]()
 [![formal](https://img.shields.io/badge/formal-Z3%20verified-brightgreen)](docs/formal-spec.md)
@@ -117,6 +117,24 @@ match p.parse_full("helLO") {
 }
 ```
 
+### Raise 模式 | Raise Pattern
+
+`ParseError` 是 `suberror` 类型，可自动向上转型为 `Error`，
+支持 MoonBit 原生 `raise`/`try...catch` 错误处理：
+
+```moonbit
+// raise 模式：失败时直接抛出
+let value : Char = try @astrolabe.parse_raise(p, "abc") catch {
+  e => fail("unexpected: \{e}")
+}
+
+// 或使用 parse_full_raise 要求全部消费
+let result = try @astrolabe.parse_full_raise(full, "ab") catch {
+  ParseError::_ as e => println(e.format())
+  _ => println("unknown error")
+}
+```
+
 ## 子包 | Subpackages
 
 ### JSON 解析器
@@ -160,6 +178,8 @@ match req {
 |-------------|------|
 | `p.parse(input)` | 解析，允许尾部未消费 |
 | `p.parse_full(input)` | 解析，要求全部消费 |
+| `p.parse_raise(input)` | 解析，失败时 raise ParseError |
+| `p.parse_full_raise(input)` | 解析+全消费，失败时 raise ParseError |
 | `err.format()` | 格式化错误 |
 | `err.format_with_input(input)` | 错误 + 输入上下文 |
 | `err.commit()` | 返回 committed=true 的副本 |
@@ -218,10 +238,13 @@ Astrolabe 充分利用 MoonBit 的方法系统、特征系统和派生属性：
 
 | 特性 | 使用方式 |
 |------|---------|
-| `#derive(Eq, Debug)` | Pos/State/ParseError/JValue/HTTP 类型自动生成 Eq/Debug |
+| `#derive(Eq, Debug)` | Pos/State/JValue/HTTP 类型自动生成 Eq/Debug |
+| `suberror ParseError` | ParseError 是 suberror，可自动向上转型为 Error，支持 raise/try...catch |
+| `ParseError::pos()/expected()/committed()/context()` | 访问器方法，替代直接字段访问 |
 | `impl Show` + `extend with Show::{output, to_string}` | Method/Version 实现 Show，支持 `.to_string()` 点调用 |
 | `TypeName::method(self, ...)` | 所有关键操作以方法定义（Parser::parse, ParseError::format, State::peek） |
 | `ParseError::commit()` | 消除 bind/seq2/seq3/seq4/control 中 7 处 `committed: true` 重复构造 |
+| `Parser::parse_raise/parse_full_raise` | raise-based API，失败时抛出 ParseError 而非返回 Result |
 | `Parser::of(fn)` | 通用扩展点，将任意函数包装为 Parser |
 | 递归 step 函数 | many/many1/sep_by/count/many_till 使用尾递归 step 函数，避免 `unused_mut` 警告 |
 | peek/save-restore 模式 | `peek(p)` 和 `many_till` 保存/恢复 state.offset 和 state.pos |

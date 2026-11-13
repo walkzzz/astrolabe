@@ -44,6 +44,10 @@ pub fn[T] parse(@core.Parser[T], String) -> Result[T, @core.ParseError]
 
 pub fn[T] parse_full(@core.Parser[T], String) -> Result[T, @core.ParseError]
 
+pub fn[T] parse_full_raise(@core.Parser[T], String) -> T raise @core.ParseError
+
+pub fn[T] parse_raise(@core.Parser[T], String) -> T raise @core.ParseError
+
 pub fn[T] peek(@core.Parser[T]) -> @core.Parser[T]
 
 #alias(return_, deprecated)

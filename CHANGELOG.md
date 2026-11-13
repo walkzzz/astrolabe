@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.16] - 2026-11-13
+
+### Added
+- `suberror ParseError` — ParseError is now a `suberror` (not `struct`), auto-upcasting to `Error`
+- Accessor methods: `ParseError::pos()`, `ParseError::expected()`, `ParseError::committed()`, `ParseError::context()`
+- `Parser::parse_raise()` / `Parser::parse_full_raise()` — raise-based API for `try...catch` usage
+- Facade `parse_raise()` / `parse_full_raise()` in root package
+- `#warnings("-result_error_return")` on `Result`-returning parse APIs (intentional data-returning design)
+
+### Changed
+- `ParseError` changed from `struct` to `suberror ParseError { ParseError(Pos, Array[String], Bool, String) }`
+- `ParseError::format()` and `format_with_input()` rewritten to use pattern matching
+- `ParseError::commit()` rewritten to use pattern matching
+- `control::label()` constructs `ParseError` via constructor instead of struct literal
+- All field accesses (`err.committed`, `err.expected`, etc.) changed to method calls (`err.committed()`, `err.expected()`)
+
 ## [0.1.15] - 2026-11-13
 
 ### Added

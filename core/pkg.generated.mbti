@@ -8,23 +8,23 @@ import {
 // Values
 
 // Errors
-
-// Types and methods
 #derive(Eq, @debug.Debug)
-pub(all) struct ParseError {
-  pos : Pos
-  expected : Array[String]
-  committed : Bool
-  context : String
+pub(all) suberror ParseError {
+  ParseError(Pos, Array[String], Bool, String)
 }
 pub fn ParseError::at(pos~ : Pos, expected~ : String) -> Self
 pub fn ParseError::commit(Self) -> Self
+pub fn ParseError::committed(Self) -> Bool
+pub fn ParseError::context(Self) -> String
 pub fn ParseError::equal(Self, Self) -> Bool
+pub fn ParseError::expected(Self) -> Array[String]
 pub fn ParseError::format(Self) -> String
 pub fn ParseError::format_with_input(Self, String) -> String
 pub fn ParseError::not_equal(Self, Self) -> Bool
+pub fn ParseError::pos(Self) -> Pos
 pub fn ParseError::to_repr(Self) -> @debug.Repr
 
+// Types and methods
 pub(all) enum ParseResult[T] {
   Success(T, State)
   Failure(ParseError)
@@ -36,6 +36,8 @@ pub(all) struct Parser[T] {
 pub fn[T] Parser::of((State) -> ParseResult[T]) -> Self[T]
 pub fn[T] Parser::parse(Self[T], String) -> Result[T, ParseError]
 pub fn[T] Parser::parse_full(Self[T], String) -> Result[T, ParseError]
+pub fn[T] Parser::parse_full_raise(Self[T], String) -> T raise ParseError
+pub fn[T] Parser::parse_raise(Self[T], String) -> T raise ParseError
 
 #derive(Eq, @debug.Debug)
 pub(all) struct Pos {

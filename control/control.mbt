@@ -50,7 +50,7 @@ pub fn[T] alt(p1 : @core.Parser[T], p2 : @core.Parser[T]) -> @core.Parser[T] {
     match (p1.run)(state) {
       @core.Success(value, st) => @core.Success(value, st)
       @core.Failure(err) =>
-        if err.committed {
+        if err.committed() {
           @core.Failure(err)
         } else {
           (p2.run)(state)
@@ -108,12 +108,9 @@ pub fn[T] label(p : @core.Parser[T], name : String) -> @core.Parser[T] {
     match (p.run)(state) {
       @core.Success(value, st) => @core.Success(value, st)
       @core.Failure(err) =>
-        @core.Failure({
-          pos: err.pos,
-          expected: [name],
-          committed: err.committed,
-          context: err.context,
-        })
+        @core.Failure(
+          @core.ParseError(err.pos(), [name], err.committed(), err.context()),
+        )
     }
   })
 }

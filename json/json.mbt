@@ -548,6 +548,7 @@ fn pair_() -> @core.Parser[(String, JValue)] {
 
 ///|
 /// Parse a complete JSON string into a `JValue`.
+#warnings("-result_error_return")
 pub fn parse(input : String) -> Result[JValue, @core.ParseError] {
   let p = @compose.bind(ws(), fn(_) {
     @compose.bind(value(), fn(v) {

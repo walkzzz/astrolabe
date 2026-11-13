@@ -559,6 +559,7 @@ pub fn parse_uri() -> @core.Parser[Uri] {
 
 ///|
 /// Convenience: parse a URI string into Result.
+#warnings("-result_error_return")
 pub fn parse_uri_string(input : String) -> Result[Uri, @core.ParseError] {
   @core.Parser::parse(parse_uri(), input)
 }
@@ -569,6 +570,7 @@ pub fn parse_uri_string(input : String) -> Result[Uri, @core.ParseError] {
 
 ///|
 /// Convenience: parse an HTTP request string into Result.
+#warnings("-result_error_return")
 pub fn parse_request_string(
   input : String,
 ) -> Result[Request, @core.ParseError] {

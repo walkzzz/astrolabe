@@ -16,7 +16,7 @@ test "char failure wrong char" {
   let p = char('a')
   let s = @core.State::new("xyz")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("'a'"))
+    @core.Failure(err) => assert_true(err.expected().contains("'a'"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -26,7 +26,7 @@ test "char failure eof" {
   let p = char('a')
   let s = @core.State::new("")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("'a'"))
+    @core.Failure(err) => assert_true(err.expected().contains("'a'"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -49,7 +49,7 @@ test "string failure" {
   let p = string("hello")
   let s = @core.State::new("world")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("\"hello\""))
+    @core.Failure(err) => assert_true(err.expected().contains("\"hello\""))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -72,7 +72,7 @@ test "any_char failure eof" {
   let p = any_char()
   let s = @core.State::new("")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("any character"))
+    @core.Failure(err) => assert_true(err.expected().contains("any character"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -95,7 +95,7 @@ test "take failure insufficient" {
   let p = take(5)
   let s = @core.State::new("hi")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("5 characters"))
+    @core.Failure(err) => assert_true(err.expected().contains("5 characters"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -118,7 +118,7 @@ test "satisfy failure" {
   let p = satisfy(fn(c) { c >= 'a' && c <= 'z' }, label="lowercase")
   let s = @core.State::new("ABC")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("lowercase"))
+    @core.Failure(err) => assert_true(err.expected().contains("lowercase"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -138,7 +138,7 @@ test "end_of_input failure" {
   let p = end_of_input()
   let s = @core.State::new("abc")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("end of input"))
+    @core.Failure(err) => assert_true(err.expected().contains("end of input"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -161,7 +161,7 @@ test "peek failure" {
   let p = peek(char('x'))
   let s = @core.State::new("abc")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("'x'"))
+    @core.Failure(err) => assert_true(err.expected().contains("'x'"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -184,7 +184,7 @@ test "skip failure" {
   let p = skip(char('x'))
   let s = @core.State::new("abc")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("'x'"))
+    @core.Failure(err) => assert_true(err.expected().contains("'x'"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -217,7 +217,7 @@ test "char_range failure out of range" {
   let p = char_range('a', 'z')
   let s = @core.State::new("Z")
   match (p.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("char in [a-z]"))
+    @core.Failure(err) => assert_true(err.expected().contains("char in [a-z]"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
@@ -281,7 +281,8 @@ test "char_class failure" {
   )
   let s = @core.State::new("123")
   match (ident_start.run)(s) {
-    @core.Failure(err) => assert_true(err.expected.contains("identifier start"))
+    @core.Failure(err) =>
+      assert_true(err.expected().contains("identifier start"))
     @core.Success(_, _) => fail("expected failure")
   }
 }
