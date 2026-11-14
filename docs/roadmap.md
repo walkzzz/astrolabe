@@ -13,7 +13,21 @@
 | v0.6.0（下赛期） | 性能优化 + 三方对比基准 | String View / 惰性行列；astrolabe vs parkit vs talcparsec vs stdlib JSON 同 workload 对比表 | 工程质量 + 生态贡献 | README 性能对比章节 |
 | v0.7.0（下赛期） | 生态采用案例 + Playground | INI/表达式完整用例；wasm Web Playground（错误位置高亮） | 生态贡献 + 展示表现 | ✅ INI 用例已提前落地（`examples/ini`，6 测试全绿）；Playground 待做 |
 
-> 配套文档（2026-11-13）：`docs/comparison.md`（10 库竞品矩阵，mooncakes 实测核查）与 `docs/performance_report.md`（25 基准实测 + **stdlib JSON 对照基准**：moonbitlang/core/json 快 10~31×，为 v0.6.0 优化提供量化基线；commit 798 ns vs nocommit 45 µs 的 57 倍收益量化）已落地——生态贡献与工程质量维度的文档化证据。**flutter-ohos-expert-agent 思想落地**：`docs/pitfall-catalog.md`（15 条【实测】陷阱，含负向判别）+ `scripts/check_docs.mjs`（数字一致性断言，4 正向 + 5 负向自测全绿——手抄漂移根治，曾实际检出 badge 190≠196）。
+> 配套文档（2026-11-13）：`docs/comparison.md`（10 库竞品矩阵，mooncakes 实测核查）与 `docs/performance_report.md`（25 基准实测 + **stdlib JSON 对照基准**：moonbitlang/core/json 快 10~31×，为 v0.6.0 优化提供量化基线；commit 798 ns vs nocommit 45 µs 的 57 倍收益量化）已落地——生态贡献与工程质量维度的文档化证据。**flutter-ohos-expert-agent 思想落地**：`docs/pitfall-catalog.md`（16 条【实测】陷阱，含负向判别）+ `scripts/check_docs.mjs`（数字一致性断言，4 正向 + 5 负向自测全绿——手抄漂移根治，曾实际检出 badge 190≠196）。
+
+## 远期规划（v0.6.0 → v1.0.0 · 草案待发起人最终确认执行窗口）
+
+> 与 proposal.md 第十节一致；每版本绑定大赛评分维度与量化验收。**决策点已闭合**：性能验收采用「量化提升 + 前后对照」（≤5× 为努力目标非硬门禁）；stb C 同机基准归 image 项目（B3）。
+
+| 版本 | 主题 | 核心内容 | 大赛维度 | 量化验收 |
+|:---|:---|:---|:---|:---|
+| **v0.6.0** | 组合子内核性能优化 | String View 输入表示；惰性行列计算（line-start 表）；热路径减分配 | 工程质量 | stdlib JSON 差距 10~31× 收敛（目标 ≤5×，量化提升 + 前后对照表） |
+| **v0.7.0** | 展示表现 | wasm Web Playground（错误位置高亮，GitHub Pages）；Dependents 培育 | 展示表现 + 生态贡献 | demo 可访问；README 生态采用节有真实链接 |
+| **v0.8.0** | 错误诊断深化 | 多错误收集（一次解析报多错）；recover 语义文档化；label 缺省自动生成 | 工程质量 | 多错误测试 ≥8 项 |
+| **v0.9.0** | 生态位扩展 | ParserLike 生态示例仓库；MoonBit 官方教程投稿（parser 章）；proof 3 目标落地（前端增强后） | 生态贡献 | 独立示例仓库在线 |
+| **v1.0.0** | 稳定化承诺 | API 冻结审计；`moon info` 全量对齐进 CI；双语注释覆盖率 100% | 完成度 | API 审计清单归零 |
+
+> 稳定性补充方向（已按发起人指令落地或规划）：`many` 零消耗防护 ✅（0.5.2）；深嵌套栈风险已入 pitfall-catalog S7（防护方案待 v0.8.0 深化）；fuzz 模糊测试列入下赛期。
 | 持续动作 | 证据链维护 | 每版本 git tag + CHANGELOG + badge 同步；proof 前端增强跟进；mooncakes 索引收录跟进；赛事群阶段性展示 | 全维度 | 可追踪提交历史 |
 
 合规边界：talcparsec（AGPL-3.0）仅吸收设计思想、仅实测性能数字，零代码引入。

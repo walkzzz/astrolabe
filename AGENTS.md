@@ -5,7 +5,7 @@ MoonBit 位置感知解析器组合子库（参考 OCaml Angstrom，MIT）。主
 ## 构建与验证（完成标准）
 
 - `moon check --deny-warn --target all` — 零警告
-- `moon test --target all` — 198 测试 × 4 后端全绿（wasm / wasm-gc / js / native）
+- `moon test --target all` — 200 测试 × 4 后端全绿（wasm / wasm-gc / js / native）
 - `moon bench --target native benchmarks/` — 25+ 基准（含 stdlib JSON 对照）
 - 凡改动 MoonBit 代码，收尾必须回归以上三项
 

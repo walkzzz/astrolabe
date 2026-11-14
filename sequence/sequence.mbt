@@ -146,10 +146,23 @@ fn[T] many_step(
   state : @core.State,
   acc : Array[T],
 ) -> @core.ParseResult[Array[T]] {
+  let before = state.offset
   match (p.run)(state) {
     @core.Success(value, st) => {
       acc.push(value)
-      many_step(p, st, acc)
+      // 零消耗防护：成功但状态未推进（offset 与运行前快照相同）= many 死循环向量。
+      // Zero-consumption guard: success without progress (offset unchanged from
+      // the pre-run snapshot) would loop forever.
+      if st.offset == before {
+        @core.Failure(
+          @core.ParseError::at(
+            pos=st.pos,
+            expected="parser must consume input (zero-width match in many)",
+          ),
+        )
+      } else {
+        many_step(p, st, acc)
+      }
     }
     @core.Failure(err) =>
       if err.committed() {
@@ -187,10 +200,23 @@ fn[T] many1_step(
   state : @core.State,
   acc : Array[T],
 ) -> @core.ParseResult[Array[T]] {
+  let before = state.offset
   match (p.run)(state) {
     @core.Success(value, st) => {
       acc.push(value)
-      many1_step(p, st, acc)
+      // 零消耗防护：同 many_step（比较对象为运行前快照，State 为 mut 引用原地推进）。
+      // Zero-consumption guard, same as many_step (compares against the pre-run
+      // snapshot; State is a mutable reference advanced in place).
+      if st.offset == before {
+        @core.Failure(
+          @core.ParseError::at(
+            pos=st.pos,
+            expected="parser must consume input (zero-width match in many1)",
+          ),
+        )
+      } else {
+        many1_step(p, st, acc)
+      }
     }
     @core.Failure(err) =>
       if err.committed() {

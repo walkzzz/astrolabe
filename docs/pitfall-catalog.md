@@ -140,6 +140,28 @@
 - **来源**：【实测】examples/ini parse_ini 重构。
 - **可自动化**：✅（编译器）。
 
+### S7 `many`/`many1` 零消耗匹配 = 无限循环；防护的比较必须用运行前快照
+
+- **现象**：`many(p)` 中 `p` 零消耗成功（如 `pure` 包装、`option(default)` 零宽回退）→ 尾递归 `many_step(p, st, acc)` 在同位置无限递归 → 请求挂起。
+- **防护实现陷阱**：`State` 是 mut 引用，`p.run(state)` **原地推进**——防护比较写成 `st.offset == state.offset` 时，`st` 与 `state` 是同一对象，**恒为 true**，反而把每次成功匹配都误判为零消耗（回归期 http 的 many1 用例全红）。
+- **修法**：在 `p.run` **之前**取 `let before = state.offset` 快照，运行后比较 `st.offset == before`——before 是 Int 值，不受原地推进影响。
+- **判别**：防护未生效时零消耗用例挂起；防护误伤时全部 many 用例失败。
+- **来源**：【实测】v0.5.2 many 防护（初版错误 → 快照修正 → 198×4 全绿 + 正反向防护测试）。
+- **可自动化**：✅ 正反向测试（examples/ini ini_wbtest）。
+
+### M10 组合子链的类型错误 FAQ（4014 泛型约束报错判别）
+
+- **现象**：组合子链构建期的 `[4014] Expr Type Mismatch` 报错晦涩（`has type : X, wanted : Y` 不直接指到根因）。
+- **常见模式与判别**：
+  1. **map/bind 的闭包返回类型与后续期望不符**：检查 lambda 的返回类型注解；
+  2. **alt 两分支类型不统一**：`alt(p1 : Parser[A], p2 : Parser[B])` 要求 A == B，分支结果类型必须收敛；
+  3. **`Parser::of` 闭包返回的 `Success(value, state)` 中 value 类型与 `Parser[T]` 的 T 不一致**；
+  4. **`take_while1(pred, label=...)` 的 pred 必须是 `(Char) -> Bool`**，lambda 参数缺类型注解时推断失败；
+  5. **`p.parse(input)` 与 `(p.run)(state)` 混用**：parse 吃 `String`、run 吃 `State`——传错即 4014（本仓库实测：ini_wbtest 的 `p.parse(s)` 误用）。
+- **修法**：给 lambda 显式类型注解；把复杂组合子链拆为带类型注解的中间 `let`；按 4014 的 note 定位期望类型。
+- **来源**：【实测】examples/ini / examples/http 组合子链构建期 + ini_wbtest 的 parse/run 混用（2026-11-13）。
+- **可自动化**：❌（依赖 IDE 类型提示；moon check 的 4014 note 提供定位）。
+
 ---
 
 ## 维护规则（照 flutter-ohos-expert 准入流程）

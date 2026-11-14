@@ -69,6 +69,34 @@ test "INI top-level enforces full consumption" {
 }
 
 ///|
+/// 测试 many 的零消耗防护：零宽匹配的解析器不再无限循环而是报错（v0.5.2 稳定性防护）
+/// Test many's zero-consumption guard: zero-width parsers error out instead of looping (v0.5.2)
+test "many guards against zero-width match" {
+  let zero : @core.Parser[Int] = @core.Parser::of(fn(state) { @core.Success(42, state) })
+  let p = @sequence.many(zero)
+  let s = @core.State::new("abc")
+  match (p.run)(s) {
+    Ok(_) => fail("expected failure: zero-width match must error, not loop")
+    Err(e) => {
+      assert_eq(e.pos().offset, 0)
+      assert_true(e.expected().length() >= 1)
+    }
+  }
+}
+
+///|
+/// 测试 many 对正常消耗输入仍正常收集（防护不误伤）
+/// Test many still collects normally for consuming input (guard does not misfire)
+test "many works with consuming parser" {
+  let p = @sequence.many(@char.char('a'))
+  let s = @core.State::new("aaab")
+  match (p.run)(s) {
+    Ok(arr) => assert_eq(arr.length(), 3)
+    Err(_) => fail("unexpected failure")
+  }
+}
+
+///|
 /// 测试 CRLF 行结束与文件末尾无换行的最后一行
 /// Test CRLF line endings and a final line without trailing newline
 test "INI supports CRLF and unterminated last line" {

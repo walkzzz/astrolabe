@@ -143,7 +143,7 @@ parser 场景推荐方案仅 2 个：`moonbitlang/yacc`（LR(1) 生成器，重�
 | 检查点 | 判据 | 权重 | 状态 | evidence |
 |---|---|:---:|:---:|---|
 | check 零警告 | `moon check --deny-warn --target all` 通过 | 10 | ✅ | "Finished. moon: ran 12 tasks"（2026-11-13） |
-| 测试全绿 | `moon test --target all` ≥ 190 × 4 | 15 | ✅ | "Total tests: 198, passed: 198, failed: 0"（wasm/wasm-gc/js/native 四行） |
+| 测试全绿 | `moon test --target all` ≥ 190 × 4 | 15 | ✅ | "Total tests: 200, passed: 200, failed: 0"（wasm/wasm-gc/js/native 四行） |
 | 形式化验证 | `moon prove` goals == 8 | 8 | ✅ | docs/formal-spec.md（7 函数一一对应） |
 | 基准公开 | `moon bench` 全过 + stdlib 对照节数据 | 5 | ✅ | docs/performance_report.md（stdlib 快 10~31× 诚实基线） |
 | mbti 零漂移 | `moon info && git diff --exit-code -- '*.mbti'` | 2 | ✅ | 2026-11-13 实测无 .mbti 变更 |

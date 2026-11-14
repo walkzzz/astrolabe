@@ -12,6 +12,33 @@ Astrolabe uses MoonBit's method and trait system throughout:
 - **Derive** auto-generates `Eq`, `Debug` for core types: `Pos`, `State`, `ParseError`, `JValue`, all HTTP types
 - **Extend** explicitly attaches trait methods for dot syntax: `extend Method with Show::{to_string, output}`
 
+## v0.5.x 新增 API（错误聚合 / ParserLike 扩展点 / Show）
+
+### 错误聚合（v0.4.0）
+
+| API | 签名 | 说明 |
+|---|---|---|
+| `ParseError::merge` | `merge(self, other : ParseError) -> ParseError` | furthest-position 优先；同位置合并 expected（去重保序）+ committed 取或 |
+| `alt` / `choice` 聚合 | 内置语义（无新 API） | 全分支失败时自动聚合多候选期望——下游看到 "expected 'a' or 'b'" |
+
+### ParserLike 扩展点（v0.5.0，函数式）
+
+| API | 签名 | 说明 |
+|---|---|---|
+| `pmap` | `pmap(run, f) -> Parser[B]` | 对任意 run 函数应用变换 |
+| `pbind` | `pbind(run, f) -> Parser[B]` | 单调绑定（第二解析器依赖第一结果，序列承诺） |
+| `palt` | `palt(run1, run2) -> Parser[A]` | 有序选择（未承诺失败回溯 + 错误聚合） |
+| `poption` | `poption(run, default) -> Parser[A]` | 未承诺失败回退默认值 |
+| `Parser::run_fn` | `run_fn(self) -> (State) -> ParseResult[T]` | 提取运行函数——第三方类型暴露 `run_fn` 方法即接入全部组合子 |
+
+> 设计说明：MoonBit trait 不支持类型参数（`trait ParserLike[A]` 语法拒绝），扩展点采用函数式约定（与 `Parser::of` 同一扩展点）——见 `core/parser_like.mbt`。
+
+### `ParseError` 实现 Show（0.5.1）
+
+- `ParseError` 已实现 `Show`（委托 `format()`）：`"\{err}"` 插值、`println`、inspect 快照**开箱可用**
+- `to_string()` 经 `extend ParseError with Show::{to_string}` 派生
+- ⚠️ 调试场景官方推荐 `Debug`（`#derive(Debug)` 已在——`debug_inspect`）；`ParseError::format()` / `format_with_input(input)` 仍是错误报告的最佳入口（位置 + 期望 + 上下文指针）
+
 ## Core Types (`@astrolabe`)
 
 ### Pos

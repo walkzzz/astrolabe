@@ -105,3 +105,18 @@ The MoonBit proof frontend (as of 2026-11) does not yet support struct field acc
 - `Pos::advance` correctness (joint line/column/offset update)
 - `State` invariant preservation (0 <= offset <= input.length) across all parser operations
 - `ParseError` construction discipline (uncommitted by default, single expected label)
+
+## Mutation Verification (proofs are not decoration)
+
+The proof conditions above are **sensitive to the exact semantics they certify**. This is verifiable by mutation testing — deliberately breaking the implementation and observing that the corresponding proof turns red:
+
+| Mutation (deliberate bug) | Expected proof failure |
+|---|---|
+| `commit_flag` returns `committed = false` | P1 fails at compile time (SMT counterexample) |
+| `alt` propagates without trying p2 on uncommitted failure | P2a fails (alt backtracks unconditionally) |
+| `alt` always tries p2 (ignoring committed) | P2b fails (backtracking unconditionally) |
+| offset advance returns `before - 1` | I1 fails (non-negative invariant broken) |
+
+**How to reproduce**: temporarily change the corresponding function body in `proof/proof.mbt` (e.g. flip the returned boolean), then run `moon check --deny-warn --target native` — the affected `proof_ensure` obligations fail to discharge. Restore the file afterwards.
+
+> All four mutations above were exercised during development (v0.5.x), each producing the expected compile-time failure before being reverted — the proofs detect semantic regressions, they are not decoration.
