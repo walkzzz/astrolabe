@@ -1,0 +1,6 @@
+import {
+  "walkzzz/astrolabe/core",
+  "walkzzz/astrolabe/char",
+  "walkzzz/astrolabe/sequence",
+  "walkzzz/astrolabe/branch",
+}

@@ -1,0 +1,33 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "walkzzz/astrolabe/examples/ini"
+
+import {
+  "walkzzz/astrolabe/core",
+}
+
+// Values
+pub fn build_ini_doc(Array[IniLine]) -> IniDoc
+
+pub fn ini_to_json(IniDoc) -> String
+
+pub fn ini_to_json_string(String) -> String raise @core.ParseError
+
+pub fn parse_ini(String) -> Array[IniLine] raise @core.ParseError
+
+// Errors
+
+// Types and methods
+pub(all) struct IniDoc {
+  sections : Array[(String, Array[(String, String)])]
+}
+
+pub(all) enum IniLine {
+  Section(String)
+  Pair(String, String)
+  Comment
+  Blank
+}
+
+// Type aliases
+
+// Traits

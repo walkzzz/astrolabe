@@ -25,3 +25,16 @@ jobs:
 
       - name: Bench (native)
         run: moon bench --target native benchmarks/
+
+      - name: Verify API interface
+        run: |
+          moon info
+          git diff --exit-code -- '*.mbti' || echo "Warning: .mbti files changed, please commit them"
+
+      - name: Code coverage report
+        run: |
+          moon coverage analyze | tee coverage.txt
+          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          head -5 coverage.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
