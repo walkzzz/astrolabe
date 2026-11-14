@@ -33,6 +33,7 @@ jobs:
 
       - name: Code coverage report
         run: |
+          moon test --enable-coverage --target native
           moon coverage analyze | tee coverage.txt
           echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
