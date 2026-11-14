@@ -13,7 +13,7 @@
 | v0.6.0（下赛期） | 性能优化 + 三方对比基准 | String View / 惰性行列；astrolabe vs parkit vs talcparsec vs stdlib JSON 同 workload 对比表 | 工程质量 + 生态贡献 | README 性能对比章节 |
 | v0.7.0（下赛期） | 生态采用案例 + Playground | INI/表达式完整用例；wasm Web Playground（错误位置高亮） | 生态贡献 + 展示表现 | ✅ INI 用例已提前落地（`examples/ini`，6 测试全绿）；Playground 待做 |
 
-> 配套文档（2026-11-13）：`docs/comparison.md`（10 库竞品矩阵，mooncakes 实测核查）与 `docs/performance_report.md`（25 基准实测数据：commit 798 ns vs nocommit 45 µs 的 57 倍收益量化）已落地——生态贡献与工程质量维度的文档化证据。
+> 配套文档（2026-11-13）：`docs/comparison.md`（10 库竞品矩阵，mooncakes 实测核查）与 `docs/performance_report.md`（25 基准实测 + **stdlib JSON 对照基准**：moonbitlang/core/json 快 10~31×，为 v0.6.0 优化提供量化基线；commit 798 ns vs nocommit 45 µs 的 57 倍收益量化）已落地——生态贡献与工程质量维度的文档化证据。
 | 持续动作 | 证据链维护 | 每版本 git tag + CHANGELOG + badge 同步；proof 前端增强跟进；mooncakes 索引收录跟进；赛事群阶段性展示 | 全维度 | 可追踪提交历史 |
 
 合规边界：talcparsec（AGPL-3.0）仅吸收设计思想、仅实测性能数字，零代码引入。

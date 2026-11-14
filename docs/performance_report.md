@@ -65,6 +65,19 @@
 
 char/string/take/satisfy/take_while 系列详见 `moon bench` 完整输出；README 历史口径（char × 1000 ≈ 132 µs）与本次量级一致。
 
+## 五点五、stdlib JSON 对照基准（moonbitlang/core/json，同 workload）
+
+2026-11-13 新增 `benchmarks/stdlib_json_bench.mbt`（`moonbitlang/core/json` 以 `@stdjson` 接入同一 bench 框架，workload 与 astrolabe JSON 基准完全一致）：
+
+| 基准 | moonbitlang/core/json | astrolabe JSON（组合子） | 差距 |
+|---|---|---|---|
+| object_50 | 28.42 µs ± 598 ns | 487.95 µs ± 12.67 µs | ≈17× |
+| object_100 | 56.49 µs ± 1.56 µs | 1.01 ms ± 35.87 µs | ≈18× |
+| array_100 | 20.80 µs ± 794 ns | 651.20 µs ± 64.56 µs | ≈31× |
+| nested_10 | 8.89 µs ± 213 ns | 92.73 µs ± 1.11 µs | ≈10× |
+
+**诚实定位**：moonbitlang/core/json 是官方手写的高性能解析器；astrolabe JSON 是**组合子能力的教学级示例**（演示 commit/alt/seq 在真实文法上的组合），性能对比的意义是为 v0.6.0 组合子内核优化（String View / 惰性行列 / 热路径减分配）提供量化基线——当前 10~31× 差距即优化空间上界。组合子框架的竞争力定位在**可组合性与诊断质量**（见 docs/comparison.md），不在与专项解析器比绝对速度。
+
 ## 六、与历史口径的差异说明
 
 - README 性能表的数字为早期实测（char×1000 ≈ 132 µs 等）；本次全部以本报告表格为准，后续以 `moon bench` 实时结果为准。

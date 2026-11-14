@@ -1,5 +1,6 @@
 import {
   "moonbitlang/core/bench",
+  "moonbitlang/core/json" @stdjson,
   "walkzzz/astrolabe/core",
   "walkzzz/astrolabe" @astro,
   "walkzzz/astrolabe/examples/json",
