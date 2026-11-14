@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2026-11-13
+
+### Added
+- `ParseError` implements `Show`（delegates to `format()`）— `inspect` snapshots, `"\{err}"` interpolation and `println` work out of the box
+- `docs/pitfall-catalog.md` — 15 measured pitfalls（M 系列 MoonBit 语法演进 9 条 + S 系列解析器语义 6 条，含序列承诺传染 / label 抹掉 alt 多候选 / furthest 位置 / facade 显式列表）
+- `docs/assessment.md` 验收记分卡 — 14 检查点逐条 evidence（三口径：没跑过≠通过 / 分母不猜 / 第三方可复算）
+- `scripts/check_docs.mjs` — 文档数字一致性自检（4 正向断言 + 5 负向自测全绿；**首跑即检出 badge 190≠196 真实漂移**）
+
+### Changed
+- README 快速开始现代化：6 处弃用的 `inspect!` 语法 → `match/println` 风格（同时展示 `e.format()` 错误报告）；`Ok('a')` 快照断言按实测修正为 `Ok(a)`
+- README 文档表补全 proposal / assessment / comparison / performance_report / pitfall-catalog（中英双语）
+- AGENTS.md 元数据更新（196×4 / mooncakes 0.5.0 已发布）
+
 ## [0.5.0] - 2026-11-13
 
 ### Added

@@ -114,7 +114,7 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 
 ## 九、预期验收产物
 
-- `walkzzz/astrolabe` v0.5.0 开发完成待发布（0.2.0 已上线），`moon add walkzzz/astrolabe` 直接可用；
+- `walkzzz/astrolabe` v0.5.1 待发布（**0.5.0 已上线**，含 v0.4.0 错误聚合 + v0.5.0 ParserLike 全部内容），`moon add walkzzz/astrolabe` 直接可用；
 - 四后端（wasm / wasm-gc / js / native）测试全绿（当前 190 × 4）、25 项基准、CI 门禁；
 - 双语文档 + 评估报告（`docs/assessment.md`，含实测数据与竞品分析）+ 本申报书（`docs/proposal.md`）；
 - 本期全部新增贡献在 CHANGELOG `[0.2.0]` / `[0.2.1]` 条目与 git 提交历史中可追踪。
