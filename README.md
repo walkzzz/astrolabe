@@ -315,6 +315,11 @@ astrolabe/
 └── docs/          API 参考、教程、迁移指南、形式化规范、路线图
 ```
 
+## 🌱 生态采用
+
+- **INI → JSON 转换**（`examples/ini`）：真实文法的端到端依赖示范——INI 文法组合（fix 递归 + peek 分派 + v0.4.0 错误聚合诊断）→ 解析 → JSON 输出，6 项端到端测试全绿
+- 欢迎把你的项目加进本节：在仓库 issue 中附上项目名与 mooncakes 包名即可
+
 ## 📚 文档
 
 | 文档 | 说明 |
@@ -623,6 +628,11 @@ astrolabe/
 ├── cmd/main/      CLI demo
 └── docs/          API reference, tutorial, migration guide, formal spec, roadmap
 ```
+
+## 🌱 Ecosystem Adoption
+
+- **INI → JSON conversion** (`examples/ini`): an end-to-end dependency demo over a real grammar — INI grammar composition (fix recursion + peek dispatch + v0.4.0 error aggregation) → parse → JSON output, 6 e2e tests all green
+- Want your project listed here? Open an issue with your project name and mooncakes package name
 
 ## 📚 Documentation
 

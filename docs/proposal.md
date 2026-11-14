@@ -80,18 +80,26 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 | 贡献 | 内容 | 可验证性 |
 |:---|:---|:---|
 | 形式化验证包 `proof/` | 7 个 proof 函数（编译期 SMT 验证）：commit 标志、alt 回溯语义 P2a/P2b、序列承诺、偏移/剩余不变量、EOF 正确性 | `moon check --target native` |
-| 基准套件 `benchmarks/` | 25 项基准覆盖 basic/compose/control/json/http | `moon bench --target native benchmarks/` |
-| 5 个示例包 | uri、json、http、csv_header、calc，含白盒测试 | `moon test --target all` |
+| **错误聚合诊断 v0.4.0** | `ParseError::merge`（furthest-position + 多候选期望合并）+ `alt`/`choice` 失败聚合——下游看到 "expected 'a' or 'b'" 而非最后一分支的错误 | `examples/ini` 错误用例 |
+| **ParserLike 扩展点 v0.5.0** | `pmap`/`pbind`/`palt`/`poption` 通用组合子 + `Parser::run_fn` 入口——第三方类型暴露 `run_fn` 方法即接入生态（`Traced[T]` 示范） | `examples/ext`（5 测试） |
+| 基准套件 + stdlib 对照 | **26 项基准** + moonbitlang/core/json 同 workload 对照（诚实基线：官方快 10~31×，为内核优化量化） | `moon bench --target native benchmarks/` |
+| **7 个示例包** | uri、json、http、csv_header、calc、**ext**（ParserLike 扩展示范）、**ini**（依赖示范：文法→解析→JSON 全链路） | `moon test --target all` |
 | CLI 演示 `cmd/main` | JSON/URI/HTTP 交互式展示 | `moon run cmd/main` |
-| CI 三门禁 | `moon check --deny-warn --target all` + `moon test --target all` + `moon bench` | `.github/workflows/ci.yml` |
-| 文档一致性审计修复 | README 中英 10 处与实际包结构/API 对齐、测试数口径更新（147→190）、版本三方统一 0.2.0、形式化性质表与 proof.mbt 一一对应 | `docs/assessment.md` |
-| 双语文档体系 | API 参考、教程、迁移指南、形式化规范、路线图，全 API 中英 `///` 注释 | `docs/` |
+| CI 五步门禁 | check --deny-warn 四目标 + test 四目标 + bench + `moon info` mbti 漂移校验 + coverage 报告 | `.github/workflows/ci.yml`（CI run 4 全绿） |
+| **pitfall-catalog** | 15 条【实测】陷阱（MoonBit 语法演进 9 + 解析器语义 6），MoonBit 生态稀缺资产 | `docs/pitfall-catalog.md` |
+| **验收记分卡 + check_docs** | 14 检查点逐条 evidence（三口径：没跑过≠通过/分母不猜/第三方可复算）+ 数字一致性自检（4 正向 + 5 负向，**首跑即检出真实漂移 190≠196**） | `docs/assessment.md` + `scripts/check_docs.mjs` |
+| README 现代化 | 6 处弃用 `inspect!` → match/println 风格；快照断言实测修正（Char Show 无引号）；`ParseError` 实现使 `"\{err}"` 插值开箱可用 | README 快速开始 |
+| 文档一致性审计修复 | README 中英与实际包结构/API 对齐、测试数口径更新（147→190→**198**）、版本 0.2.0→0.5.0→**0.5.1**、形式化性质表与 proof.mbt 一一对应 | `docs/assessment.md` 记分卡 |
+| 双语文档体系 | **10 份文档**（含竞品对比/性能报告/申报书/陷阱目录），全 API 中英 `///` 注释 | `docs/` |
+| **发布记录** | **0.5.0 已发布 mooncakes（2026-11-14）**；0.5.1（本轮增量）待发布 | mooncakes.io/docs/walkzzz/astrolabe |
 
 ## 六、核心功能范围
 
 **已交付**：`Parser[T]` 一等值核心 + 12 个字符原语组合子 + 11 类顺序/重复组合子 + 6 个回溯控制组合子（commit/alt/choice/label/not_followed_by/fix）；`parse`/`parse_full`/`parse_raise`/`parse_full_raise` 四种入口；JSON 解析器（parse + stringify 往返）与 HTTP 解析器（Method/Uri/Request/Show）；位置感知错误报告（行列号 + 上下文指针）。
 
-**拟实现（下一季度）**：`ParserLike` trait 抽象（自定义输入流）；choice 错误聚合（expected 标签合并）；性能优化（惰性行列、热路径减分配）。
+**已交付**（本期新增）：错误聚合诊断（v0.4.0）、ParserLike 函数式扩展点（v0.5.0）、`ParseError` 实现 Show、pitfall-catalog/验收记分卡/check_docs 工程工具链。
+
+**拟实现（下一季度）**：组合子内核性能优化（String View / 惰性行列，stdlib 对照基线 10~31× 收敛）；多错误收集（一次解析报多错）；wasm Web Playground。
 
 **明确不做**：不做代码生成（与 yacc 定位区分）；不内置全部主流格式（保持内核单一职责，格式解析走示例子包）；不做正则引擎（生态已有 moonrockz/regex）。
 
@@ -138,7 +146,7 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 | v0.4.0 ✅ | choice 错误聚合（吸收 talcparsec CanMerge 思想，独立实现）：`ParseError::merge`、多候选期望输出 | 工程质量 |
 | v0.5.0 ✅ | ParserLike 函数式扩展点：`pmap`/`pbind`/`palt`/`poption` + `run_fn` 入口 + Traced[T] 扩展示例 | 项目完成度 |
 | v0.6.0 | 惰性行列计算等性能优化；与 parkit / talcparsec / stdlib JSON 的三方对比基准（仅实测数据，零代码引入） | 工程质量 + 生态贡献 |
-| v0.7.0 | 生态采用案例（INI/表达式求值器完整链路）与 wasm Web Playground（错误位置高亮演示） | 生态贡献 + 展示表现 |
+| v0.7.0 | 生态采用案例与 wasm Web Playground——**INI 已提前落地**（examples/ini，6 端到端测试全绿，v0.7.0 仅余 Playground） | 生态贡献 + 展示表现 |
 
 以上路线与 `docs/roadmap.md` 的「vNext 竞争力路线图」一致；v0.4.0 / v0.5.0 为本赛期（截止 2026-11-18）冲刺目标。
 
