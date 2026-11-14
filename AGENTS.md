@@ -1,91 +1,36 @@
-# Project Agents.md Guide
+# AGENTS.md — walkzzz/astrolabe
 
-This is a [MoonBit](https://docs.moonbitlang.com) project.
+MoonBit 位置感知解析器组合子库（参考 OCaml Angstrom，MIT）。主模块 `moon.mod` v0.5.0；mooncakes 最新 0.2.0（0.5.0 待发布）。
 
-You can browse and install extra skills here:
-<https://github.com/moonbitlang/skills>
+## 构建与验证（完成标准）
 
-## Project Structure
+- `moon check --deny-warn --target all` — 零警告
+- `moon test --target all` — 196 测试 × 4 后端全绿（wasm / wasm-gc / js / native）
+- `moon bench --target native benchmarks/` — 25+ 基准（含 stdlib JSON 对照）
+- 凡改动 MoonBit 代码，收尾必须回归以上三项
 
-- MoonBit packages are organized per directory; each directory contains a
-  `moon.pkg` file listing its dependencies. Each package has its files and
-  blackbox test files (ending in `_test.mbt`) and whitebox test files (ending in
-  `_wbtest.mbt`).
+## 工程文档（docs/）
 
-- In the toplevel directory, there is a `moon.mod` file listing module
-  metadata.
+- `proposal.md` — 季度评选申报书
+- `assessment.md` — 工程评估报告（实测数据 + 竞品分析）
+- `comparison.md` — 10 库 parser 竞品矩阵
+- `performance_report.md` — 基准报告（含 stdlib JSON 对照：官方快 10~31×，为内核优化量化基线）
+- `roadmap.md` — vNext 竞争力路线图（v0.4.0 错误聚合 ✅ / v0.5.0 ParserLike ✅ / v0.6.0 性能+基准 / v0.7.0 Playground）
+- `formal-spec.md` — 形式化验证规范（与 proof/proof.mbt 一一对应）
 
-## Coding convention
+## 长流程任务协议（防跑偏 + 记锁回）
 
-- MoonBit code is organized in block style, each block is separated by `///|`,
-  the order of each block is irrelevant. In some refactorings, you can process
-  block by block independently.
+> 与中枢协议（forCodearts AGENTS.md v1.5）保持一致；完整技能路由表见中枢。本协议默认不启用，满足任一判定才纳入，不自动扩散。
 
-- Try to keep deprecated blocks in file called `deprecated.mbt` in each
-  directory.
+**启用判定**（任一触发，按长流程任务）：多轮任务（>3 步跨轮，产出链路依赖）· 固化承诺（规则/责任人/时限留存备查）· 外部输入（群聊、多方评审与角色反馈）· 高风险操作（发布/合并/迁移/批量修改）· 发起人声明适用。
 
-## Tooling
+**启用后执行**：任务清单化（pending/in_progress/completed 跨轮维护，禁止凭记忆续接）· 链路依赖显式化（前置未完成不启动后置）· 承诺固化（写入留存文档，注明日期与来源）· 外部输入归档（来源/结论/采纳状态，未采纳须说明理由）· 高风险操作双确认（影响范围 + 回滚预案，显式批准后执行）· 任务收尾报告。
 
-- `moon fmt` is used to format your code properly.
+**循环三步机制（记 → 锁 → 回）**：
+- **记**：每步开始前，把已确认的"规则 / 负责人 / 截止时间"写入本任务的留存区块（对话内固定区块；需持久的写入本文件），跨轮次可追溯
+- **锁**：遇到与前序约定冲突的新要求，**先停下**：标注冲突来源（哪条前序约定 vs 哪个新要求），询问"谁有权改"——获得有权方（发起人 / 规则 owner）显式确认后才可变更；未确认前按前序约定执行
+- **回**：每完成一环，回写一句"已交付 X，下环依赖 Y"（X = 本轮产出物，Y = 下一步的前置依赖），保持链路依赖显式化
 
-- `moon ide` provides project navigation helpers like `peek-def`, `outline`, and
-  `find-references`. See $moonbit-agent-guide for details.
+**外部输入确认**：禁止在未确认的情况下，把群聊里的某句话当成最终决定——群聊 / 多方评审的意见必须经发起人显式确认（如"按此执行"）后才可纳入交付链。
 
-- `moon info` is used to update the generated interface of the package, each
-  package has a generated interface file `.mbti`, it is a brief formal
-  description of the package. If nothing in `.mbti` changes, this means your
-  change does not bring the visible changes to the external package users, it is
-  typically a safe refactoring.
-
-- In the last step, run `moon info && moon fmt` to update the interface and
-  format the code. Check the diffs of `.mbti` file to see if the changes are
-  expected.
-
-- Run `moon test` to check tests pass. MoonBit supports snapshot testing; when
-  changes affect outputs, run `moon test --update` to refresh snapshots.
-
-- Prefer `assert_eq` or `assert_true(pattern is Pattern(...))` for results that
-  are stable or very unlikely to change. For snapshot tests that record
-  structured debugging output, derive `Debug` and use `debug_inspect`, rather
-  than deriving `Show` for debugging. For solid, well-defined results (e.g.
-  scientific computations), prefer assertion tests. You can use
-  `moon coverage analyze > uncovered.log` to see which parts of your code are
-  not covered by tests.
-
-## 长流程协议（默认不启用）
-
-本协议仅在满足以下任一触发条件时启用，不自动扩散：
-
-| # | 触发条件 | 说明 |
-|---|---------|------|
-| T1 | 多轮任务 | >3 步跨轮协作，产出链路依赖 |
-| T2 | 固化承诺 | 规则、责任人、时限需留存备查 |
-| T3 | 外部输入 | 群聊、多方评审与角色反馈 |
-| T4 | 高风险操作 | 合并、发布、迁移、批量修改等难回滚动作 |
-| T5 | 发起人声明 | 用户明确声明适用本协议 |
-
-### 三步动作
-
-每一步必须执行：
-
-1. **记**：把已确认的"规则 / 负责人 / 截止时间"写进本文件下方 `## 长流程状态` 区块
-2. **锁**：遇到与前序约定冲突的新要求，先停下，标注冲突来源，问"谁有权改"
-3. **回**：每完成一环，回写一句"已交付 X，下环依赖 Y"
-
-### 禁则
-
-- 禁止在没确认的情况下，把群聊里的某句话当成最终决定
-- 未触发条件时不启用，不自动扩散到简单任务
-
-## 长流程状态
-
-> 本区块仅在协议启用时填写
-
-| 项目 | 内容 |
-|------|------|
-| 当前阶段 | v0.0.1 组合子正确性证明 ✅ |
-| 规则 | Z3 SMT 证明 commit/alt 语义 + Parser 态射保结构 |
-| 负责人 | walkzzz |
-| 截止时间 | 本会话内 |
-| 交付记录 | 已交付 proof/ + v0.1.0 核心类型+基础组合子，30 测试×4后端全绿，下环依赖 v0.2.0 组合组合子+commit/alt |
-| 冲突登记 | — |
+**边界约束**：协议仅对当前任务生效，任务结束即解除；不因启用而自动修改技能、路由或其他配置；短任务保持轻量流程。

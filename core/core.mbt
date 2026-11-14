@@ -522,6 +522,32 @@ pub fn ParseError::merge(
   }
 }
 
+///| `ParseError` 实现 `Show` — 委托给 `format()`，使 `inspect` 快照、
+
+///| 字符串插值 `"\{err}"` 与 `println` 开箱可用（下游调试体验）。
+
+///|
+
+///| `ParseError` implements `Show` — delegates to `format()`, making
+
+///| `inspect` snapshots, interpolation `"\{err}"` and `println` work
+
+///| out of the box (downstream debugging experience).
+
+pub impl Show for ParseError with fn output(self, logger) {
+  logger.write_string(self.format())
+}
+
+///|
+
+///| 补齐 `Show` 的 `to_string` 派生方法。
+
+///|
+
+///| Add the derived `to_string` from `Show`.
+
+pub extend ParseError with Show::{output, to_string}
+
 ///| 解析结果 — 运行 `Parser[T]` 后的输出。
 
 ///|

@@ -9,8 +9,9 @@
 _MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Angstrom](https://github.com/SimonCourteaux/angstrom)_
 
 [![mooncakes.io](https://img.shields.io/badge/mooncakes-0.5.0-orange?style=flat-square)](https://mooncakes.io/package/walkzzz/astrolabe)
+[![CI](https://github.com/walkzzz/astrolabe/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/walkzzz/astrolabe/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![tests](https://img.shields.io/badge/tests-190%20%C3%97%204%20backends-green?style=flat-square)]()
+[![tests](https://img.shields.io/badge/tests-196%20%C3%97%204%20backends-green?style=flat-square)]()
 [![formal](https://img.shields.io/badge/formal-Z3%20verified-brightgreen?style=flat-square)](docs/formal-spec.md)
 [![docs](https://img.shields.io/badge/docs-bilingual-blueviolet?style=flat-square)](docs/)
 
@@ -39,7 +40,7 @@ _MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Ang
 - 🎯 **精确错误报告** — 字符级位置 + 输入上下文片段
 - 📦 **JSON/HTTP 解析器** — 开箱即用的格式解析子包
 - 🔬 **Z3 形式化验证** — 核心 commit/alt 语义已机械化证明
-- ✅ **4 后端全通** — wasm / wasm-gc / js / native 均通过 190 项测试，`moon check --deny-warn --target all` 零警告
+- ✅ **4 后端全通** — wasm / wasm-gc / js / native 均通过 196 项测试，`moon check --deny-warn --target all` 零警告
 - 🌐 **双语文档** — 所有公共 API 均有中英双语 `///` 注释
 
 ## 🚀 快速开始
@@ -51,11 +52,17 @@ moon add walkzzz/astrolabe
 ```moonbit
 // 基础：匹配单字符
 let p = @astrolabe.char('a')
-inspect!(p.parse("abc"), content="Ok('a')")
+match p.parse("abc") {
+  Ok(c) => println("parsed: \{c}") // parsed: a
+  Err(e) => println(e.format()) // 精确位置 + 上下文片段
+}
 
 // 组合：变换结果
 let greeting = @astrolabe.map(@astrolabe.string("hello"), fn(s) { s.length() })
-inspect!(greeting.parse("hello"), content="Ok(5)")
+match greeting.parse("hello") {
+  Ok(n) => println("length: \{n}") // length: 5
+  Err(e) => println(e.format())
+}
 
 // 选择：有序回溯
 let letter_or_digit = @astrolabe.alt(
@@ -69,7 +76,10 @@ let full = @astrolabe.bind(@astrolabe.char('a'), fn(_) {
     @astrolabe.pure("ab")
   })
 })
-inspect!(full.parse_full("ab"), content="Ok(\"ab\")")
+match full.parse_full("ab") {
+  Ok(v) => println("value: \{v}") // value: ab
+  Err(e) => println(e.format())
+}
 ```
 
 ## 🔒 核心：commit/alt 回溯控制
@@ -313,9 +323,14 @@ astrolabe/
 | [教程](docs/tutorial.md) | 从零到 JSON 解析器 |
 | [迁移指南](docs/migration.md) | 从 yacc / regex / nom / Angstrom 迁移 |
 | [形式化规范](docs/formal-spec.md) | Z3 验证的核心语义性质 |
+| [竞品对比](docs/comparison.md) | 10 库 parser 竞品矩阵（mooncakes 实测核查） |
+| [性能基准报告](docs/performance_report.md) | 25 基准实测 + stdlib JSON 对照（commit 57 倍收益量化） |
 | [路线图](docs/roadmap.md) | v0.1.0→v1.0.0 迭代计划 |
 | [变更日志](CHANGELOG.md) | 版本历史 |
 | [贡献指南](CONTRIBUTING.md) | 开发流程 |
+| [申报书](docs/proposal.md) | 季度评选申报材料 |
+| [陷阱目录](docs/pitfall-catalog.md) | MoonBit 语法演进 + 解析器语义实测陷阱（15 条） |
+| [工程评估报告](docs/assessment.md) | 实测数据与竞品分析 |
 
 ## License
 
@@ -344,7 +359,7 @@ astrolabe/
 - 🎯 **Precise errors** — Character-level position + input context snippets
 - 📦 **JSON/HTTP parsers** — Ready-to-use format parsing subpackages
 - 🔬 **Z3 formal verification** — Core commit/alt semantics mechanically proved
-- ✅ **4 backends pass** — wasm / wasm-gc / js / native all pass 190 tests, `moon check --deny-warn --target all` with zero warnings
+- ✅ **4 backends pass** — wasm / wasm-gc / js / native all pass 196 tests, `moon check --deny-warn --target all` with zero warnings
 - 🌐 **Bilingual docs** — All public APIs have Chinese+English `///` comments
 
 ## 🚀 Quick Start
@@ -355,10 +370,10 @@ moon add walkzzz/astrolabe
 
 ```moonbit
 let p = @astrolabe.char('a')
-inspect!(p.parse("abc"), content="Ok('a')")
+inspect(p.parse("abc"), content="Ok(a)")
 
 let greeting = @astrolabe.map(@astrolabe.string("hello"), fn(s) { s.length() })
-inspect!(greeting.parse("hello"), content="Ok(5)")
+inspect(greeting.parse("hello"), content="Ok(5)")
 
 let letter_or_digit = @astrolabe.alt(
   @astrolabe.char_range('a', 'z'),
@@ -370,7 +385,10 @@ let full = @astrolabe.bind(@astrolabe.char('a'), fn(_) {
     @astrolabe.pure("ab")
   })
 })
-inspect!(full.parse_full("ab"), content="Ok(\"ab\")")
+match full.parse_full("ab") {
+  Ok(v) => println("value: \{v}") // value: ab
+  Err(e) => println(e.format())
+}
 ```
 
 ## 🔒 Core: commit/alt Backtrack Control
@@ -614,9 +632,14 @@ astrolabe/
 | [Tutorial](docs/tutorial.md) | From zero to JSON parser |
 | [Migration Guide](docs/migration.md) | From yacc / regex / nom / Angstrom |
 | [Formal Spec](docs/formal-spec.md) | Z3-verified core semantic properties |
+| [Comparison](docs/comparison.md) | 10-library parser matrix (mooncakes-verified) |
+| [Performance Report](docs/performance_report.md) | 25 benches + stdlib JSON comparison |
 | [Roadmap](docs/roadmap.md) | v0.1.0→v1.0.0 iteration plan |
 | [Changelog](CHANGELOG.md) | Version history |
 | [Contributing](CONTRIBUTING.md) | Development workflow |
+| [Proposal](docs/proposal.md) | Quarterly award submission |
+| [Pitfall Catalog](docs/pitfall-catalog.md) | MoonBit evolution & parser-semantics pitfalls (measured) |
+| [Assessment](docs/assessment.md) | Measured data & competitor analysis |
 
 ## License
 
