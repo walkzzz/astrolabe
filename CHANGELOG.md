@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.2] - 2026-11-13
+
+### Added
+- README「生态采用」节（中英）：`examples/ini` 依赖示范（INI→JSON 全链路）+ 社区项目征集
+- proposal 刷新：本期贡献表 8→13 行（补错误聚合 v0.4.0 / ParserLike v0.5.0 / Show / pitfall-catalog / 记分卡 / check_docs / ini 依赖示范 / 0.5.0 发布记录），第六节已交付/拟实现更新，第十节 INI 提前落地标注
+
+### Changed
+- 版本顺移：0.5.1 已发布后的文档/工具增量并入 0.5.2
+
 ## [0.5.1] - 2026-11-13
 
 ### Added

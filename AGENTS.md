@@ -1,6 +1,6 @@
 # AGENTS.md — walkzzz/astrolabe
 
-MoonBit 位置感知解析器组合子库（参考 OCaml Angstrom，MIT）。主模块 `moon.mod` v0.5.1；mooncakes 0.5.0 已发布（0.5.1 待发布）。
+MoonBit 位置感知解析器组合子库（参考 OCaml Angstrom，MIT）。主模块 `moon.mod` v0.5.2；mooncakes 0.5.1 已发布（0.5.2 待发布）。
 
 ## 构建与验证（完成标准）
 

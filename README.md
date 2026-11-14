@@ -8,7 +8,7 @@
 
 _MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Angstrom](https://github.com/SimonCourteaux/angstrom)_
 
-[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.5.1-orange?style=flat-square)](https://mooncakes.io/package/walkzzz/astrolabe)
+[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.5.2-orange?style=flat-square)](https://mooncakes.io/package/walkzzz/astrolabe)
 [![CI](https://github.com/walkzzz/astrolabe/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/walkzzz/astrolabe/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![tests](https://img.shields.io/badge/tests-198%20%C3%97%204%20backends-green?style=flat-square)]()
