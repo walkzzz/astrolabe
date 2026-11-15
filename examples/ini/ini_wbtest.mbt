@@ -92,7 +92,7 @@ test "many works with consuming parser" {
   let p = @sequence.many(@char.char('a'))
   let s = @core.State::new("aaab")
   match (p.run)(s) {
-    @core.Success(arr) => assert_eq(arr.length(), 3)
+    @core.Success(arr, _) => assert_eq(arr.length(), 3)
     @core.Failure(_) => fail("unexpected failure")
   }
 }
