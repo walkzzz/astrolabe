@@ -76,11 +76,12 @@ test "many guards against zero-width match" {
   let p = @sequence.many(zero)
   let s = @core.State::new("abc")
   match (p.run)(s) {
-    Ok(_) => fail("expected failure: zero-width match must error, not loop")
-    Err(e) => {
+    @core.Failure(e) => {
       assert_eq(e.pos().offset, 0)
       assert_true(e.expected().length() >= 1)
     }
+    @core.Success(_, _) =>
+      fail("expected failure: zero-width match must error, not loop")
   }
 }
 
@@ -91,8 +92,8 @@ test "many works with consuming parser" {
   let p = @sequence.many(@char.char('a'))
   let s = @core.State::new("aaab")
   match (p.run)(s) {
-    Ok(arr) => assert_eq(arr.length(), 3)
-    Err(_) => fail("unexpected failure")
+    @core.Success(arr) => assert_eq(arr.length(), 3)
+    @core.Failure(_) => fail("unexpected failure")
   }
 }
 
