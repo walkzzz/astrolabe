@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.3] - 2026-11-13
+
+### Fixed
+- ini_wbtest many 防护测试：match 改用 `ParseResult` 的 `Success(value, state)` 双参构造（原 `Ok/Err` 与 astrolabe 自定义 enum 不匹配——4014/4080 编译错误根因）
+
+### Added
+- README「生态采用」节：同作者生态互链（walkzzz MoonBit 工具集三库组合：astrolabe + moon2dart + image）
+
 ## [0.5.2] - 2026-11-13
 
 ### Added
