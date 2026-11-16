@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.4] - 2026-11-16
+
+### Fixed
+- `moon fmt` compliance — 9 个文件格式对齐 moon formatter 标准（doc comment 换行 / 长参数列表折行 / ini_wbtest try/catch 简化）
+- CI 补充 `moon fmt --check` 门禁（ci.yml）
+
+### Changed
+- `docs/proposal.md` 测试数 190→200、基准数 25→26，与实测对齐
+- 根目录 `hackathon2026_astrolabe_proposal.md` 标注过时并重定向至 `docs/proposal.md`（消除仓库内许可证 Apache-2.0 过时信息）
+
 ## [0.5.3] - 2026-11-13
 
 ### Fixed
