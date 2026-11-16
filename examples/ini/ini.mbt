@@ -25,8 +25,11 @@
 ///| `ini_to_json_string`.
 
 ///| 行级语法元素。
+
 ///|
-///| Line-level syntax elements.
+
+///|
+/// Line-level syntax elements.
 pub(all) enum IniLine {
   Section(String)
   Pair(String, String)
@@ -42,7 +45,8 @@ pub(all) enum IniLine {
 
 ///| Parsed INI document: `sections[i] = (name, [(key, value)...])`.
 
-///| Keys before the first section header land in the unnamed section `""`.
+///|
+/// Keys before the first section header land in the unnamed section `""`.
 pub(all) struct IniDoc {
   sections : Array[(String, Array[(String, String)])]
 }
@@ -51,16 +55,23 @@ pub(all) struct IniDoc {
 
 ///|
 
-///| Key character set: letters / digits / `_` / `-` / `.`.
+///|
+/// Key character set: letters / digits / `_` / `-` / `.`.
 fn is_key_char(c : Char) -> Bool {
-  (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.'
+  (c >= 'a' && c <= 'z') ||
+  (c >= 'A' && c <= 'Z') ||
+  (c >= '0' && c <= '9') ||
+  c == '_' ||
+  c == '-' ||
+  c == '.'
 }
 
 ///| 行内空白（不跨行）。
 
 ///|
 
-///| Intra-line whitespace (never crosses lines).
+///|
+/// Intra-line whitespace (never crosses lines).
 fn ws() -> @core.Parser[String] noraise {
   @char.take_while(fn(c) { c == ' ' || c == '\t' })
 }
@@ -69,7 +80,8 @@ fn ws() -> @core.Parser[String] noraise {
 
 ///|
 
-///| Line terminator: `\r\n` or `\n`.
+///|
+/// Line terminator: `\r\n` or `\n`.
 fn eol() -> @core.Parser[String] noraise {
   @branch.alt(@char.string("\r\n"), @char.string("\n"))
 }
@@ -78,7 +90,8 @@ fn eol() -> @core.Parser[String] noraise {
 
 ///|
 
-///| Optional line end — succeeds at EOF when no trailing newline exists.
+///|
+/// Optional line end — succeeds at EOF when no trailing newline exists.
 fn line_end() -> @core.Parser[Unit] noraise {
   @sequence.map(@sequence.option(eol(), ""), fn(_) { () })
 }
@@ -87,7 +100,8 @@ fn line_end() -> @core.Parser[Unit] noraise {
 
 ///|
 
-///| Comment line: starts with `;` or `#` until end of line.
+///|
+/// Comment line: starts with `;` or `#` until end of line.
 fn comment_line() -> @core.Parser[IniLine] noraise {
   @sequence.map(
     @sequence.seq2(
@@ -102,7 +116,8 @@ fn comment_line() -> @core.Parser[IniLine] noraise {
 
 ///|
 
-///| Blank line.
+///|
+/// Blank line.
 fn blank_line() -> @core.Parser[IniLine] noraise {
   @sequence.map(eol(), fn(_) { IniLine::Blank })
 }
@@ -111,7 +126,8 @@ fn blank_line() -> @core.Parser[IniLine] noraise {
 
 ///|
 
-///| Section header: `[name]`, whitespace around the name is trimmed.
+///|
+/// Section header: `[name]`, whitespace around the name is trimmed.
 fn section_line() -> @core.Parser[IniLine] noraise {
   @sequence.map(
     @sequence.seq2(
@@ -132,7 +148,8 @@ fn section_line() -> @core.Parser[IniLine] noraise {
 
 ///| Key-value line: `key = value`, both sides trimmed, value runs to
 
-///| end of line (may contain spaces).
+///|
+/// end of line (may contain spaces).
 fn pair_line() -> @core.Parser[IniLine] noraise {
   @sequence.map(
     @sequence.seq3(
@@ -167,8 +184,8 @@ fn pair_line() -> @core.Parser[IniLine] noraise {
 
 ///| sub-parsers: dispatch failures backtrack freely, while in-branch failures
 
-///| (e.g. `=` missing after a consumed key) propagate as sequence commitments.
-
+///|
+/// (e.g. `=` missing after a consumed key) propagate as sequence commitments.
 fn ini_line() -> @core.Parser[IniLine] noraise {
   @core.Parser::of(fn(state) {
     let saved_offset = state.offset
@@ -201,14 +218,14 @@ fn ini_line() -> @core.Parser[IniLine] noraise {
 
 ///|
 
-///| Parse a full INI document, requiring all input consumed.
+///|
+/// Parse a full INI document, requiring all input consumed.
 pub fn parse_ini(input : String) -> Array[IniLine] raise @core.ParseError {
-  match @sequence
-    .map(
+  match
+    @sequence.map(
       @sequence.seq2(@sequence.many(ini_line()), @char.end_of_input()),
       fn(pair) { pair.0 },
-    )
-    .parse_full(input) {
+    ).parse_full(input) {
     Ok(lines) => lines
     Err(e) => raise e
   }
@@ -222,7 +239,8 @@ pub fn parse_ini(input : String) -> Array[IniLine] raise @core.ParseError {
 
 ///| Assemble lines into a document: `Section` opens a new section,
 
-///| `Pair` joins the current one; keys before any `Section` land in `""`.
+///|
+/// `Pair` joins the current one; keys before any `Section` land in `""`.
 pub fn build_ini_doc(lines : Array[IniLine]) -> IniDoc noraise {
   let sections : Array[(String, Array[(String, String)])] = []
   let mut current : Array[(String, String)] = []
@@ -252,7 +270,8 @@ pub fn build_ini_doc(lines : Array[IniLine]) -> IniDoc noraise {
 
 ///|
 
-///| JSON string escaping.
+///|
+/// JSON string escaping.
 fn json_escape_string(s : String) -> String noraise {
   let buf : StringBuilder = StringBuilder()
   buf.write_char('"')
@@ -274,7 +293,8 @@ fn json_escape_string(s : String) -> String noraise {
 
 ///|
 
-///| `IniDoc` → JSON string: `{"section":{"key":"value",...},...}`.
+///|
+/// `IniDoc` → JSON string: `{"section":{"key":"value",...},...}`.
 pub fn ini_to_json(doc : IniDoc) -> String noraise {
   let buf : StringBuilder = StringBuilder()
   buf.write_char('{')
@@ -303,7 +323,8 @@ pub fn ini_to_json(doc : IniDoc) -> String noraise {
 
 ///|
 
-///| One-shot entry: INI text → JSON string.
+///|
+/// One-shot entry: INI text → JSON string.
 pub fn ini_to_json_string(input : String) -> String raise @core.ParseError {
   ini_to_json(build_ini_doc(parse_ini(input)))
 }

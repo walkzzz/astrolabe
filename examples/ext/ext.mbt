@@ -16,7 +16,8 @@
 
 ///| every run records the current position in `log`, useful for debugging,
 
-///| statistics, or caching.
+///|
+/// statistics, or caching.
 pub(all) struct Traced[T] {
   inner : @core.Parser[T]
   mut log : Array[String]
@@ -26,7 +27,8 @@ pub(all) struct Traced[T] {
 
 ///|
 
-///| Create a `Traced` wrapper with an empty log.
+///|
+/// Create a `Traced` wrapper with an empty log.
 pub fn[T] Traced::new(inner : @core.Parser[T]) -> Traced[T] noraise {
   { inner, log: [], }
 }
@@ -35,7 +37,8 @@ pub fn[T] Traced::new(inner : @core.Parser[T]) -> Traced[T] noraise {
 
 ///|
 
-///| Read the invocation log (one entry appended per run).
+///|
+/// Read the invocation log (one entry appended per run).
 pub fn[T] Traced::entries(self : Traced[T]) -> Array[String] noraise {
   self.log
 }
@@ -50,7 +53,8 @@ pub fn[T] Traced::entries(self : Traced[T]) -> Array[String] noraise {
 
 ///| function, directly usable with `@core.pmap` / `@core.pbind` /
 
-///| `@core.palt` / `@core.poption`.
+///|
+/// `@core.palt` / `@core.poption`.
 pub fn[T] Traced::run_fn(
   self : Traced[T],
 ) -> (@core.State) -> @core.ParseResult[T] noraise {

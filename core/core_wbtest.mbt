@@ -120,8 +120,14 @@ test "ParseError::format_with_input" {
 /// 测试 ParseError::merge 不同位置时保留更远的错误
 /// Test ParseError::merge keeps the further error on different positions
 test "ParseError::merge furthest wins" {
-  let e1 = ParseError::at(pos={ line: 1, column: 1, offset: 0, }, expected="near")
-  let e2 = ParseError::at(pos={ line: 1, column: 5, offset: 4, }, expected="far")
+  let e1 = ParseError::at(
+    pos={ line: 1, column: 1, offset: 0, },
+    expected="near",
+  )
+  let e2 = ParseError::at(
+    pos={ line: 1, column: 5, offset: 4, },
+    expected="far",
+  )
   assert_eq(e1.merge(e2).pos().offset, 4)
   assert_eq(e2.merge(e1).pos().offset, 4)
 }

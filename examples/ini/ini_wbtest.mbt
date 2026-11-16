@@ -3,12 +3,11 @@
 /// Test INI → JSON end-to-end conversion (raise-style API + try/catch idiom)
 test "INI to JSON end-to-end" {
   let input = "; config\n[server]\nhost = localhost\nport = 8080\n\n[client]\ntimeout = 30\n"
-  let json = try ini_to_json_string(input) catch {
+  let json = ini_to_json_string(input) catch {
     e => fail("unexpected: \{e.format()}")
   }
   assert_eq(
-    json,
-    "{\"server\":{\"host\":\"localhost\",\"port\":\"8080\"},\"client\":{\"timeout\":\"30\"}}",
+    json, "{\"server\":{\"host\":\"localhost\",\"port\":\"8080\"},\"client\":{\"timeout\":\"30\"}}",
   )
 }
 
@@ -17,7 +16,7 @@ test "INI to JSON end-to-end" {
 /// Test whitespace trimming around keys, values and section names
 test "INI trims whitespace" {
   let input = "[ s ]\n  k1  =  v1  \n"
-  let json = try ini_to_json_string(input) catch {
+  let json = ini_to_json_string(input) catch {
     e => fail("unexpected: \{e.format()}")
   }
   assert_true(json.contains("\"s\""))
@@ -30,7 +29,7 @@ test "INI trims whitespace" {
 /// Test keys before any section land in the unnamed section
 test "INI keys before section land in unnamed section" {
   let input = "root = yes\n[server]\nhost = localhost\n"
-  let json = try ini_to_json_string(input) catch {
+  let json = ini_to_json_string(input) catch {
     e => fail("unexpected: \{e.format()}")
   }
   assert_true(json.contains("\"\":{\"root\":\"yes\"}"))
@@ -57,9 +56,7 @@ test "INI line errors point to furthest position" {
 /// Test top-level parsing enforces full consumption with sequence commitment
 test "INI top-level enforces full consumption" {
   let input = "[unclosed\n"
-  let result : Result[String, @core.ParseError] = try {
-    Ok(ini_to_json_string(input))
-  } catch {
+  let result : Result[String, @core.ParseError] = Ok(ini_to_json_string(input)) catch {
     e => Err(e)
   }
   match result {
@@ -72,7 +69,9 @@ test "INI top-level enforces full consumption" {
 /// 测试 many 的零消耗防护：零宽匹配的解析器不再无限循环而是报错（v0.5.2 稳定性防护）
 /// Test many's zero-consumption guard: zero-width parsers error out instead of looping (v0.5.2)
 test "many guards against zero-width match" {
-  let zero : @core.Parser[Int] = @core.Parser::of(fn(state) { @core.Success(42, state) })
+  let zero : @core.Parser[Int32] = @core.Parser::of(fn(state) {
+    @core.Success(42, state)
+  })
   let p = @sequence.many(zero)
   let s = @core.State::new("abc")
   match (p.run)(s) {
@@ -102,7 +101,7 @@ test "many works with consuming parser" {
 /// Test CRLF line endings and a final line without trailing newline
 test "INI supports CRLF and unterminated last line" {
   let input = "[server]\r\nhost = localhost\r\nport = 8080"
-  let json = try ini_to_json_string(input) catch {
+  let json = ini_to_json_string(input) catch {
     e => fail("unexpected: \{e.format()}")
   }
   assert_eq(json, "{\"server\":{\"host\":\"localhost\",\"port\":\"8080\"}}")

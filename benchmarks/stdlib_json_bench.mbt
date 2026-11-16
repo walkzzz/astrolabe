@@ -3,13 +3,15 @@
 /// ============================================================================
 
 ///| stdlib JSON 解析并序列化，返回长度（失败返回 -1）。
+
 ///|
+
 ///| Parse with moonbitlang/core/json and stringify, returning the length
-///| (or -1 on failure) — mirrors bench_json_parse for a fair comparison.
+
+///|
+/// (or -1 on failure) — mirrors bench_json_parse for a fair comparison.
 fn stdjson_parse_count(input : String) -> Int32 {
-  try {
-    @stdjson.parse(input).stringify().length()
-  } catch {
+  @stdjson.parse(input).stringify().length() catch {
     _ => -1
   }
 }

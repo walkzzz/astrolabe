@@ -55,8 +55,8 @@ pub fn[T] commit(p : @core.Parser[T]) -> @core.Parser[T] noraise {
 
 ///|   when `p2` also fails, errors are aggregated via `ParseError::merge` —
 
-///|   the furthest position wins, and equal positions merge expected labels.
-
+///|
+///   the furthest position wins, and equal positions merge expected labels.
 pub fn[T] alt(
   p1 : @core.Parser[T],
   p2 : @core.Parser[T],

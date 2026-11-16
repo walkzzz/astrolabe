@@ -494,8 +494,8 @@ pub fn ParseError::format_with_input(
 
 ///| - Equal positions: merge expected labels (deduplicated, order-preserving),
 
-///|   OR the committed flags, and keep the first error's context chain
-
+///|
+///   OR the committed flags, and keep the first error's context chain
 pub fn ParseError::merge(
   self : ParseError,
   other : ParseError,
@@ -518,7 +518,12 @@ pub fn ParseError::merge(
         merged.push(label)
       }
     }
-    ParseError(self.pos(), merged, self.committed() || other.committed(), self.contexts())
+    ParseError(
+      self.pos(),
+      merged,
+      self.committed() || other.committed(),
+      self.contexts(),
+    )
   }
 }
 
@@ -532,8 +537,8 @@ pub fn ParseError::merge(
 
 ///| `inspect` snapshots, interpolation `"\{err}"` and `println` work
 
-///| out of the box (downstream debugging experience).
-
+///|
+/// out of the box (downstream debugging experience).
 pub impl Show for ParseError with fn output(self, logger) {
   logger.write_string(self.format())
 }
@@ -544,8 +549,8 @@ pub impl Show for ParseError with fn output(self, logger) {
 
 ///|
 
-///| Add the derived `to_string` from `Show`.
-
+///|
+/// Add the derived `to_string` from `Show`.
 pub extend ParseError with Show::{output, to_string}
 
 ///| 解析结果 — 运行 `Parser[T]` 后的输出。

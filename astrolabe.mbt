@@ -149,14 +149,9 @@ pub using @branch {
 
 ///|   let t = @ext.Traced::new(@astrolabe.char('a'))
 
-///|   let p = @astrolabe.pmap(t, fn(c) { c.to_string() })
-
-pub using @core {
-  pmap,
-  pbind,
-  palt,
-  poption,
-}
+///|
+///   let p = @astrolabe.pmap(t, fn(c) { c.to_string() })
+pub using @core {pmap, pbind, palt, poption}
 
 // ============================================================================
 // 便捷入口 / Convenience entry points

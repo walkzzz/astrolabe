@@ -54,8 +54,8 @@
 
 ///| Extract the run-function from a `Parser` — the standard entry to the
 
-///| ParserLike extension point.
-
+///|
+/// ParserLike extension point.
 pub fn[T] Parser::run_fn(self : Parser[T]) -> (State) -> ParseResult[T] noraise {
   self.run
 }
@@ -68,8 +68,8 @@ pub fn[T] Parser::run_fn(self : Parser[T]) -> (State) -> ParseResult[T] noraise 
 
 ///| Apply a transform to any ParserLike run-function — generic combinator
 
-///| extension. Returns a concrete `Parser[B]`; failure semantics match `map`.
-
+///|
+/// extension. Returns a concrete `Parser[B]`; failure semantics match `map`.
 pub fn[A, B] pmap(
   run : (State) -> ParseResult[A],
   f : (A) -> B,
@@ -94,8 +94,8 @@ pub fn[A, B] pmap(
 
 ///| after the first parser succeeds, failures from the continuation are
 
-///| committed.
-
+///|
+/// committed.
 pub fn[A, B] pbind(
   run : (State) -> ParseResult[A],
   f : (A) -> Parser[B],
@@ -122,8 +122,8 @@ pub fn[A, B] pbind(
 
 ///| uncommitted failure and aggregates errors via `ParseError::merge` when
 
-///| both branches fail (same semantics as `alt`).
-
+///|
+/// both branches fail (same semantics as `alt`).
 pub fn[A] palt(
   run1 : (State) -> ParseResult[A],
   run2 : (State) -> ParseResult[A],
@@ -154,8 +154,8 @@ pub fn[A] palt(
 
 ///| uncommitted. Committed failures still propagate (same semantics as
 
-///| `option`).
-
+///|
+/// `option`).
 pub fn[A] poption(
   run : (State) -> ParseResult[A],
   default : A,

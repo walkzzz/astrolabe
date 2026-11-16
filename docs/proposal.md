@@ -35,7 +35,7 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 | 回溯语义 | 消费即承诺，回溯需 `attempt` 显式开启 | Angstrom 语义：`alt` 默认回溯，`commit` 显式切断；**语义经 7 个证明函数形式化** |
 | 许可证 | AGPL-3.0（传染性，闭源集成受限） | MIT（生态采用零门槛） |
 | 定位 | 纯组合子框架（无格式解析器） | 组合子内核 + JSON/HTTP 开箱解析器 + 5 示例包 |
-| 工程证据 | examples，无公开基准 | 190 测试 × 4 后端全绿、25 基准、CI 三门禁 |
+| 工程证据 | examples，无公开基准 | 200 测试 × 4 后端全绿、26 基准、CI 三门禁 |
 | 错误模型 | trait 分层（可替换错误类型） | 位置 + 上下文片段 + committed 标志，raise/try 原生集成 |
 
 **核心差异**：Astrolabe 的回溯语义有形式化背书且默认路径对使用者更直觉（需要切断时才写 `commit`）；MIT 许可证使库可被任何 MoonBit 项目无顾虑集成。
@@ -115,7 +115,7 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 
 ## 八、实现路径与技术理解
 
-- **语义模型先行**：先固化 commit/alt 承诺传播表（README 公开），再用 proof 条件把表中的关键不变量交给编译期 SMT 验证，最后以 190 项测试（含边界与错误路径）覆盖实现——"语义 → 证明 → 测试"三层递进，这是本项目区别于同类项目的方法论。
+- **语义模型先行**：先固化 commit/alt 承诺传播表（README 公开），再用 proof 条件把表中的关键不变量交给编译期 SMT 验证，最后以 200 项测试（含边界与错误路径）覆盖实现——"语义 → 证明 → 测试"三层递进，这是本项目区别于同类项目的方法论。
 - **门面架构**：core/char/sequence/branch 四包单一职责，根包 `pub using` 扁平化导出；格式解析器放示例子包，避免内核膨胀。
 - **MoonBit 惯用法**：`suberror ParseError` 接入原生 raise/try；`#derive(Eq, Debug)` 与 `impl Show` 全覆盖；尾递归 step 函数实现重复组合子；`#inline` 零成本门面。
 - **质量门禁**：CI 固化 `check --deny-warn --target all`（零警告）+ `test --target all` + `bench`，四后端回归自动化。
@@ -123,7 +123,7 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 ## 九、预期验收产物
 
 - `walkzzz/astrolabe` v0.5.3 待发布（**0.5.2 已上线**），`moon add walkzzz/astrolabe` 直接可用；
-- 四后端（wasm / wasm-gc / js / native）测试全绿（当前 190 × 4）、25 项基准、CI 门禁；
+- 四后端（wasm / wasm-gc / js / native）测试全绿（当前 200 × 4）、26 基准、CI 门禁；
 - 双语文档 + 评估报告（`docs/assessment.md`，含实测数据与竞品分析）+ 本申报书（`docs/proposal.md`）；
 - 本期全部新增贡献在 CHANGELOG `[0.2.0]` / `[0.2.1]` 条目与 git 提交历史中可追踪。
 
@@ -152,4 +152,4 @@ Astrolabe 为 MoonBit 生态提供**位置感知解析器组合子库**：每个
 
 ---
 
-*本申报书基于项目实测数据（moon 0.1.20261104：check 零警告、test 190×4、bench 25/25）与 mooncakes.io 生态快照（2026-11-09）撰写，竞品数据取自各项目 mooncakes 页面公开信息。*
+*本申报书基于项目实测数据（moon 0.1.20261104：check 零警告、test 200×4、bench 26/26）与 mooncakes.io 生态快照（2026-11-09）撰写，竞品数据取自各项目 mooncakes 页面公开信息。*

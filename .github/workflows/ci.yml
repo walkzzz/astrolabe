@@ -17,6 +17,9 @@ jobs:
       - name: Add moon to PATH
         run: echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
+      - name: Format check
+        run: moon fmt --check
+
       - name: Check all targets (deny warnings)
         run: moon check --deny-warn --target all
 
