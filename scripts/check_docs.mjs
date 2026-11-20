@@ -75,6 +75,44 @@ const ASSERTIONS = [
       return { checked: links.length, files: links };
     },
   },
+  {
+    id: 'A5', desc: 'proof.mbt 证明函数数 == formal-spec 的 7 条属性表',
+    async run(root) {
+      const proof = await read('proof/proof.mbt', root);
+      const n = (proof.match(/^pub fn/gm) || []).length;
+      const spec = await read('docs/formal-spec.md', root);
+      const rows = (spec.match(/^\| (?:P|I)\d/gm) || []).length;
+      if (n !== 7) throw new Error(`proof/proof.mbt pub fn=${n} != 7`);
+      if (rows !== 7) throw new Error(`formal-spec 属性行=${rows} != 7`);
+      if (!spec.includes('seven proof functions')) throw new Error('formal-spec 缺少 "seven proof functions" 声明');
+      if (spec.includes('178 tests')) throw new Error('formal-spec 残留旧测试数 178');
+      return { proof_fns: n, spec_rows: rows };
+    },
+  },
+  {
+    id: 'A6', desc: '覆盖率门槛脚本存在（core 90%）且 CI 引用',
+    async run(root) {
+      const cov = await read('scripts/check_coverage.mjs', root);
+      const min = cap(/const CORE_MIN = ([\d.]+)/, cov, 'scripts/check_coverage.mjs', 'CORE_MIN').value;
+      if (min !== '90.0') throw new Error(`CORE_MIN=${min} != 90.0`);
+      const ci = await read('.github/workflows/ci.yml', root);
+      if (!ci.includes('node scripts/check_coverage.mjs')) throw new Error('CI 未引用 check_coverage.mjs');
+      return { core_min: min };
+    },
+  },
+  {
+    id: 'A7', desc: '测试数三处一致（README badge / AGENTS / assessment）',
+    async run(root) {
+      const readme = await read('README.md', root);
+      const agents = await read('AGENTS.md', root);
+      const assess = await read('docs/assessment.md', root);
+      const a = cap(/tests-([\d_]+)/, readme, 'README.md', 'tests badge').value.replace(/_/g, '');
+      const b = cap(/(\d+) 测试 × 4 后端/, agents, 'AGENTS.md', 'agents tests').value;
+      const c = cap(/(\d+) \/ (\d+) × 4 后端/, assess, 'docs/assessment.md', 'assessment tests').value;
+      if (a !== b || b !== c) throw new Error(`README=${a} AGENTS=${b} assessment=${c}`);
+      return { tests: a };
+    },
+  },
 ];
 
 // ---- 主流程 ----

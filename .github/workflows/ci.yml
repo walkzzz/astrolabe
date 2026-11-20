@@ -4,41 +4,142 @@ on:
   push:
     branches: [main, master]
   pull_request:
+  workflow_dispatch:
+
+env:
+  MOONBIT_VERSION: latest
 
 jobs:
-  check-and-test:
+  quality:
+    name: fmt / check / .mbti / docs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install moon toolchain
-        run: curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
-
-      - name: Add moon to PATH
-        run: echo "$HOME/.moon/bin" >> $GITHUB_PATH
-
-      - name: Format check
+      - name: Install MoonBit + update registry (retry)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 10
+          command: |
+            curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$MOONBIT_VERSION"
+            echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+            "$HOME/.moon/bin/moon" update
+      - name: moon fmt --check
         run: moon fmt --check
-
-      - name: Check all targets (deny warnings)
+      - name: moon check --deny-warn --target all
         run: moon check --deny-warn --target all
-
-      - name: Test all targets
-        run: moon test --target all
-
-      - name: Bench (native)
-        run: moon bench --target native benchmarks/
-
-      - name: Verify API interface
+      - name: .mbti contract drift
         run: |
           moon info
-          git diff --exit-code -- '*.mbti' || echo "Warning: .mbti files changed, please commit them"
+          git diff --exit-code -- '*.mbti'
+      - name: Docs consistency (version / tests / proof / coverage claims)
+        run: node scripts/check_docs.mjs
 
-      - name: Code coverage report
+  test:
+    name: moon test --target ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [native, wasm, wasm-gc, js]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MoonBit + update registry (retry)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 10
+          command: |
+            curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$MOONBIT_VERSION"
+            echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+            "$HOME/.moon/bin/moon" update
+      - name: moon test --target ${{ matrix.target }}
+        run: moon test --target ${{ matrix.target }}
+
+  coverage:
+    name: coverage gate (core >= 90%)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install MoonBit + update registry (retry)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 10
+          command: |
+            curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$MOONBIT_VERSION"
+            echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+            "$HOME/.moon/bin/moon" update
+      - name: Coverage gate
+        run: node scripts/check_coverage.mjs
+
+  prove:
+    name: moon prove (Why3 + Z3)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MoonBit + update registry (retry)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 10
+          command: |
+            curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$MOONBIT_VERSION"
+            echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+            "$HOME/.moon/bin/moon" update
+      - name: Install Z3
+        run: sudo apt-get update && sudo apt-get install -y z3
+      - name: moon prove
+        run: moon prove
+
+  examples:
+    name: runnable examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MoonBit + update registry (retry)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 10
+          command: |
+            curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$MOONBIT_VERSION"
+            echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+            "$HOME/.moon/bin/moon" update
+      - name: Run executable examples
         run: |
-          moon test --enable-coverage --target native
-          moon coverage analyze | tee coverage.txt
-          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          head -5 coverage.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          moon run examples/calc --target native
+          moon run examples/uri --target native
+          moon run examples/csv_header --target native
+
+  mutation:
+    name: mutation testing (manual)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install MoonBit + update registry (retry)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 10
+          command: |
+            curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$MOONBIT_VERSION"
+            echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+            "$HOME/.moon/bin/moon" update
+      - name: Mutation testing
+        run: node scripts/mutation_test.mjs

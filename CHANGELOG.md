@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.5] - 2026-11-20
+
+### Added
+- 覆盖率补强：测试 200 → **236**（core / branch / sequence / chain / parser_like 未覆盖分支）
+- `scripts/check_coverage.mjs`：覆盖率门槛（core ≥ 90%，库口径 ≥ 85%；排除 benchmarks/examples/cmd/proof）
+- `scripts/mutation_test.mjs`：10 变异点（char / core / branch / sequence / chain / parser_like / facade）
+- CI 重构：quality（fmt / check / `.mbti` 严格 / docs）/ test × 4 后端 / coverage / prove（Z3）/ examples / 手动 mutation
+- `docs/assessment.md` 与 README 口径按实测重写（测试数 / 覆盖率 / 证明 / CI 状态）
+
+### Fixed
+- 文档漂移：测试数 178 / 190 / 200 三种说法统一为 **236**；形式化 7 goals；CI 门禁状态与实测对齐
+
+### Verified
+- 236 测试 × 4 后端全绿；`moon check --deny-warn --target all` 零警告
+- core 覆盖率 **92.9%**（576/620）；`moon prove` **7 goals proved**
+- `node scripts/check_coverage.mjs` / `node scripts/mutation_test.mjs` 一键复现
+
 ## [0.5.4] - 2026-11-16
 
 ### Fixed

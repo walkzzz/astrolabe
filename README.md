@@ -8,11 +8,13 @@
 
 _MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Angstrom](https://github.com/SimonCourteaux/angstrom)_
 
-[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.5.4-orange?style=flat-square)](https://mooncakes.io/package/walkzzz/astrolabe)
+[![mooncakes.io](https://img.shields.io/badge/mooncakes-0.5.5-orange?style=flat-square)](https://mooncakes.io/package/walkzzz/astrolabe)
 [![CI](https://github.com/walkzzz/astrolabe/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/walkzzz/astrolabe/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![tests](https://img.shields.io/badge/tests-200%20%C3%97%204%20backends-green?style=flat-square)]()
-[![formal](https://img.shields.io/badge/formal-Z3%20verified-brightgreen?style=flat-square)](docs/formal-spec.md)
+[![tests](https://img.shields.io/badge/tests-236%20%C3%97%204%20backends-green?style=flat-square)]()
+[![coverage](https://img.shields.io/badge/coverage-92.9%25%20(core)-brightgreen?style=flat-square)](docs/assessment.md)
+[![mutation](https://img.shields.io/badge/mutation-10%2F10%20KILLED-brightgreen?style=flat-square)](scripts/mutation_test.mjs)
+[![formal](https://img.shields.io/badge/formal-7%20goals%20proved-brightgreen?style=flat-square)](docs/formal-spec.md)
 [![docs](https://img.shields.io/badge/docs-bilingual-blueviolet?style=flat-square)](docs/)
 
 </div>
@@ -40,7 +42,7 @@ _MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Ang
 - 🎯 **精确错误报告** — 字符级位置 + 输入上下文片段
 - 📦 **JSON/HTTP 解析器** — 开箱即用的格式解析子包
 - 🔬 **Z3 形式化验证** — 核心 commit/alt 语义已机械化证明
-- ✅ **4 后端全通** — wasm / wasm-gc / js / native 均通过 200 项测试，`moon check --deny-warn --target all` 零警告
+- ✅ **4 后端全通** — wasm / wasm-gc / js / native 均通过 236 项测试，`moon check --deny-warn --target all` 零警告
 - 🌐 **双语文档** — 所有公共 API 均有中英双语 `///` 注释
 
 ## 🚀 快速开始
@@ -365,7 +367,7 @@ astrolabe/
 - 🎯 **Precise errors** — Character-level position + input context snippets
 - 📦 **JSON/HTTP parsers** — Ready-to-use format parsing subpackages
 - 🔬 **Z3 formal verification** — Core commit/alt semantics mechanically proved
-- ✅ **4 backends pass** — wasm / wasm-gc / js / native all pass 200 tests, `moon check --deny-warn --target all` with zero warnings
+- ✅ **4 backends pass** — wasm / wasm-gc / js / native all pass 236 tests, `moon check --deny-warn --target all` with zero warnings
 - 🌐 **Bilingual docs** — All public APIs have Chinese+English `///` comments
 
 ## 🚀 Quick Start
