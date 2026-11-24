@@ -73,7 +73,7 @@ forall offset, length : Int, 0 <= offset <= length  =>  compute_is_eof(offset, l
 
 ## Semantic-Level Guarantees (covered by tests, not separately proved)
 
-The following guarantees are specified by the commitment propagation table below and covered by the test suite (236 tests x 4 backends), but have **no dedicated proof obligation** in `proof/proof.mbt`:
+The following guarantees are specified by the commitment propagation table below and covered by the test suite (239 tests x 4 backends), but have **no dedicated proof obligation** in `proof/proof.mbt`:
 
 - P3a: `map` preserves the commitment flag;
 - P4: `label` preserves the commitment flag and does not alter backtracking behavior;
@@ -98,7 +98,7 @@ The following guarantees are specified by the commitment propagation table below
 
 ## Scope of the Verification
 
-Each proof function in `proof/proof.mbt` distills a key semantic invariant into a direct function over integers/booleans, annotated with `proof_require` (precondition) and `proof_ensure` (postcondition); the MoonBit compiler hands these contracts to its SMT backend during type checking. This verifies the **core logic invariants of the commitment semantics** — not end-to-end correctness of the parser implementation as a whole, which is covered by the test suite (236 tests x 4 backends).
+Each proof function in `proof/proof.mbt` distills a key semantic invariant into a direct function over integers/booleans, annotated with `proof_require` (precondition) and `proof_ensure` (postcondition); the MoonBit compiler hands these contracts to its SMT backend during type checking. This verifies the **core logic invariants of the commitment semantics** — not end-to-end correctness of the parser implementation as a whole, which is covered by the test suite (239 tests x 4 backends).
 
 The MoonBit proof frontend (as of 2026-11) does not yet support struct field access in logic predicates, Char/String comparison in proof assertions, or array indexing in logic bodies. Once these land, the following targets become directly formalizable:
 

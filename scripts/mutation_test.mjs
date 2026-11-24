@@ -84,6 +84,20 @@ const MUTATIONS = [
     new: '        Ok(value)',
     desc: 'parse_full accepts trailing input',
   },
+  {
+    id: 'M11',
+    file: 'core/core.mbt',
+    old: '    if !out.contains(item) {',
+    new: '    if true {',
+    desc: 'expected_joined deduplication removed',
+  },
+  {
+    id: 'M12',
+    file: 'core/core.mbt',
+    old: '    Success(value, st) => Ok((value, input[st.offset:].to_owned()))',
+    new: '    Success(value, st) => Ok((value, input[0:].to_owned()))',
+    desc: 'parse_prefix tail slice starts at 0',
+  },
 ];
 
 function run(cmd) {

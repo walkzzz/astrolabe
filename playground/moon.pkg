@@ -1,0 +1,7 @@
+import {
+  "moonbitlang/core/json",
+  "walkzzz/astrolabe",
+  "walkzzz/astrolabe/core",
+}
+
+pkgtype(kind: "foreign_library")

@@ -75,6 +75,14 @@ pub fn Pos::advance(self : Pos, ch : Char) -> Pos noraise {
   }
 }
 
+///|
+/// 位置的可读格式：`line:column@offset`（与错误信息一致）。
+///
+/// Readable position format: `line:column@offset`.
+pub fn Pos::to_string(self : Pos) -> String noraise {
+  "\{self.line}:\{self.column}@\{self.offset}"
+}
+
 ///| 可变解析状态 — 包装输入字符串和游标。
 
 ///|
@@ -295,6 +303,25 @@ pub fn ParseError::pos(self : ParseError) -> Pos noraise {
 pub fn ParseError::expected(self : ParseError) -> Array[String] noraise {
   match self {
     ParseError(_, expected, _, _) => expected
+  }
+}
+
+///|
+/// 期望集合的稳定合并：去重保序，空集合返回 `"unknown"`。
+///
+/// Stable join of expected tokens: deduplicated, order-preserving;
+/// an empty set yields `"unknown"`.
+pub fn ParseError::expected_joined(self : ParseError) -> String noraise {
+  let out : Array[String] = []
+  for item in self.expected() {
+    if !out.contains(item) {
+      out.push(item)
+    }
+  }
+  if out.length() == 0 {
+    "unknown"
+  } else {
+    out.join(" | ")
   }
 }
 
@@ -636,6 +663,22 @@ pub fn[T] Parser::parse(
   let state = State::new(input)
   match (self.run)(state) {
     Success(value, _) => Ok(value)
+    Failure(err) => Err(err)
+  }
+}
+
+///|
+/// 解析 `input` 并返回 `(值, 未消费尾部)`——增量/流式解析入口。
+///
+/// Parse `input` and return `(value, unconsumed tail)` for incremental/streaming use.
+#warnings("-result_error_return")
+pub fn[T] Parser::parse_prefix(
+  self : Parser[T],
+  input : String,
+) -> Result[(T, String), ParseError] noraise {
+  let state = State::new(input)
+  match (self.run)(state) {
+    Success(value, st) => Ok((value, input[st.offset:].to_owned()))
     Failure(err) => Err(err)
   }
 }

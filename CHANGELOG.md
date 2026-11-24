@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.6] - 2026-11-24
+
+### Added
+
+- **`Parser::parse_prefix`**：返回 `(值, 未消费尾部)`，增量/流式解析入口。
+- **`Pos::to_string`**：稳定格式 `line:column@offset`（与错误信息一致）。
+- **`ParseError::expected_joined`**：期望集合去重保序合并，空集合为 `unknown`。
+- **`playground/`**：11 个非 raise 浏览器导出（char/string/range/identifier/int/csv/三入口/错误上下文/commit-vs-alt/位置追踪/版本）。
+- **GitHub Pages 库首页**：`docs/index.html` + `style.css` + `app.js`（Hero 错误上下文、12 能力卡、9 演示卡、深浅主题、移动端抽屉导航）。
+- **`scripts/check_pages.mjs`**（结构与语义双轨）与 **`scripts/serve_pages.mjs`**。
+- **`docs/architecture.md`** 与 **`docs/security.md`**（补齐立项文档面）。
+
+### Changed
+
+- 测试 236 → **239**（四后端各 239/239）；README/评估口径同步。
+
+### Quality
+
+- 页面门禁 **128 项 PASS**（结构 + 导出语义 + 口径）；CDP E2E **28 项**（本地/线上）。
+- 覆盖率 92.9%（576/620）与变异 10/10 口径不变；mutation 新增 2 点（expected_joined 去重 / parse_prefix 尾部）→ **12/12**。
+
 ## [0.5.5] - 2026-11-20
 
 ### Added
@@ -201,7 +222,7 @@ All notable changes to this project will be documented in this file.
 - Example: Arithmetic calculator (`examples/calc/`)
 - `Method::to_string()` in HTTP subpackage
 
-## [0.6.0] - 2026-11-12
+## [0.5.6] - 2026-11-12
 
 ### Added
 - Custom parser extension points via `Parser::of(fn)`

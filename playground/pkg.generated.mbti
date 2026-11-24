@@ -1,0 +1,33 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "walkzzz/astrolabe/playground"
+
+// Values
+pub fn astrolabe_version() -> String
+
+pub fn commit_vs_alt(String) -> String
+
+pub fn error_demo(String, String) -> String
+
+pub fn parse_char(String, String) -> String
+
+pub fn parse_csv(String) -> String
+
+pub fn parse_identifier(String) -> String
+
+pub fn parse_int(String) -> String
+
+pub fn parse_modes_demo(String, String) -> String
+
+pub fn parse_range(String, String, String) -> String
+
+pub fn parse_string(String, String) -> String
+
+pub fn pos_track(String) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

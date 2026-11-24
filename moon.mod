@@ -11,7 +11,7 @@
 
 name = "walkzzz/astrolabe"
 
-version = "0.5.5"
+version = "0.5.6"
 
 readme = "README.md"
 

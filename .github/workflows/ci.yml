@@ -35,6 +35,10 @@ jobs:
           git diff --exit-code -- '*.mbti'
       - name: Docs consistency (version / tests / proof / coverage claims)
         run: node scripts/check_docs.mjs
+      - name: Pages gate (structure / 11 exports / parser semantics)
+        run: |
+          moon build --target js --release playground
+          node scripts/check_pages.mjs
 
   test:
     name: moon test --target ${{ matrix.target }}
