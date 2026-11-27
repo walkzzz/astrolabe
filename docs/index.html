@@ -30,7 +30,7 @@
       <a class="brand" href="#top">
         <span class="brand-mark" aria-hidden="true">AST</span>
         <span class="brand-name">astrolabe</span>
-        <span class="brand-ver">v0.5.6</span>
+        <span class="brand-ver">v0.5.7</span>
       </a>
       <nav id="site-nav" class="nav" aria-label="主导航">
         <a href="#features">能力</a>
@@ -66,8 +66,8 @@
         </div>
         <ul class="badges" aria-label="项目指标">
           <li>239 测试 × 4 后端</li>
-          <li>覆盖 92.9%</li>
-          <li>变异 10 / 10</li>
+          <li>覆盖 93.1%</li>
+          <li>变异 12 / 12</li>
           <li>Z3 7 goals</li>
         </ul>
       </div>
@@ -130,7 +130,7 @@
           <span class="feature-no">11</span><h3>基准</h3><p>25+ 基准，含与 stdlib JSON 的对照。</p><code>moon bench</code>
         </a>
         <a class="feature" href="https://github.com/walkzzz/astrolabe/blob/main/docs/assessment.md" target="_blank" rel="noreferrer">
-          <span class="feature-no">12</span><h3>质量门禁</h3><p>239×4 测试、覆盖 92.9%、变异 10/10、文档断言。</p><code>CI 6 job</code>
+          <span class="feature-no">12</span><h3>质量门禁</h3><p>239×4 测试、覆盖 93.1%、变异 12/12、文档断言。</p><code>CI 6 job</code>
         </a>
       </div>
     </section>
@@ -288,7 +288,7 @@ b</textarea></label>
         <div class="start-col">
           <div class="code">
             <div class="code-head"><span>安装</span><button type="button" class="copy" data-copy-target="cmd-install">复制</button></div>
-            <pre id="cmd-install"><code>moon add walkzzz/astrolabe@0.5.6
+            <pre id="cmd-install"><code>moon add walkzzz/astrolabe@0.5.7
 moon update</code></pre>
           </div>
           <div class="code">
@@ -386,8 +386,8 @@ let committed = @astrolabe.alt(
       </div>
       <div class="stat-grid">
         <div class="stat"><strong>239 × 4</strong><span>测试（native/js/wasm/wasm-gc）</span></div>
-        <div class="stat"><strong>92.9%</strong><span>覆盖率（576/620 核心）</span></div>
-        <div class="stat"><strong>10 / 10</strong><span>变异点 KILLED</span></div>
+        <div class="stat"><strong>93.1%</strong><span>覆盖率（593/637 核心）</span></div>
+        <div class="stat"><strong>12 / 12</strong><span>变异点 KILLED</span></div>
         <div class="stat"><strong>7</strong><span>Z3 goals proved</span></div>
         <div class="stat"><strong>25+</strong><span>基准（含 stdlib 对照）</span></div>
         <div class="stat"><strong>7</strong><span>示例（json/http/ini/uri/…）</span></div>
@@ -396,7 +396,7 @@ let committed = @astrolabe.alt(
       </div>
       <div class="quality-notes">
         <p><strong>测试口径</strong>：native / js / wasm / wasm-gc 各 <strong>239/239</strong>（2026-11-24 实测）。</p>
-        <p><strong>覆盖率</strong>：核心库 576/620 = 92.9%（`node scripts/check_coverage.mjs`）；含示例/基准为 69.2%。</p>
+        <p><strong>覆盖率</strong>：核心库 593/637 = 93.1%（`node scripts/check_coverage.mjs`）；含示例/基准的全量口径见 CI 日志。</p>
         <p><strong>形式化</strong>：`proof` 包 7 goals（WSL + Z3 4.8.12）；commit/alt/位置推进语义与实现对齐。</p>
         <p><strong>演示口径</strong>：页面所有结果来自 <code>playground</code> 的 11 个非 raise 导出，与库同一份源码。</p>
       </div>
@@ -433,7 +433,7 @@ let committed = @astrolabe.alt(
         <li><span class="step-no">1</span><p><code>playground/</code> 是根模块的 <code>foreign_library</code> 包，用 <code>#export_name</code> 导出 11 个非 raise 包装函数（错误折叠为 <code>{"ok":false}</code>）。</p></li>
         <li><span class="step-no">2</span><p><code>moon build --target js --release playground</code> 生成一份 JS；同一份源码也可构建为 <code>wasm-gc</code> / <code>native</code>。</p></li>
         <li><span class="step-no">3</span><p>页面直接 <code>import</code> 并调用：解析、三入口、错误上下文、commit/alt、位置追踪全部本地完成。</p></li>
-        <li><span class="step-no">4</span><p>语义由 239×4 测试、10 点变异矩阵与 7 条 Z3 性质守护；<code>check_pages.mjs</code> 验证导出与语义。</p></li>
+        <li><span class="step-no">4</span><p>语义由 239×4 测试、12 点变异矩阵与 7 条 Z3 性质守护；<code>check_pages.mjs</code> 验证导出与语义。</p></li>
       </ol>
     </section>
   </main>

@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
+const TRUTH = JSON.parse(readFileSync(join(ROOT, 'docs/coverage.json'), 'utf8'));
 const JS_BUILD = join(ROOT, '_build/js/release/build/playground/playground.js');
 const JS_DOCS = join(ROOT, 'docs/playground.js');
 
@@ -90,11 +91,16 @@ for (const anchor of ['features', 'demo', 'start', 'api', 'quality', 'docs', 'ho
 
 const mod = readFileSync(join(ROOT, 'moon.mod'), 'utf8');
 const version = (mod.match(/version\s*=\s*"([^"]+)"/) || [])[1] || '';
+const pct = TRUTH.coverage.percent;
+const tests = TRUTH.tests.per_backend;
+const backends = TRUTH.tests.backends;
+const killed = TRUTH.mutation.killed;
+const mutTotal = TRUTH.mutation.total;
 check('version matches moon.mod', version.length > 0 && html.includes(version), version);
-check('version is 0.5.6', version === '0.5.6', version);
-check('badge numbers: tests 239 x4', html.includes('239') && html.includes('× 4'));
-check('coverage number 92.9%', html.includes('92.9%'));
-check('mutation 10 / 10', html.includes('10 / 10'));
+check('version format x.y.z', /^\d+\.\d+\.\d+$/.test(version), version);
+check('badge numbers: tests = coverage.json', html.includes(`${tests} × ${backends}`), `${tests} × ${backends}`);
+check('coverage number = coverage.json', html.includes(`${pct}%`), `${pct}%`);
+check('mutation = coverage.json', html.includes(`${killed} / ${mutTotal}`), `${killed} / ${mutTotal}`);
 check('formal 7 goals', html.includes('7') && html.includes('goals'));
 check('script assets present', existsSync(join(ROOT, 'scripts/mutation_test.mjs')) && existsSync(join(ROOT, 'scripts/check_docs.mjs')));
 
@@ -135,7 +141,7 @@ for (const name of exportsList) {
   check(`export: ${name}`, typeof pg[name] === 'function');
 }
 
-check('version export is 0.5.6', pg.astrolabe_version() === '0.5.6');
+check('version export matches moon.mod', pg.astrolabe_version() === version, `${pg.astrolabe_version()} vs ${version}`);
 
 const charOk = JSON.parse(pg.parse_char('abc', 'a'));
 check('char parses value + rest', charOk.ok === true && charOk.value === 'a' && charOk.rest === 'bc');

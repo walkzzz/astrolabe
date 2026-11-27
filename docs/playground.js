@@ -1,4 +1,4 @@
-const $reinterpret_view = new DataView(new ArrayBuffer(8));
+var $reinterpret_view = new DataView(new ArrayBuffer(8));
 function $i64_reinterpret_f64(a) {
   $reinterpret_view.setBigUint64(0, BigInt.asUintN(64, a), false);
   return $reinterpret_view.getFloat64(0, false);
@@ -18,7 +18,7 @@ function $panic(message) {
 function _M0TPB13StringBuilder(param0) {
   this.val = param0;
 }
-const _M0FPB12random__seed = () => {
+var _M0FPB12random__seed = () => {
   const cryptoObj = globalThis.crypto;
   if (cryptoObj != null && typeof cryptoObj.getRandomValues === "function") {
     try {
@@ -31,7 +31,7 @@ const _M0FPB12random__seed = () => {
   }
   return Math.floor(Math.random() * 0x100000000) | 0; // Fallback to Math.random
 };
-const _M0FPB19int__to__string__js = (x, radix) => {
+var _M0FPB19int__to__string__js = (x, radix) => {
   return x.toString(radix);
 };
 function _M0TPB4IterGUsRPC14json4JsonEE(param0, param1) {
@@ -79,10 +79,10 @@ function _M0DTPC14json4Json4Null() {}
 _M0DTPC14json4Json4Null.prototype.$tag = 0;
 function _M0DTPC14json4Json4True() {}
 _M0DTPC14json4Json4True.prototype.$tag = 1;
-const _M0DTPC14json4Json4True__ = new _M0DTPC14json4Json4True();
+var _M0DTPC14json4Json4True__ = new _M0DTPC14json4Json4True();
 function _M0DTPC14json4Json5False() {}
 _M0DTPC14json4Json5False.prototype.$tag = 2;
-const _M0DTPC14json4Json5False__ = new _M0DTPC14json4Json5False();
+var _M0DTPC14json4Json5False__ = new _M0DTPC14json4Json5False();
 function _M0DTPC14json4Json6Number(param0, param1) {
   this._0 = param0;
   this._1 = param1;
@@ -213,16 +213,16 @@ function _M0DTP37walkzzz9astrolabe4core11ParseResultGRPB5ArrayGRPC14json4JsonEE7
   this._0 = param0;
 }
 _M0DTP37walkzzz9astrolabe4core11ParseResultGRPB5ArrayGRPC14json4JsonEE7Failure.prototype.$tag = 1;
-const _M0FP092moonbitlang_2fcore_2fbuiltin_2fStringBuilder_24as_24_40moonbitlang_2fcore_2fbuiltin_2eLogger = { method_0: _M0IPB13StringBuilderPB6Logger13write__string, method_1: _M0IP016_24default__implPB6Logger16write__substringGRPB13StringBuilderE, method_2: _M0IPB13StringBuilderPB6Logger11write__view, method_3: _M0IPB13StringBuilderPB6Logger11write__char, method_4: _M0IP016_24default__implPB6Logger28write__string__interpolationGRPB13StringBuilderE, method_5: _M0IP016_24default__implPB6Logger5writeGRPB13StringBuilderE };
-const _M0FPB18double__max__value = $i64_reinterpret_f64(9218868437227405311n);
-const _M0FPB18double__min__value = $i64_reinterpret_f64(18442240474082181119n);
-const _M0MPB4Iter4nextN6constrS186GUsRPC14json4JsonEE = 0;
-const _M0MPB4Iter4nextN6constrS187GUsRPC14json4JsonEE = 0;
-const _M0MPB4Iter3newN6constrS196GUsRPC14json4JsonEE = 0;
-const _M0MP37walkzzz9astrolabe4core10ParseError16expected__joinedN6recordS611 = new _M0TPC16string10StringView(" | ", 0, 3);
-const _M0FPB4seed = _M0FPB12random__seed();
-const _M0MP37walkzzz9astrolabe4core10ParseError6formatN6recordS620 = new _M0TPC16string10StringView(" or ", 0, 4);
-const _M0MP37walkzzz9astrolabe4core10ParseError6formatN6recordS621 = new _M0TPC16string10StringView(" > ", 0, 3);
+var _M0FP092moonbitlang_2fcore_2fbuiltin_2fStringBuilder_24as_24_40moonbitlang_2fcore_2fbuiltin_2eLogger = { method_0: _M0IPB13StringBuilderPB6Logger13write__string, method_1: _M0IP016_24default__implPB6Logger16write__substringGRPB13StringBuilderE, method_2: _M0IPB13StringBuilderPB6Logger11write__view, method_3: _M0IPB13StringBuilderPB6Logger11write__char, method_4: _M0IP016_24default__implPB6Logger28write__string__interpolationGRPB13StringBuilderE, method_5: _M0IP016_24default__implPB6Logger5writeGRPB13StringBuilderE };
+var _M0FPB18double__max__value = $i64_reinterpret_f64(9218868437227405311n);
+var _M0FPB18double__min__value = $i64_reinterpret_f64(18442240474082181119n);
+var _M0MPB4Iter4nextN6constrS186GUsRPC14json4JsonEE = 0;
+var _M0MPB4Iter4nextN6constrS187GUsRPC14json4JsonEE = 0;
+var _M0MPB4Iter4IterN6constrS196GUsRPC14json4JsonEE = 0;
+var _M0MP37walkzzz9astrolabe4core10ParseError16expected__joinedN6recordS611 = new _M0TPC16string10StringView(" | ", 0, 3);
+var _M0FPB4seed = _M0FPB12random__seed();
+var _M0MP37walkzzz9astrolabe4core10ParseError6formatN6recordS620 = new _M0TPC16string10StringView(" or ", 0, 4);
+var _M0MP37walkzzz9astrolabe4core10ParseError6formatN6recordS621 = new _M0TPC16string10StringView(" > ", 0, 3);
 function _M0FPB13consume4__acc(acc, input) {
   const _p = (acc >>> 0) + ((Math.imul(input, -1028477379) | 0) >>> 0) | 0;
   return Math.imul(_p << 17 | (_p >>> 15 | 0), 668265263) | 0;
@@ -363,15 +363,20 @@ function _M0MPB18UninitializedArray23make__and__blit_2einnerGcE(src, allocate_le
     return _M0MPB18UninitializedArray23unsafe__make__and__blitGcE(src, allocate_len, src_offset, dst_offset, len);
   } else {
     const _string_builder = _M0MPB13StringBuilder21StringBuilder_2einner(8);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "bounds check failed: allocate_len = ");
+    const _p = "bounds check failed: allocate_len = ";
+    _string_builder.val = `${_string_builder.val}${_p}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, allocate_len);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ", src_offset = ");
+    const _p$2 = ", src_offset = ";
+    _string_builder.val = `${_string_builder.val}${_p$2}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, src_offset);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ", dst_offset = ");
+    const _p$3 = ", dst_offset = ";
+    _string_builder.val = `${_string_builder.val}${_p$3}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, dst_offset);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ", len = ");
+    const _p$4 = ", len = ";
+    _string_builder.val = `${_string_builder.val}${_p$4}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, len);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ", src.length = ");
+    const _p$5 = ", src.length = ";
+    _string_builder.val = `${_string_builder.val}${_p$5}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, src.length);
     return $panic(_string_builder.val);
   }
@@ -400,15 +405,20 @@ function _M0MPB18UninitializedArray23make__and__blit_2einnerGsE(src, allocate_le
     return _M0MPB18UninitializedArray23unsafe__make__and__blitGsE(src, allocate_len, src_offset, dst_offset, len);
   } else {
     const _string_builder = _M0MPB13StringBuilder21StringBuilder_2einner(8);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "bounds check failed: allocate_len = ");
+    const _p = "bounds check failed: allocate_len = ";
+    _string_builder.val = `${_string_builder.val}${_p}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, allocate_len);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ", src_offset = ");
+    const _p$2 = ", src_offset = ";
+    _string_builder.val = `${_string_builder.val}${_p$2}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, src_offset);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ", dst_offset = ");
+    const _p$3 = ", dst_offset = ";
+    _string_builder.val = `${_string_builder.val}${_p$3}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, dst_offset);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ", len = ");
+    const _p$4 = ", len = ";
+    _string_builder.val = `${_string_builder.val}${_p$4}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, len);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ", src.length = ");
+    const _p$5 = ", src.length = ";
+    _string_builder.val = `${_string_builder.val}${_p$5}`;
     _M0MPB13StringBuilder13write__objectGiE(_string_builder, src.length);
     return $panic(_string_builder.val);
   }
@@ -548,14 +558,14 @@ function _M0MPB4Iter4nextGUsRPC14json4JsonEE(self) {
 function _M0MPC13int3Int18to__string_2einner(self, radix) {
   return _M0FPB19int__to__string__js(self, radix);
 }
-function _M0MPB4Iter3newGUsRPC14json4JsonEE(f, size_hint) {
+function _M0MPB4Iter4IterGUsRPC14json4JsonEE(f, size_hint) {
   let size_hint$2;
   if (size_hint === undefined) {
     size_hint$2 = undefined;
   } else {
     const _Some = size_hint;
     const _n = _Some;
-    size_hint$2 = _n > 0 ? _n : _M0MPB4Iter3newN6constrS196GUsRPC14json4JsonEE;
+    size_hint$2 = _n > 0 ? _n : _M0MPB4Iter4IterN6constrS196GUsRPC14json4JsonEE;
   }
   return new _M0TPB4IterGUsRPC14json4JsonEE(f, size_hint$2);
 }
@@ -614,7 +624,7 @@ function _M0MPC16string6String6repeat(self, n) {
           while (true) {
             const _ = _tmp;
             if (_ < n) {
-              _M0IPB13StringBuilderPB6Logger13write__string(buf, str);
+              buf.val = `${buf.val}${str}`;
               _tmp = _ + 1 | 0;
               continue;
             } else {
@@ -1036,7 +1046,7 @@ function _M0MPB3Map4iterGsRPC14json4JsonE(self) {
   const curr_entry = new _M0TPB8MutLocalGORPB5EntryGsRPC14json4JsonEE(self.head);
   const len = self.size;
   const remaining = new _M0TPB8MutLocalGiE(len);
-  return _M0MPB4Iter3newGUsRPC14json4JsonEE(() => {
+  return _M0MPB4Iter4IterGUsRPC14json4JsonEE(() => {
     _L: {
       if (remaining.val > 0) {
         const _bind = curr_entry.val;
@@ -1191,39 +1201,48 @@ function _M0FPC14json12need__escape(str, escape_slash) {
 function _M0FPC14json13write__escape(buf, code) {
   switch (code) {
     case 34: {
-      _M0IPB13StringBuilderPB6Logger13write__string(buf, "\\\"");
+      const _p = "\\\"";
+      buf.val = `${buf.val}${_p}`;
       return;
     }
     case 92: {
-      _M0IPB13StringBuilderPB6Logger13write__string(buf, "\\\\");
+      const _p$2 = "\\\\";
+      buf.val = `${buf.val}${_p$2}`;
       return;
     }
     case 47: {
-      _M0IPB13StringBuilderPB6Logger13write__string(buf, "\\/");
+      const _p$3 = "\\/";
+      buf.val = `${buf.val}${_p$3}`;
       return;
     }
     case 10: {
-      _M0IPB13StringBuilderPB6Logger13write__string(buf, "\\n");
+      const _p$4 = "\\n";
+      buf.val = `${buf.val}${_p$4}`;
       return;
     }
     case 13: {
-      _M0IPB13StringBuilderPB6Logger13write__string(buf, "\\r");
+      const _p$5 = "\\r";
+      buf.val = `${buf.val}${_p$5}`;
       return;
     }
     case 8: {
-      _M0IPB13StringBuilderPB6Logger13write__string(buf, "\\b");
+      const _p$6 = "\\b";
+      buf.val = `${buf.val}${_p$6}`;
       return;
     }
     case 9: {
-      _M0IPB13StringBuilderPB6Logger13write__string(buf, "\\t");
+      const _p$7 = "\\t";
+      buf.val = `${buf.val}${_p$7}`;
       return;
     }
     case 12: {
-      _M0IPB13StringBuilderPB6Logger13write__string(buf, "\\f");
+      const _p$8 = "\\f";
+      buf.val = `${buf.val}${_p$8}`;
       return;
     }
     default: {
-      _M0IPB13StringBuilderPB6Logger13write__string(buf, "\\u00");
+      const _p$9 = "\\u00";
+      buf.val = `${buf.val}${_p$9}`;
       _M0MPB13StringBuilder13write__objectGsE(buf, _M0MPC14byte4Byte7to__hex(code & 255));
       return;
     }
@@ -1231,7 +1250,7 @@ function _M0FPC14json13write__escape(buf, code) {
 }
 function _M0FPC14json14write__escaped(buf, str, escape_slash) {
   if (!_M0FPC14json12need__escape(str, escape_slash)) {
-    _M0IPB13StringBuilderPB6Logger13write__string(buf, str);
+    buf.val = `${buf.val}${str}`;
     return undefined;
   }
   const _bind = str.length;
@@ -1276,7 +1295,8 @@ function _M0FPC14json13write__indent(buf, cache, level, indent) {
   if (level < 0 || level >= cache.len) {
     $panic();
   }
-  _M0IPB13StringBuilderPB6Logger13write__string(buf, cache.buf[level]);
+  const _p = cache.buf[level];
+  buf.val = `${buf.val}${_p}`;
 }
 function _M0MPC14json4Json17stringify_2einner(self, escape_slash, indent, replacer) {
   const buf = _M0MPB13StringBuilder21StringBuilder_2einner(0);
@@ -1363,7 +1383,8 @@ function _M0MPC14json4Json17stringify_2einner(self, escape_slash, indent, replac
             }
             _M0IPB13StringBuilderPB6Logger11write__char(buf, 34);
             _M0FPC14json14write__escaped(buf, _k, escape_slash);
-            _M0IPB13StringBuilderPB6Logger13write__string(buf, "\":");
+            const _p = "\":";
+            buf.val = `${buf.val}${_p}`;
             if (indent > 0) {
               _M0IPB13StringBuilderPB6Logger11write__char(buf, 32);
             }
@@ -1381,7 +1402,8 @@ function _M0MPC14json4Json17stringify_2einner(self, escape_slash, indent, replac
           const _Object = _value;
           const _members = _Object._0;
           if (_members.size === 0) {
-            _M0IPB13StringBuilderPB6Logger13write__string(buf, "{}");
+            const _p = "{}";
+            buf.val = `${buf.val}${_p}`;
           } else {
             depth = depth + 1 | 0;
             _M0IPB13StringBuilderPB6Logger11write__char(buf, 123);
@@ -1393,7 +1415,8 @@ function _M0MPC14json4Json17stringify_2einner(self, escape_slash, indent, replac
           const _Array = _value;
           const _arr = _Array._0;
           if (_arr.len === 0) {
-            _M0IPB13StringBuilderPB6Logger13write__string(buf, "[]");
+            const _p = "[]";
+            buf.val = `${buf.val}${_p}`;
           } else {
             depth = depth + 1 | 0;
             _M0IPB13StringBuilderPB6Logger11write__char(buf, 91);
@@ -1426,20 +1449,23 @@ function _M0MPC14json4Json17stringify_2einner(self, escape_slash, indent, replac
           } else {
             const _Some$2 = _repr;
             const _r = _Some$2;
-            _M0IPB13StringBuilderPB6Logger13write__string(buf, _r);
+            buf.val = `${buf.val}${_r}`;
           }
           break;
         }
         case 1: {
-          _M0IPB13StringBuilderPB6Logger13write__string(buf, "true");
+          const _p = "true";
+          buf.val = `${buf.val}${_p}`;
           break;
         }
         case 2: {
-          _M0IPB13StringBuilderPB6Logger13write__string(buf, "false");
+          const _p$2 = "false";
+          buf.val = `${buf.val}${_p$2}`;
           break;
         }
         default: {
-          _M0IPB13StringBuilderPB6Logger13write__string(buf, "null");
+          const _p$3 = "null";
+          buf.val = `${buf.val}${_p$3}`;
         }
       }
       _tmp = undefined;
@@ -1534,9 +1560,11 @@ function _M0MP37walkzzz9astrolabe4core3Pos7advance(self, ch) {
 function _M0MP37walkzzz9astrolabe4core3Pos10to__string(self) {
   const _string_builder = _M0MPB13StringBuilder21StringBuilder_2einner(8);
   _M0MPB13StringBuilder13write__objectGiE(_string_builder, self.line);
-  _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ":");
+  const _p = ":";
+  _string_builder.val = `${_string_builder.val}${_p}`;
   _M0MPB13StringBuilder13write__objectGiE(_string_builder, self.column);
-  _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "@");
+  const _p$2 = "@";
+  _string_builder.val = `${_string_builder.val}${_p$2}`;
   _M0MPB13StringBuilder13write__objectGiE(_string_builder, self.offset);
   return _string_builder.val;
 }
@@ -1603,13 +1631,17 @@ function _M0MP37walkzzz9astrolabe4core10ParseError6format(self) {
   const _expected = _ParseError._1;
   const _contexts = _ParseError._3;
   const _string_builder = _M0MPB13StringBuilder21StringBuilder_2einner(8);
-  _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "line ");
+  const _p = "line ";
+  _string_builder.val = `${_string_builder.val}${_p}`;
   _M0MPB13StringBuilder13write__objectGiE(_string_builder, _pos.line);
-  _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ", column ");
+  const _p$2 = ", column ";
+  _string_builder.val = `${_string_builder.val}${_p$2}`;
   _M0MPB13StringBuilder13write__objectGiE(_string_builder, _pos.column);
-  _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, " (offset ");
+  const _p$3 = " (offset ";
+  _string_builder.val = `${_string_builder.val}${_p$3}`;
   _M0MPB13StringBuilder13write__objectGiE(_string_builder, _pos.offset);
-  _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, ")");
+  const _p$4 = ")";
+  _string_builder.val = `${_string_builder.val}${_p$4}`;
   const loc = _string_builder.val;
   const exp = _M0MPC15array5Array4joinGsE(_expected, _M0MP37walkzzz9astrolabe4core10ParseError6formatN6recordS620);
   let ctx;
@@ -1617,13 +1649,15 @@ function _M0MP37walkzzz9astrolabe4core10ParseError6format(self) {
     ctx = "";
   } else {
     const _string_builder$2 = _M0MPB13StringBuilder21StringBuilder_2einner(8);
-    _M0IPB13StringBuilderPB6Logger13write__string(_string_builder$2, "\n  in ");
+    const _p$5 = "\n  in ";
+    _string_builder$2.val = `${_string_builder$2.val}${_p$5}`;
     _M0MPB13StringBuilder13write__objectGsE(_string_builder$2, _M0MPC15array5Array4joinGsE(_contexts, _M0MP37walkzzz9astrolabe4core10ParseError6formatN6recordS621));
     ctx = _string_builder$2.val;
   }
   const _string_builder$2 = _M0MPB13StringBuilder21StringBuilder_2einner(8);
   _M0MPB13StringBuilder13write__objectGsE(_string_builder$2, loc);
-  _M0IPB13StringBuilderPB6Logger13write__string(_string_builder$2, ":\nexpected ");
+  const _p$5 = ":\nexpected ";
+  _string_builder$2.val = `${_string_builder$2.val}${_p$5}`;
   _M0MPB13StringBuilder13write__objectGsE(_string_builder$2, exp);
   _M0MPB13StringBuilder13write__objectGsE(_string_builder$2, ctx);
   return _string_builder$2.val;
@@ -1642,11 +1676,13 @@ function _M0MP37walkzzz9astrolabe4core10ParseError19format__with__input(self, in
   const caret = `${_M0MPC16string6String6repeat(" ", caret_offset)}^`;
   const _string_builder = _M0MPB13StringBuilder21StringBuilder_2einner(8);
   _M0MPB13StringBuilder13write__objectGsE(_string_builder, base);
-  _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "\n  ");
+  const _p = "\n  ";
+  _string_builder.val = `${_string_builder.val}${_p}`;
   _M0MPB13StringBuilder13write__objectGsE(_string_builder, prefix);
   _M0MPB13StringBuilder13write__objectGsE(_string_builder, snippet);
   _M0MPB13StringBuilder13write__objectGsE(_string_builder, suffix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "\n  ");
+  const _p$2 = "\n  ";
+  _string_builder.val = `${_string_builder.val}${_p$2}`;
   _M0MPB13StringBuilder13write__objectGsE(_string_builder, caret);
   return _string_builder.val;
 }
@@ -1762,9 +1798,11 @@ function _M0FP37walkzzz9astrolabe4char4char(expected) {
     if (_bind === -1) {
       const _tmp = state.pos;
       const _string_builder = _M0MPB13StringBuilder21StringBuilder_2einner(8);
-      _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "'");
+      const _p = "'";
+      _string_builder.val = `${_string_builder.val}${_p}`;
       _M0MPB13StringBuilder13write__objectGcE(_string_builder, expected);
-      _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "'");
+      const _p$2 = "'";
+      _string_builder.val = `${_string_builder.val}${_p$2}`;
       return new _M0DTP37walkzzz9astrolabe4core11ParseResultGcE7Failure(_M0MP37walkzzz9astrolabe4core10ParseError2at(_tmp, _string_builder.val));
     } else {
       const _Some = _bind;
@@ -1775,9 +1813,11 @@ function _M0FP37walkzzz9astrolabe4char4char(expected) {
       } else {
         const _tmp = state.pos;
         const _string_builder = _M0MPB13StringBuilder21StringBuilder_2einner(8);
-        _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "'");
+        const _p = "'";
+        _string_builder.val = `${_string_builder.val}${_p}`;
         _M0MPB13StringBuilder13write__objectGcE(_string_builder, expected);
-        _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "'");
+        const _p$2 = "'";
+        _string_builder.val = `${_string_builder.val}${_p$2}`;
         return new _M0DTP37walkzzz9astrolabe4core11ParseResultGcE7Failure(_M0MP37walkzzz9astrolabe4core10ParseError2at(_tmp, _string_builder.val));
       }
     }
@@ -1789,9 +1829,11 @@ function _M0FP37walkzzz9astrolabe4char6string(expected) {
     if ((state.input.length - state.offset | 0) < len) {
       const _tmp = state.pos;
       const _string_builder = _M0MPB13StringBuilder21StringBuilder_2einner(8);
-      _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "\"");
+      const _p = "\"";
+      _string_builder.val = `${_string_builder.val}${_p}`;
       _M0MPB13StringBuilder13write__objectGsE(_string_builder, expected);
-      _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "\"");
+      const _p$2 = "\"";
+      _string_builder.val = `${_string_builder.val}${_p$2}`;
       return new _M0DTP37walkzzz9astrolabe4core11ParseResultGsE7Failure(_M0MP37walkzzz9astrolabe4core10ParseError2at(_tmp, _string_builder.val));
     } else {
       const actual = _M0MP37walkzzz9astrolabe4core5State5slice(state, state.offset, state.offset + len | 0);
@@ -1801,9 +1843,11 @@ function _M0FP37walkzzz9astrolabe4char6string(expected) {
       } else {
         const _tmp = state.pos;
         const _string_builder = _M0MPB13StringBuilder21StringBuilder_2einner(8);
-        _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "\"");
+        const _p = "\"";
+        _string_builder.val = `${_string_builder.val}${_p}`;
         _M0MPB13StringBuilder13write__objectGsE(_string_builder, expected);
-        _M0IPB13StringBuilderPB6Logger13write__string(_string_builder, "\"");
+        const _p$2 = "\"";
+        _string_builder.val = `${_string_builder.val}${_p$2}`;
         return new _M0DTP37walkzzz9astrolabe4core11ParseResultGsE7Failure(_M0MP37walkzzz9astrolabe4core10ParseError2at(_tmp, _string_builder.val));
       }
     }
@@ -2007,7 +2051,7 @@ function _M0FP37walkzzz9astrolabe10playground13error__detail(err, input) {
   return new _M0DTPC14json4Json6Object(_p);
 }
 function _M0FP37walkzzz9astrolabe10playground18astrolabe__version() {
-  return "0.5.6";
+  return "0.5.7";
 }
 function _M0FP37walkzzz9astrolabe10playground11parse__char(input, ch) {
   let c;

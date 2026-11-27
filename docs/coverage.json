@@ -1,0 +1,34 @@
+{
+  "schema": "coverage-truth@1",
+  "updated": "2026-11-27",
+  "source": {
+    "coverage": "node scripts/check_coverage.mjs --skip-test (moon coverage report -f full_summary)",
+    "tests": "moon test --target all --warn-list +73 --deny-warn",
+    "mutation": "node scripts/mutation_test.mjs",
+    "proof": "moon prove (Why3 + Z3)"
+  },
+  "tests": {
+    "per_backend": 239,
+    "backends": 4,
+    "total": 956
+  },
+  "coverage": {
+    "covered": 593,
+    "total": 637,
+    "percent": 93.1,
+    "threshold_core": 90,
+    "threshold_library": 85,
+    "excluded": ["benchmarks", "examples", "cmd", "proof", "playground"]
+  },
+  "mutation": {
+    "killed": 12,
+    "total": 12,
+    "script": "scripts/mutation_test.mjs"
+  },
+  "proof_goals": 7,
+  "packages": {
+    "functional": 5,
+    "names": ["astrolabe", "char", "core", "branch", "sequence"]
+  },
+  "ci_jobs": 8
+}

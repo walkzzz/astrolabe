@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.7] - 2026-11-27
+
+### Fixed
+
+- **CI 覆盖率门槛红灯**：`moon coverage report -f full_summary` 把 `playground/playground.mbt`（0/201，演示层，不被单元测试直接调用）计入 core 分母，CI 得到 `core: 593/838 = 70.8%` 判红。`scripts/check_coverage.mjs` 排除 `playground` 与 `_build` 后为 `593/637 = 93.1%`，与本地同口径一致。
+- **页面与文档口径漂移**：`docs/index.html` 仍写 92.9%（576/620）与变异 10/10（实测 12/12），而 README 徽章已是 93.1%。页面、评估文档、README 统一到 `593/637 = 93.1%` 与 `12/12`。
+
+### Added
+
+- `scripts/version_points.mjs`：9 个版本引用点的唯一清单（moon.mod / CHANGELOG / README 徽章 / 页面品牌版本与安装命令 / playground `astrolabe_version` / AGENTS / architecture / security）。
+- `scripts/check_version.mjs`：版本一致性门禁（9 点必须同版，不一致即退出 1）。
+- `scripts/bump_version.mjs`：一次改完 9 点并在 CHANGELOG 补条目骨架，消除"升版漏改 playground 源码常量"这一类必然踩的坑。
+- `scripts/sync_pages.mjs --check`：README 徽章 / 页面 / assessment 的数字必须等于 `docs/coverage.json` 真值。
+- `docs/coverage.json`：测试数、覆盖率、变异点数、证明目标数的唯一真值文件。
+- `scripts/check_release_ready.mjs`：一条命令跑完 9 项发布前门禁（`--skip-slow` 快跑约 1 分钟）。
+- `scripts/publish.ps1`：单模块发布脚本（`moon update` → dry-run → publish，按 `Server status` 判定成败）。
+- `docs/release.md`：发布流程、真值表、失败分类与三条实测教训（必须 update / 退出码不可信 / PowerShell 5.1 输出捕获）。
+
+### Changed
+
+- `scripts/check_pages.mjs`：删除硬编码的 `version === 0.5.6`、`92.9%`、`10 / 10` 断言，改为读 `moon.mod` 与 `docs/coverage.json`，升版本不再必然报红。
+
 ## [0.5.6] - 2026-11-24
 
 ### Added
@@ -222,7 +244,7 @@ All notable changes to this project will be documented in this file.
 - Example: Arithmetic calculator (`examples/calc/`)
 - `Method::to_string()` in HTTP subpackage
 
-## [0.5.6] - 2026-11-12
+## [0.5.6] - 2026-11-12（历史条目：版本号后复用于 2026-11-24 的立项级增强，见上方 0.5.6 条目）
 
 ### Added
 - Custom parser extension points via `Parser::of(fn)`

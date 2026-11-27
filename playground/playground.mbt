@@ -40,7 +40,7 @@ fn error_detail(err : @core.ParseError, input : String) -> @json.Json {
 /// 版本（与 moon.mod 同步）。
 #export_name("astrolabe_version")
 pub fn astrolabe_version() -> String {
-  "0.5.6"
+  "0.5.7"
 }
 
 ///|

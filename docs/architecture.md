@@ -1,4 +1,4 @@
-# 架构设计（astrolabe 0.5.6）
+# 架构设计（astrolabe 0.5.7）
 
 > 范围：`walkzzz/astrolabe` —— MoonBit 位置感知解析器组合子库（参考 OCaml Angstrom，MIT）。
 > 本文描述包分层、核心数据流、回溯语义与边界；数字口径见 `assessment.md` 与 `performance_report.md`。
