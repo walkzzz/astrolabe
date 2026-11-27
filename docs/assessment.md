@@ -14,7 +14,7 @@ Astrolabe 是 MoonBit 生态**位置感知解析器组合子库**（参考 OCaml
 | --- | --- | --- |
 | 测试 | **239 / 239 × 4 后端**（wasm / wasm-gc / js / native） | `moon test --target all` |
 | 编译门禁 | 四目标 `--deny-warn` 零警告 | `moon check --deny-warn --target all` |
-| 覆盖率（库口径） | **92.9%（576/620）** | `node scripts/check_coverage.mjs` |
+| 覆盖率（库口径） | **93.1%（593/637）** | `node scripts/check_coverage.mjs` |
 | 覆盖率（含示例/基准） | 1100/1590（69.2%） | `moon coverage report -f full_summary` |
 | 形式化 | **7 goals proved**（proof 包，WSL + Z3 4.8.12） | `moon prove` |
 | 变异测试 | **10 个变异点**（KILLED 结果以脚本运行输出为准） | `node scripts/mutation_test.mjs` |
@@ -43,7 +43,7 @@ Astrolabe 是 MoonBit 生态**位置感知解析器组合子库**（参考 OCaml
 ### 1.3 工程质量 ✅
 
 - 四目标 `--deny-warn` 零警告；`.mbti` 契约入库并在 CI 严格校验（`git diff --exit-code`）
-- 覆盖率门槛 core ≥ 90%（实测 92.9%）；变异脚本 10 点
+- 覆盖率门槛 core ≥ 90%（实测 93.1%）；变异脚本 10 点
 - 形式化证明与 `docs/formal-spec.md` 一一对应（7 条）
 - 文档数字由 `scripts/check_docs.mjs` 断言（版本 / CHANGELOG / 测试数 / 死链）
 
@@ -54,7 +54,7 @@ Astrolabe 是 MoonBit 生态**位置感知解析器组合子库**（参考 OCaml
 ```text
 moon check --deny-warn --target all   ✅ 零警告
 moon test --target all                ✅ 239 × 4 后端
-moon test --enable-coverage ...       ✅ core 576/620 = 92.9%
+moon test --enable-coverage ...       ✅ core 593/637 = 93.1%
 moon prove（WSL + Z3）                ✅ 7 goals proved
 moon bench --target native benchmarks/ ✅ 25 项
 node scripts/check_coverage.mjs       ✅ core ≥ 90%
@@ -73,7 +73,7 @@ node scripts/mutation_test.mjs        ✅ 10 变异点（KILLED 见运行输出�
 | # | 项 | 修复前 | 修复后 |
 | --- | --- | --- | --- |
 | 1 | 测试数 | 178 / 190 / 200 三种说法 | **239 × 4**（README / AGENTS / assessment 一致） |
-| 2 | 覆盖率 | 无口径、只打印前 5 行 | **core 92.9%（576/620）** + 硬门槛脚本 |
+| 2 | 覆盖率 | 无口径、只打印前 5 行 | **core 93.1%（593/637）** + 硬门槛脚本 |
 | 3 | 形式化 | 文档写 8 goals | **7 goals proved**（与 proof.mbt 一致） |
 | 4 | 变异 | 无 | 10 变异点脚本 + CI 手动 job |
 | 5 | CI | 单 job；mbti 用 `\|\| echo` 不阻断 | 6 job（quality / test×4 / coverage / prove / examples / 手动 mutation），mbti 严格 |
@@ -99,7 +99,7 @@ Astrolabe 定位：**位置感知（line:column:offset）+ 显式 commit/alt 回
 | 优先级 | 行动 | 状态 |
 |:---:|:---|:---|
 | 🔴 | `moon publish` 发布 **0.5.6** | 待用户执行（助手不执行上传） |
-| 🟡 | 覆盖率 92.9% → 95%+（剩余：sequence 25 行 / chain 9 行 / parser_like 4 行 / branch 5 行） | 可选 |
+| 🟡 | 覆盖率 93.1% → 95%+（剩余：sequence 25 行 / chain 9 行 / parser_like 4 行 / branch 5 行） | 可选 |
 | 🟢 | `examples/ini`、`examples/json`、`examples/http` 增加可执行 `main` 或明确标注为库示例 | 文档已标注 |
 | 🟢 | 文档数字断言持续化 | ✅ `scripts/check_docs.mjs` |
 
@@ -111,14 +111,14 @@ Astrolabe 定位：**位置感知（line:column:offset）+ 显式 commit/alt 回
 | --- | --- | :---: | --- |
 | check 零警告 | `moon check --deny-warn --target all` | ✅ | 本机实测 |
 | 测试全绿 | 239 × 4 | ✅ | `moon test --target all` |
-| 覆盖率门槛 | core ≥ 90% | ✅ | `node scripts/check_coverage.mjs`（92.9%） |
+| 覆盖率门槛 | core ≥ 90% | ✅ | `node scripts/check_coverage.mjs`（93.1%） |
 | 形式化 | 7 goals | ✅ | `moon prove`（WSL + Z3） |
 | 变异 | 10 点全 KILLED | ✅/待复核 | `node scripts/mutation_test.mjs` |
 | 基准 | 25+ | ✅ | `moon bench --target native benchmarks/` |
 | `.mbti` 契约 | 无漂移 | ✅ | `moon info && git diff --exit-code` |
 | 文档一致性 | 版本/测试数/死链 | ✅ | `node scripts/check_docs.mjs` |
 | 示例可运行 | calc / uri / csv_header | ✅ | `moon run examples/<name>` |
-| mooncakes 发布 | 0.5.4 在线；0.5.6 待发布 | ⏳ | mooncakes.io |
+| mooncakes 发布 | 0.5.4 在线；0.5.6 已发布（2026-11-24） | ⏳ | mooncakes.io |
 
 ---
 

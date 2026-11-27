@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # 🔭 Astrolabe
 
@@ -12,7 +12,7 @@ _MoonBit 生态首个位置感知解析器组合子库，灵感来自 OCaml [Ang
 [![CI](https://github.com/walkzzz/astrolabe/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/walkzzz/astrolabe/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![tests](https://img.shields.io/badge/tests-239%20%C3%97%204%20backends-green?style=flat-square)]()
-[![coverage](https://img.shields.io/badge/coverage-92.9%25%20(core)-brightgreen?style=flat-square)](docs/assessment.md)
+[![coverage](https://img.shields.io/badge/coverage-93.1%25%20(core)-brightgreen?style=flat-square)](docs/assessment.md)
 [![mutation](https://img.shields.io/badge/mutation-10%2F10%20KILLED-brightgreen?style=flat-square)](scripts/mutation_test.mjs)
 [![formal](https://img.shields.io/badge/formal-7%20goals%20proved-brightgreen?style=flat-square)](docs/formal-spec.md)
 [![docs](https://img.shields.io/badge/docs-bilingual-blueviolet?style=flat-square)](docs/)

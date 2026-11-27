@@ -49,11 +49,11 @@
 | v0.7.0 | CLI 演示 + 示例 | ✅ 超额完成（cmd/main + 5 个示例包） |
 | v0.8.0 | 性能优化 + 基准 | 🔶 部分完成（25 项基准已建立；String View/竞品对比基准待做） |
 | v0.9.0 | 文档完善 | 🔶 部分完成（双语五份文档已交付；测试覆盖分析待做） |
-| v1.0.0 | mooncakes.io 完整发布 | 🔶 部分完成（0.5.4 已发布，0.5.6 待发布） |
-| **v0.5.5** | 工程质量补强（2026-11-20） | ✅ 完成（236×4 测试、core 覆盖率 92.9%、10 变异点、CI 六 job、docs 断言 7 项） |
+| v1.0.0 | mooncakes.io 完整发布 | 🔶 部分完成（0.5.4 已发布，0.5.6 已发布（2026-11-24）） |
+| **v0.5.5** | 工程质量补强（2026-11-20） | ✅ 完成（236×4 测试、core 覆盖率 93.1%、10 变异点、CI 六 job、docs 断言 7 项） |
 | **v0.5.6** | 立项级增强 + 浏览器演示（2026-11-24） | ✅ 完成（3 API：parse_prefix / Pos::to_string / expected_joined；239×4 测试；12/12 变异；11 演示导出；页面门禁 128；CDP E2E 28） |
 
-实际测试数：**239 × 4 后端全绿**，`moon check --deny-warn --target all` 零警告；core 覆盖率 **92.9%（576/620）**，`moon prove` **7 goals**，CI 六 job（quality / test×4 / coverage / prove / examples / 手动 mutation）。
+实际测试数：**239 × 4 后端全绿**，`moon check --deny-warn --target all` 零警告；core 覆盖率 **93.1%（593/637）**，`moon prove` **7 goals**，CI 六 job（quality / test×4 / coverage / prove / examples / 手动 mutation）。
 
 ---
 
