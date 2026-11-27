@@ -35,6 +35,10 @@ jobs:
           git diff --exit-code -- '*.mbti'
       - name: Docs consistency (version / tests / proof / coverage claims)
         run: node scripts/check_docs.mjs
+      - name: Version consistency (9 reference points)
+        run: node scripts/check_version.mjs
+      - name: Pages numbers = docs/coverage.json
+        run: node scripts/sync_pages.mjs --check
       - name: Pages gate (structure / 11 exports / parser semantics)
         run: |
           moon build --target js --release playground
